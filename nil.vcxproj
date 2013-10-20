@@ -112,6 +112,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\nil.h" />
+    <ClInclude Include="include\nilUtil.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

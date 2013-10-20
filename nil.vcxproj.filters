@@ -18,5 +18,8 @@
     <ClInclude Include="include\nil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\nilUtil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
