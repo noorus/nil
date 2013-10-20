@@ -143,10 +143,40 @@ Window::~Window()
     UnregisterClassW( (LPCWSTR)mClass, mInstance );
 }*/
 
-int wmain( int argc, wchar_t** argv, wchar_t** env )
+HANDLE stopEvent = NULL;
+
+BOOL WINAPI consoleHandler( DWORD ctrl )
 {
-  nil::System sys;
-  sys.test();
+  if ( ctrl == CTRL_C_EVENT || ctrl == CTRL_CLOSE_EVENT )
+  {
+    SetEvent( stopEvent );
+    return TRUE;
+  }
+  return FALSE;
+}
+
+int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
+{
+  try
+  {
+    nil::System* system = new nil::System();
+    stopEvent = CreateEventW( 0, FALSE, FALSE, 0 );
+    SetConsoleCtrlHandler( consoleHandler, TRUE );
+    WaitForSingleObject( stopEvent, INFINITE );
+    SetConsoleCtrlHandler( NULL, FALSE );
+    CloseHandle( stopEvent );
+    delete system;
+  }
+  catch ( std::exception& e )
+  {
+    wprintf_s( L"Exception: %S\r\n", e.what() );
+    return EXIT_FAILURE;
+  }
+  catch ( ... )
+  {
+    wprintf_s( L"Unknown exception\r\n" );
+    return EXIT_FAILURE;
+  }
 
   return EXIT_SUCCESS;
 }
