@@ -8,8 +8,9 @@
 #include <dbt.h>
 #include <devguid.h>
 #include <hidclass.h>
+#include "nil.h"
 
-GUID guid = { 0x4D1E55B2L, 0xF16F, 0x11CF, { 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } };
+/*GUID guid = { 0x4D1E55B2L, 0xF16F, 0x11CF, { 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } };
 
 class Window {
 protected:
@@ -140,23 +141,12 @@ Window::~Window()
     DestroyWindow( mWindow );
   if ( mClass )
     UnregisterClassW( (LPCWSTR)mClass, mInstance );
-}
+}*/
 
 int wmain( int argc, wchar_t** argv, wchar_t** env )
 {
-  try {
-    wprintf_s( L"Creating\r\n" );
-    Window* wnd = new Window();
-    wnd->registerNotifications();
-    wprintf_s( L"Pumping\r\n" );
-    wnd->pump();
-    wprintf_s( L"Dying\r\n" );
-    delete wnd;
-  } catch ( std::exception& e ) {
-    wprintf_s( L"Exception %S\r\n", e.what() );
-  } catch ( ... ) {
-    wprintf_s( L"Unknown exception\r\n" );
-  }
+  nil::System sys;
+  sys.test();
 
   return EXIT_SUCCESS;
 }

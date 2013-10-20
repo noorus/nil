@@ -17,6 +17,15 @@
 
 namespace nil {
 
-  // stubb
+  typedef std::string string;
+  typedef std::wstring wstring;
+
+  class System {
+  protected:
+  public:
+    System();
+    void test();
+    ~System();
+  };
 
 }
