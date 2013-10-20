@@ -159,7 +159,7 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
 {
   try
   {
-    nil::System* system = new nil::System();
+    nil::System* system = new nil::System( GetConsoleWindow() );
     stopEvent = CreateEventW( 0, FALSE, FALSE, 0 );
     SetConsoleCtrlHandler( consoleHandler, TRUE );
     WaitForSingleObject( stopEvent, INFINITE );

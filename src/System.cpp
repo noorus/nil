@@ -3,14 +3,24 @@
 
 namespace nil {
 
-  System::System()
+  System::System( HWND window ): mDirectInput( nullptr ),
+  mWindow( window ), mInstance( 0 )
   {
-    EXCEPT( L"testing exceptions" );
+    if ( !IsWindow( mWindow ) )
+      EXCEPT( L"Passed window handle is invalid" );
+
+    mInstance = GetModuleHandleW( nullptr );
+
+    HRESULT hr = DirectInput8Create( mInstance, DIRECTINPUT_VERSION,
+      IID_IDirectInput8, (LPVOID*)&mDirectInput, NULL );
+
+    if ( FAILED( hr ) )
+      EXCEPT_DINPUT( hr, L"Could not instance DirectInput 8" );
   }
 
   System::~System()
   {
-    // stubb
+    SAFE_RELEASE( mDirectInput );
   }
 
 }

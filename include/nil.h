@@ -5,10 +5,15 @@
 # define _WIN32_WINNT _WIN32_WINNT_VISTA
 #endif
 #include <sdkddkver.h>
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <dbt.h>
 #include <devguid.h>
 #include <hidclass.h>
+
+#define DIRECTINPUT_VERSION 0x0800
+#include <dinput.h>
+#include <xinput.h>
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -44,7 +49,8 @@ namespace nil {
   public:
     enum Type {
       Generic = 0,
-      WinAPI
+      WinAPI,
+      DirectInput
     };
   private:
     Exception();
@@ -55,11 +61,13 @@ namespace nil {
     mutable wstring mFullDescription;
     mutable string mUTF8Description;
     variant<WinAPIError> mAdditional;
-    void handleAdditional();
+    void handleAdditional( HRESULT hr = 0 );
   public:
     Exception( const wstring& description, Type type = Generic );
     Exception( const wstring& description, const wstring& source,
       Type type = Generic );
+    Exception( const wstring& description, const wstring& source,
+      HRESULT hr, Type type = Generic );
     virtual const wstring& getFullDescription() const;
     virtual const char* what() const throw();
   };
@@ -68,8 +76,11 @@ namespace nil {
   //! The input system.
   class System {
   protected:
+    IDirectInput8* mDirectInput;
+    HWND mWindow;
+    HINSTANCE mInstance;
   public:
-    System();
+    System( HWND window );
     ~System();
   };
 
