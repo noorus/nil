@@ -5,7 +5,8 @@ const wchar_t* cPnPMonitorClass = L"NILPNP";
 
 namespace nil {
 
-  PnPMonitor::PnPMonitor( HINSTANCE instance ): mInstance( instance ),
+  PnPMonitor::PnPMonitor( HINSTANCE instance, PnPListener* listener ):
+  mInstance( instance ), mListener( listener ),
   mClass( 0 ), mWindow( 0 ), mNotifications( 0 )
   {
     WNDCLASSEXW wx   = { 0 };
@@ -66,10 +67,13 @@ namespace nil {
         broadcast = (PDEV_BROADCAST_DEVICEINTERFACE_W)lParam;
         if ( broadcast && broadcast->dbcc_devicetype == DBT_DEVTYP_DEVICEINTERFACE )
         {
-          if ( wParam == DBT_DEVICEARRIVAL ) {
-            wprintf_s( L"Device plugged: %s\r\n", broadcast->dbcc_name );
-          } else if ( wParam == DBT_DEVICEREMOVECOMPLETE ) {
-            wprintf_s( L"Device unplugged: %s\r\n", broadcast->dbcc_name );
+          if ( wParam == DBT_DEVICEARRIVAL )
+          {
+            me->mListener->onPlug( broadcast->dbcc_classguid, broadcast->dbcc_name );
+          }
+          else if ( wParam == DBT_DEVICEREMOVECOMPLETE )
+          {
+            me->mListener->onUnplug( broadcast->dbcc_classguid, broadcast->dbcc_name );
           }
         }
         return TRUE;

@@ -1,4 +1,5 @@
 #include "nil.h"
+#include "nilUtil.h"
 
 HANDLE stopEvent = NULL;
 
@@ -24,6 +25,11 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
     SetConsoleCtrlHandler( NULL, FALSE );
     CloseHandle( stopEvent );
     delete system;
+  }
+  catch ( nil::Exception& e )
+  {
+    wprintf_s( L"Exception: %s\r\n", e.getFullDescription() );
+    return EXIT_FAILURE;
   }
   catch ( std::exception& e )
   {

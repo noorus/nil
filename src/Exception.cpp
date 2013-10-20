@@ -11,7 +11,8 @@ namespace nil {
 
 # define NIL_MAX_DIERRORDESCS 32
 
-  static DirectInputErrorEntry g_diErrorDescriptions[NIL_MAX_DIERRORDESCS] = {
+  static DirectInputErrorEntry g_diErrorDescriptions[NIL_MAX_DIERRORDESCS] =
+  {
     { DIERR_ACQUIRED, L"The operation cannot be performed while the device is acquired." },
     { DIERR_ALREADYINITIALIZED, L"The object is already initialized." },
     { DIERR_BADDRIVERVER, L"The object could not be created due to an incompatible driver." },
@@ -83,8 +84,11 @@ namespace nil {
         FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL, error.code, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
         (LPWSTR)&message, 0, NULL );
-      error.description = message;
-      LocalFree( message );
+      if ( message )
+      {
+        error.description = message;
+        LocalFree( message );
+      }
       mAdditional = error;
     }
     else if ( mType == DirectInput )

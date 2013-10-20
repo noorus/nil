@@ -3,19 +3,13 @@
 
 namespace nil {
 
-  wstring guidToStr( GUID guid )
-  {
-    OLECHAR* bstrGuid;
-    StringFromCLSID( guid, &bstrGuid );
-    wstring str = bstrGuid;
-    ::CoTaskMemFree( bstrGuid );
-    return str;
-  }
-
   Device::Device( GUID productID, GUID deviceID ):
   mProductID( productID ), mDeviceID( deviceID )
   {
-    wprintf_s( L"Device: %s\r\n", guidToStr( mDeviceID ).c_str() );
+    wprintf_s( L"Device:\r\n  ProductID: %s\r\n  DeviceID: %s\r\n",
+      guidToStr( mProductID ).c_str(),
+      guidToStr( mDeviceID ).c_str()
+    );
   }
 
   const GUID Device::getProductID()
@@ -30,7 +24,10 @@ namespace nil {
 
   Device::~Device()
   {
-    wprintf_s( L"~Device: %s\r\n", guidToStr( mDeviceID ).c_str() );
+    wprintf_s( L"~Device:\r\n  ProductID: %s\r\n  DeviceID: %s\r\n",
+      guidToStr( mProductID ).c_str(),
+      guidToStr( mDeviceID ).c_str()
+    );
   }
 
 }

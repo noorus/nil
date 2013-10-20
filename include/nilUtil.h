@@ -12,7 +12,7 @@ namespace nil {
 #   define SAFE_RELEASE(p) {if(p){p->Release();(p)=NULL;}}
 # endif
 
-# if defined(EXCEPT) || defined(EXCEPT_WINAPI)
+# if defined(EXCEPT) || defined(EXCEPT_WINAPI) || defined(EXCEPT_DINPUT)
 #   error EXCEPT* maro already defined!
 # else
 #   define EXCEPT(description) {throw nil::Exception(description,__FUNCTIONW__,nil::Exception::Generic);}
@@ -20,7 +20,16 @@ namespace nil {
 #   define EXCEPT_DINPUT(hr,description) {throw nil::Exception(description,__FUNCTIONW__,hr,nil::Exception::DirectInput);}
 # endif
 
-  static GUID g_HIDInterfaceGUID = { 0x4D1E55B2L, 0xF16F, 0x11CF, { 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } };
+  static GUID g_HIDInterfaceGUID = { 0x4D1E55B2, 0xF16F, 0x11CF, { 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } };
+
+  static wstring guidToStr( GUID guid )
+  {
+    OLECHAR* bstrGuid;
+    StringFromCLSID( guid, &bstrGuid );
+    wstring str = bstrGuid;
+    ::CoTaskMemFree( bstrGuid );
+    return str;
+  }
 
   namespace util
   {

@@ -8,12 +8,11 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <dbt.h>
-#include <devguid.h>
-#include <hidclass.h>
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #include <xinput.h>
+#include <setupapi.h>
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -24,6 +23,7 @@
 #include <list>
 #include <sstream>
 #include <boost/variant.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace nil {
 
@@ -87,26 +87,34 @@ namespace nil {
 
   typedef list<Device*> DeviceList;
 
+  class PnPListener {
+  friend class PnPMonitor;
+  protected:
+    virtual void onPlug( const GUID& deviceClass, const wstring& devicePath ) = 0;
+    virtual void onUnplug( const GUID& deviceClass, const wstring& devicePath ) = 0;
+  };
+
   class PnPMonitor {
   protected:
     HINSTANCE mInstance;
     ATOM mClass;
     HWND mWindow;
     HDEVNOTIFY mNotifications;
+    PnPListener* mListener;
   protected:
     void registerNotifications();
     void unregisterNotifications();
     static LRESULT CALLBACK wndProc( HWND window, UINT message,
       WPARAM wParam, LPARAM lParam );
   public:
-    PnPMonitor( HINSTANCE instance );
+    PnPMonitor( HINSTANCE instance, PnPListener* listener );
     void update();
     ~PnPMonitor();
   };
 
   //! \class System
   //! The input system.
-  class System {
+  class System: public PnPListener {
   protected:
     IDirectInput8* mDirectInput;
     HWND mWindow;
@@ -115,6 +123,9 @@ namespace nil {
     DeviceList mDevices;
   protected:
     void enumerate();
+    bool resolveDevice( const wstring& devicePath );
+    virtual void onPlug( const GUID& deviceClass, const wstring& devicePath );
+    virtual void onUnplug( const GUID& deviceClass, const wstring& devicePath );
     static BOOL CALLBACK diEnumCallback(
       LPCDIDEVICEINSTANCE instance, LPVOID referer );
   public:
