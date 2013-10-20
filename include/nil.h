@@ -72,6 +72,38 @@ namespace nil {
     virtual const char* what() const throw();
   };
 
+  //! \class Device
+  //! Input device instance.
+  class Device {
+  protected:
+    GUID mProductID;
+    GUID mDeviceID;
+  public:
+    Device( GUID productID, GUID deviceID );
+    const GUID getProductID();
+    const GUID getDeviceID();
+    ~Device();
+  };
+
+  typedef list<Device*> DeviceList;
+
+  class PnPMonitor {
+  protected:
+    HINSTANCE mInstance;
+    ATOM mClass;
+    HWND mWindow;
+    HDEVNOTIFY mNotifications;
+  protected:
+    void registerNotifications();
+    void unregisterNotifications();
+    static LRESULT CALLBACK wndProc( HWND window, UINT message,
+      WPARAM wParam, LPARAM lParam );
+  public:
+    PnPMonitor( HINSTANCE instance );
+    void update();
+    ~PnPMonitor();
+  };
+
   //! \class System
   //! The input system.
   class System {
@@ -79,8 +111,15 @@ namespace nil {
     IDirectInput8* mDirectInput;
     HWND mWindow;
     HINSTANCE mInstance;
+    PnPMonitor* mMonitor;
+    DeviceList mDevices;
+  protected:
+    void enumerate();
+    static BOOL CALLBACK diEnumCallback(
+      LPCDIDEVICEINSTANCE instance, LPVOID referer );
   public:
     System( HWND window );
+    void update();
     ~System();
   };
 
