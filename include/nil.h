@@ -8,6 +8,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <dbt.h>
+#include <objbase.h>
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
@@ -75,18 +76,40 @@ namespace nil {
   //! \class Device
   //! Input device instance.
   class Device {
+  friend class System;
+  public:
+    enum Type {
+      Device_DirectInput,
+      Device_XInput
+    };
+    enum State {
+      State_Disconnected, //!< Disconnected but not forgotten
+      State_Pending, //!< Pending refresh
+      State_Current //!< Up-to-date and available
+    };
   protected:
+    Type mType;
+    State mState;
     GUID mProductID;
     GUID mDeviceID;
+    struct XInput {
+      int deviceID;
+    } mXInput;
+    void setState( State state );
+    void makeXInput( int index );
+    Device( Type type, GUID productID, GUID deviceID );
+    ~Device();
   public:
-    Device( GUID productID, GUID deviceID );
+    const Type getType();
+    const State getState();
     const GUID getProductID();
     const GUID getDeviceID();
-    ~Device();
   };
 
   typedef list<Device*> DeviceList;
 
+  //! \class PnPListener
+  //! Plug-n-Play event listener.
   class PnPListener {
   friend class PnPMonitor;
   protected:
@@ -94,6 +117,8 @@ namespace nil {
     virtual void onUnplug( const GUID& deviceClass, const wstring& devicePath ) = 0;
   };
 
+  //! \class PnPMonitor
+  //! Monitors for Plug-n-Play (USB) device events.
   class PnPMonitor {
   protected:
     HINSTANCE mInstance;
@@ -116,20 +141,21 @@ namespace nil {
   //! The input system.
   class System: public PnPListener {
   protected:
-    IDirectInput8* mDirectInput;
-    HWND mWindow;
-    HINSTANCE mInstance;
-    PnPMonitor* mMonitor;
-    DeviceList mDevices;
-  protected:
-    void enumerate();
+    IDirectInput8* mDirectInput; //!< Our DirectInput instance
+    HINSTANCE mInstance; //!< Host application instance handle
+    HWND mWindow; //!< Host application window handle
+    PnPMonitor* mMonitor; //!< Our Plug-n-Play event monitor
+    DeviceList mDevices; //!< List of current devices
+    bool mInitializedCOM; //!< Are we responsible for freeing COM?
+    void refreshDevices();
+    void identifyXInputDevices();
     bool resolveDevice( const wstring& devicePath );
     virtual void onPlug( const GUID& deviceClass, const wstring& devicePath );
     virtual void onUnplug( const GUID& deviceClass, const wstring& devicePath );
     static BOOL CALLBACK diEnumCallback(
       LPCDIDEVICEINSTANCE instance, LPVOID referer );
   public:
-    System( HWND window );
+    System( HINSTANCE instance, HWND window );
     void update();
     ~System();
   };

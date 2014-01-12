@@ -17,12 +17,12 @@ namespace nil {
 
     mClass = RegisterClassExW( &wx );
     if ( !mClass )
-      EXCEPT_WINAPI( L"Window class registration failed" );
+      NIL_EXCEPT_WINAPI( L"Window class registration failed" );
 
     mWindow = CreateWindowExW(
       0, (LPCWSTR)mClass, nullptr, 0, 0, 0, 0, 0, 0, 0, mInstance, this );
     if ( !mWindow )
-      EXCEPT_WINAPI( L"Window creation failed" );
+      NIL_EXCEPT_WINAPI( L"Window creation failed" );
 
     registerNotifications();
   }
@@ -39,7 +39,7 @@ namespace nil {
     mNotifications = RegisterDeviceNotification( mWindow, &filter,
       DEVICE_NOTIFY_WINDOW_HANDLE );
     if ( !mNotifications )
-      EXCEPT_WINAPI( L"Couldn't register device notification handler" );
+      NIL_EXCEPT_WINAPI( L"Couldn't register device notification handler" );
   }
 
   LRESULT CALLBACK PnPMonitor::wndProc( HWND window, UINT message,
@@ -49,14 +49,14 @@ namespace nil {
 
     if ( message == WM_CREATE )
     {
-      LPCREATESTRUCTW pcs = (LPCREATESTRUCTW)lParam;
-      PnPMonitor* me = (PnPMonitor*)pcs->lpCreateParams;
+      auto createstruct = (LPCREATESTRUCTW)lParam;
+      auto me = (PnPMonitor*)createstruct->lpCreateParams;
       SetWindowLongPtrW( window, GWLP_USERDATA, PtrToUlong( me ) );
       return 1;
     }
 
-    LONG_PTR ptr = static_cast<LONG_PTR>( GetWindowLongPtrW( window, GWLP_USERDATA ) );
-    PnPMonitor* me = reinterpret_cast<PnPMonitor*>( ptr );
+    auto ptr = static_cast<LONG_PTR>( GetWindowLongPtrW( window, GWLP_USERDATA ) );
+    auto me = reinterpret_cast<PnPMonitor*>( ptr );
 
     if ( !me )
       return DefWindowProcW( window, message, wParam, lParam );
@@ -79,7 +79,6 @@ namespace nil {
         return TRUE;
       break;
       case WM_CLOSE:
-        // don't react to outside close requests
         return 0;
       break;
       case WM_DESTROY:
@@ -104,8 +103,7 @@ namespace nil {
   void PnPMonitor::update()
   {
     MSG msg;
-    int ret;
-    while ( ( ret = PeekMessageW( &msg, mWindow, 0, 0, PM_REMOVE ) ) != 0 )
+    while ( PeekMessageW( &msg, mWindow, 0, 0, PM_REMOVE ) > 0 )
     {
       TranslateMessage( &msg );
       DispatchMessage( &msg );

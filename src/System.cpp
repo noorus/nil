@@ -4,27 +4,40 @@
 #include <devguid.h>
 #include <devpkey.h>
 #include <hidclass.h>
+#include <wbemidl.h>
+#include <oleauto.h>
 
 namespace nil {
 
   const unsigned long cDetailDataBufferSize = 4096;
+  const int cMaxXInputDevices = 4;
+  const int cCOMQueryTimeout = 5000;
 
-  System::System( HWND window ): mDirectInput( nullptr ),
-  mWindow( window ), mInstance( 0 ), mMonitor( nullptr )
+  System::System( HINSTANCE instance, HWND window ):
+  mWindow( window ), mInstance( instance ),
+  mDirectInput( nullptr ), mMonitor( nullptr ), mInitializedCOM( false )
   {
+    // Make sure the window is a window
     if ( !IsWindow( mWindow ) )
-      EXCEPT( L"Passed window handle is invalid" );
+      NIL_EXCEPT( L"Window handle is invalid" );
 
-    mInstance = GetModuleHandleW( nullptr );
+    // Initialize COM, in case it isn't already
+    auto hr = CoInitializeEx( nullptr, COINIT_MULTITHREADED | COINIT_SPEED_OVER_MEMORY );
+    if ( FAILED( hr ) )
+      NIL_EXCEPT( L"COM initialization failed" );
+    mInitializedCOM = true;
 
-    HRESULT hr = DirectInput8Create( mInstance, DIRECTINPUT_VERSION,
+    // Create DirectInput instance
+    hr = DirectInput8Create( mInstance, DIRECTINPUT_VERSION,
       IID_IDirectInput8, (LPVOID*)&mDirectInput, NULL );
     if ( FAILED( hr ) )
-      EXCEPT_DINPUT( hr, L"Could not instance DirectInput 8" );
+      NIL_EXCEPT_DINPUT( hr, L"Could not instance DirectInput 8" );
 
+    // Initialize our Plug-n-Play monitor
     mMonitor = new PnPMonitor( mInstance, this );
 
-    enumerate();
+    // Enumerate currently connected devices
+    refreshDevices();
   }
 
   bool System::resolveDevice( const wstring& devicePath )
@@ -36,7 +49,7 @@ namespace nil {
       NULL, NULL, DIGCF_DEVICEINTERFACE | DIGCF_ALLCLASSES );
 
     if ( info == INVALID_HANDLE_VALUE )
-      EXCEPT_WINAPI( L"SetupDiGetClassDevsW failed" );
+      NIL_EXCEPT_WINAPI( L"SetupDiGetClassDevsW failed" );
 
     auto detailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA_W)malloc( cDetailDataBufferSize );
 
@@ -70,29 +83,43 @@ namespace nil {
   void System::onPlug( const GUID& deviceClass, const wstring& devicePath )
   {
     wprintf_s( L"Plugged:\r\n  Class: %s\r\n  Path: %s\r\n", guidToStr( deviceClass ).c_str(), devicePath.c_str() );
-    resolveDevice( devicePath );
+    GUID resolved = { 0 };
+    // Wtf? I think FindDevice is totally borked, keeps returning DIERR_DEVICENOTREG...
+    HRESULT hr = mDirectInput->FindDevice( deviceClass, devicePath.c_str(), &resolved );
+    wprintf_s( L"mDirectInput->FindDevice() returned 0x%X\r\n", hr );
+    wprintf_s( L"Resolved is %s\r\n", guidToStr( resolved ).c_str() );
   }
 
   void System::onUnplug( const GUID& deviceClass, const wstring& devicePath )
   {
     wprintf_s( L"Unplugged:\r\n  Class: %s\r\n  Path: %s\r\n", guidToStr( deviceClass ).c_str(), devicePath.c_str() );
-    resolveDevice( devicePath );
   }
 
-  void System::enumerate()
+  void System::refreshDevices()
   {
     mDevices.clear();
 
     HRESULT hr = mDirectInput->EnumDevices( DI8DEVCLASS_ALL,
       diEnumCallback, this, DIEDFL_ATTACHEDONLY );
     if ( FAILED( hr ) )
-      EXCEPT_DINPUT( hr, L"Could not enumerate DirectInput devices" );
+      NIL_EXCEPT_DINPUT( hr, L"Could not enumerate DirectInput devices" );
+
+    for ( int i = 0; i < cMaxXInputDevices; i++ )
+    {
+      XINPUT_STATE state;
+      if ( XInputGetState( i, &state ) == ERROR_SUCCESS )
+      {
+        // At least one XInput device is connected; Identify them
+        identifyXInputDevices();
+        break;
+      }
+    }
   }
 
   BOOL CALLBACK System::diEnumCallback( LPCDIDEVICEINSTANCE instance,
   LPVOID referer )
   {
-    System* system = static_cast<System*>( referer );
+    auto system = static_cast<System*>( referer );
 
     unsigned long deviceType = GET_DIDEVICE_TYPE( instance->dwDevType );
 
@@ -102,11 +129,100 @@ namespace nil {
     || deviceType == DI8DEVTYPE_FLIGHT
     || deviceType == DI8DEVTYPE_1STPERSON )
     {
-      Device* device = new Device( instance->guidProduct, instance->guidInstance );
+      Device* device = new Device(
+        Device::Device_DirectInput,
+        instance->guidProduct,
+        instance->guidInstance );
+
+      device->setState( Device::State_Current );
+
       system->mDevices.push_back( device );
     }
 
     return DIENUM_CONTINUE;
+  }
+
+  void System::identifyXInputDevices()
+  {
+    COMString nameSpace( L"\\\\.\\root\\cimv2" );
+    COMString className( L"Win32_PNPEntity" );
+    COMString classValueDeviceID( L"DeviceID" );
+
+    IWbemLocator* locator;
+    auto hr = CoCreateInstance( __uuidof( WbemLocator ), NULL,
+      CLSCTX_INPROC_SERVER, __uuidof( IWbemLocator ),
+      (LPVOID*)&locator );
+    if ( FAILED( hr ) || !locator )
+      NIL_EXCEPT( L"CoCreateInstance failed" );
+
+    IWbemServices* services;
+    hr = locator->ConnectServer( nameSpace, NULL, NULL, 0L, 0L,
+      NULL, NULL, &services );
+    if ( FAILED( hr ) || !services )
+      NIL_EXCEPT( L"ConnectServer failed" );
+
+    hr = CoSetProxyBlanket( services, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE,
+      NULL, RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL,
+      EOAC_NONE );
+    if ( FAILED( hr ) )
+      NIL_EXCEPT( L"CoSetProxyBlanket failed" );
+
+    IEnumWbemClassObject* enumerator;
+    hr = services->CreateInstanceEnum( className, 0, NULL, &enumerator );
+    if ( FAILED( hr ) || !enumerator )
+      NIL_EXCEPT( L"CreateInstanceEnum failed" );
+
+    unsigned long xinputIndex = 0;
+    IWbemClassObject* devices[8] = { nullptr };
+
+    while ( true )
+    {
+      unsigned long count = 0;
+
+      hr = enumerator->Next( cCOMQueryTimeout, 8, devices, &count );
+      if ( FAILED( hr ) || count == 0 )
+        break;
+
+      for ( unsigned long i = 0; i < count; i++ )
+      {
+        VARIANT var;
+        hr = devices[i]->Get( classValueDeviceID, 0L, &var, NULL, NULL );
+        if ( SUCCEEDED( hr ) && var.vt == VT_BSTR && var.bstrVal != NULL )
+        {
+          if ( wcsstr( var.bstrVal, L"IG_" ) )
+          {
+            unsigned long vid;
+            auto vidptr = wcsstr( var.bstrVal, L"VID_" );
+            if ( !vidptr || swscanf_s( vidptr, L"VID_%4X", &vid ) != 1 )
+              vid = 0;
+
+            unsigned long pid;
+            auto pidptr = wcsstr( var.bstrVal, L"PID_" );
+            if ( !pidptr || swscanf_s( pidptr, L"PID_%4X", &pid ) != 1 )
+              pid = 0;
+
+            unsigned long identifier = MAKELONG( vid, pid );
+
+            for ( Device* device : mDevices )
+            {
+              if ( device->getType() == Device::Device_XInput )
+                continue;
+              if ( device->getProductID().Data1 == identifier )
+              {
+                device->makeXInput( xinputIndex );
+                xinputIndex++;
+              }
+            }
+          }
+        }
+
+        SAFE_RELEASE( devices[i] );
+      }
+    }
+    
+    SAFE_RELEASE( enumerator );
+    SAFE_RELEASE( services );
+    SAFE_RELEASE( locator );
   }
 
   void System::update()
@@ -118,8 +234,12 @@ namespace nil {
   {
     for ( Device* device : mDevices )
       delete device;
+
     SAFE_DELETE( mMonitor );
     SAFE_RELEASE( mDirectInput );
+
+    if ( mInitializedCOM )
+      CoUninitialize();
   }
 
 }

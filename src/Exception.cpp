@@ -9,9 +9,9 @@ namespace nil {
     WCHAR* description;
   };
 
-# define NIL_MAX_DIERRORDESCS 32
+  const int cErrorDescriptionCount = 32;
 
-  static DirectInputErrorEntry g_diErrorDescriptions[NIL_MAX_DIERRORDESCS] =
+  const DirectInputErrorEntry cErrorDescriptions[cErrorDescriptionCount] =
   {
     { DIERR_ACQUIRED, L"The operation cannot be performed while the device is acquired." },
     { DIERR_ALREADYINITIALIZED, L"The object is already initialized." },
@@ -84,21 +84,23 @@ namespace nil {
         FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL, error.code, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
         (LPWSTR)&message, 0, NULL );
+
       if ( message )
       {
         error.description = message;
         LocalFree( message );
       }
+
       mAdditional = error;
     }
     else if ( mType == DirectInput )
     {
       error.code = hr;
-      for ( unsigned long i = 0; i < NIL_MAX_DIERRORDESCS; i++ )
+      for ( unsigned long i = 0; i < cErrorDescriptionCount; i++ )
       {
-        if ( g_diErrorDescriptions[i].code == error.code )
+        if ( cErrorDescriptions[i].code == error.code )
         {
-          error.description = g_diErrorDescriptions[i].description;
+          error.description = cErrorDescriptions[i].description;
           break;
         }
       }
