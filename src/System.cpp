@@ -97,7 +97,7 @@ namespace nil {
 
   void System::refreshDevices()
   {
-    mDevices.clear();
+    mEntries.clear();
 
     HRESULT hr = mDirectInput->EnumDevices( DI8DEVCLASS_ALL,
       diEnumCallback, this, DIEDFL_ATTACHEDONLY );
@@ -129,14 +129,14 @@ namespace nil {
     || deviceType == DI8DEVTYPE_FLIGHT
     || deviceType == DI8DEVTYPE_1STPERSON )
     {
-      Device* device = new Device(
-        Device::Device_DirectInput,
+      DeviceEntry* device = new DeviceEntry(
+        DeviceEntry::Device_DirectInput,
         instance->guidProduct,
         instance->guidInstance );
 
-      device->setState( Device::State_Current );
+      device->setState( DeviceEntry::State_Current );
 
-      system->mDevices.push_back( device );
+      system->mEntries.push_back( device );
     }
 
     return DIENUM_CONTINUE;
@@ -203,13 +203,13 @@ namespace nil {
 
             unsigned long identifier = MAKELONG( vid, pid );
 
-            for ( Device* device : mDevices )
+            for ( DeviceEntry* entry : mEntries )
             {
-              if ( device->getType() == Device::Device_XInput )
+              if ( entry->getType() == DeviceEntry::Device_XInput )
                 continue;
-              if ( device->getProductID().Data1 == identifier )
+              if ( entry->getProductID().Data1 == identifier )
               {
-                device->makeXInput( xinputIndex );
+                entry->makeXInput( xinputIndex );
                 xinputIndex++;
               }
             }
@@ -232,8 +232,8 @@ namespace nil {
 
   System::~System()
   {
-    for ( Device* device : mDevices )
-      delete device;
+    for ( DeviceEntry* entry : mEntries )
+      delete entry;
 
     SAFE_DELETE( mMonitor );
     SAFE_RELEASE( mDirectInput );

@@ -73,9 +73,9 @@ namespace nil {
     virtual const char* what() const throw();
   };
 
-  //! \class Device
-  //! Input device instance.
-  class Device {
+  //! \class DeviceEntry
+  //! Input device information entry.
+  class DeviceEntry {
   friend class System;
   public:
     enum Type {
@@ -97,8 +97,8 @@ namespace nil {
     } mXInput;
     void setState( State state );
     void makeXInput( int index );
-    Device( Type type, GUID productID, GUID deviceID );
-    ~Device();
+    DeviceEntry( Type type, GUID productID, GUID deviceID );
+    ~DeviceEntry();
   public:
     const Type getType();
     const State getState();
@@ -106,7 +106,7 @@ namespace nil {
     const GUID getDeviceID();
   };
 
-  typedef list<Device*> DeviceList;
+  typedef list<DeviceEntry*> DeviceEntryList;
 
   //! \class PnPListener
   //! Plug-n-Play event listener.
@@ -145,7 +145,7 @@ namespace nil {
     HINSTANCE mInstance; //!< Host application instance handle
     HWND mWindow; //!< Host application window handle
     PnPMonitor* mMonitor; //!< Our Plug-n-Play event monitor
-    DeviceList mDevices; //!< List of current devices
+    DeviceEntryList mEntries; //!< List of possible devices
     bool mInitializedCOM; //!< Are we responsible for freeing COM?
     void refreshDevices();
     void identifyXInputDevices();
