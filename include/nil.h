@@ -146,10 +146,8 @@ namespace nil {
     HWND mWindow; //!< Host application window handle
     PnPMonitor* mMonitor; //!< Our Plug-n-Play event monitor
     DeviceEntryList mEntries; //!< List of possible devices
-    bool mInitializedCOM; //!< Are we responsible for freeing COM?
     void refreshDevices();
     void identifyXInputDevices();
-    bool resolveDevice( const wstring& devicePath );
     virtual void onPlug( const GUID& deviceClass, const wstring& devicePath );
     virtual void onUnplug( const GUID& deviceClass, const wstring& devicePath );
     static BOOL CALLBACK diEnumCallback(

@@ -15,8 +15,10 @@ BOOL WINAPI consoleHandler( DWORD ctrl )
 
 int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
 {
+#ifndef _DEBUG
   try
   {
+#endif
     nil::System* system = new nil::System(
       GetModuleHandleW( nullptr ), GetConsoleWindow() );
 
@@ -30,6 +32,7 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
     CloseHandle( stopEvent );
 
     delete system;
+#ifndef _DEBUG
   }
   catch ( nil::Exception& e )
   {
@@ -46,6 +49,7 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
     wprintf_s( L"Unknown exception\r\n" );
     return EXIT_FAILURE;
   }
+#endif
 
   return EXIT_SUCCESS;
 }
