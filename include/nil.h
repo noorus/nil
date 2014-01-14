@@ -100,18 +100,20 @@ namespace nil {
     DeviceID mID;
     Status mStatus;
     Status mSavedStatus;
+    String mName;
     Type mType;
     Device( DeviceID id, Type type );
-    void onDisconnect();
-    void onConnect();
-    void setStatus( Status status );
-    void saveStatus();
-    const Status getSavedStatus();
+    virtual void setStatus( Status status );
+    virtual void saveStatus();
+    virtual const Status getSavedStatus();
+    virtual void onDisconnect();
+    virtual void onConnect();
   public:
     virtual const DeviceID getID();
     virtual const Handler getHandler() = 0;
     virtual const Type getType();
     virtual const Status getStatus();
+    virtual const String& getName();
   };
 
   class DirectInputDevice: public Device {
@@ -130,7 +132,13 @@ namespace nil {
   friend class System;
   protected:
     int mXInputID;
+    bool mIdentified;
+    XINPUT_CAPABILITIES mCapabilities;
     XInputDevice( DeviceID id, int xinputID );
+    void identify();
+    virtual void setStatus( Status status );
+    virtual void onDisconnect();
+    virtual void onConnect();
   public:
     virtual const Handler getHandler();
     virtual const int getXInputID();

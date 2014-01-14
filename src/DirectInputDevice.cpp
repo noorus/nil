@@ -7,6 +7,8 @@ namespace nil {
   Device( id, Device_Controller ), mProductID( instance->guidProduct ),
   mInstanceID( instance->guidInstance )
   {
+    mName = instance->tszInstanceName;
+
     unsigned long deviceType = GET_DIDEVICE_TYPE( instance->dwDevType );
 
     switch ( deviceType )

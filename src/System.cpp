@@ -46,11 +46,13 @@ namespace nil {
     wprintf_s( L"Initial devices:\r\n" );
     for ( Device* device : mDevices )
       if ( device->getStatus() == Device::Status_Connected )
-        wprintf_s( L"%d - %s %s\r\n",
+        wprintf_s( L"Initial: (%d) %s (%s %s)\r\n",
         device->getID(),
+        device->getName().c_str(),
         device->getHandler() == Device::Handler_XInput ? L"XInput" : L"DirectInput",
         device->getType() == Device::Device_Mouse ? L"Mouse" : device->getType() == Device::Device_Keyboard ? L"Keyboard" : L"Controller"
         );
+    wprintf_s( L"Running...\r\n" );
   }
 
   DeviceID System::getNextID()

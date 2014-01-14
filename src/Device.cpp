@@ -13,15 +13,21 @@ namespace nil {
   void Device::onConnect()
   {
     mStatus = Status_Connected;
-    wprintf_s( L"Connected: %d (%s)\r\n", mID,
-      getHandler() == Handler_XInput ? L"XInput" : L"DirectInput" );
+    wprintf_s( L"Connected: (%d) %s (%s %s)\r\n",
+      getID(),
+      getName().c_str(),
+      getHandler() == Device::Handler_XInput ? L"XInput" : L"DirectInput",
+      getType() == Device::Device_Mouse ? L"Mouse" : getType() == Device::Device_Keyboard ? L"Keyboard" : L"Controller" );
   }
 
   void Device::onDisconnect()
   {
     mStatus = Status_Disconnected;
-    wprintf_s( L"Disconnected: %d (%s)\r\n", mID,
-      getHandler() == Handler_XInput ? L"XInput" : L"DirectInput" );
+    wprintf_s( L"Disconnected: (%d) %s (%s %s)\r\n",
+      getID(),
+      getName().c_str(),
+      getHandler() == Device::Handler_XInput ? L"XInput" : L"DirectInput",
+      getType() == Device::Device_Mouse ? L"Mouse" : getType() == Device::Device_Keyboard ? L"Keyboard" : L"Controller" );
   }
 
   const DeviceID Device::getID()
@@ -37,6 +43,11 @@ namespace nil {
   const Device::Status Device::getSavedStatus()
   {
     return mSavedStatus;
+  }
+
+  const String& Device::getName()
+  {
+    return mName;
   }
 
   const Device::Type Device::getType()
