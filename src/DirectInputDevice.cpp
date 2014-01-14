@@ -3,22 +3,26 @@
 
 namespace nil {
 
-  DirectInputDevice::DirectInputDevice( DeviceID id,
-  const GUID& productID, const GUID& instanceID ):
-  Device( id ), mProductID( productID ), mInstanceID( instanceID )
+  DirectInputDevice::DirectInputDevice( DeviceID id, LPCDIDEVICEINSTANCEW instance ):
+  Device( id, Device_Controller ), mProductID( instance->guidProduct ),
+  mInstanceID( instance->guidInstance )
   {
-    wprintf_s( L"Created: Device %d (%s)\r\n", mID,
-      getHandler() == Handler_XInput ? L"XInput" : L"DirectInput" );
+    unsigned long deviceType = GET_DIDEVICE_TYPE( instance->dwDevType );
+
+    switch ( deviceType )
+    {
+      case DI8DEVTYPE_MOUSE:
+        mType = Device_Mouse;
+      break;
+      case DI8DEVTYPE_KEYBOARD:
+        mType = Device_Keyboard;
+      break;
+    }
   }
 
   const Device::Handler DirectInputDevice::getHandler()
   {
     return Device::Handler_DirectInput;
-  }
-
-  const Device::Type DirectInputDevice::getType()
-  {
-    return Device::Device_Controller;
   }
 
   const GUID DirectInputDevice::getProductID()

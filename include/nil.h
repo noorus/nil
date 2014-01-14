@@ -72,20 +72,10 @@ namespace nil {
     virtual const String& getFullDescription() const;
     virtual const char* what() const throw();
   };
-  
-  enum ControllerType {
-    Controller_Joystick,
-    Controller_Gamepad,
-    Controller_Firstperson,
-    Controller_Driving,
-    Controller_Flight,
-    Controller_DancePad,
-    Controller_Guitar,
-    Controller_Drumkit,
-    Controller_ArcadePad
-  };
 
   typedef int DeviceID;
+
+  class System;
 
   //! \class Device
   //! Input device information entry.
@@ -101,23 +91,27 @@ namespace nil {
       Device_Mouse,
       Device_Controller
     };
-    enum State {
-      State_Disconnected, //!< Disconnected but not forgotten
-      State_Pending, //!< Pending refresh
-      State_Connected //!< Up-to-date and available
+    enum Status {
+      Status_Disconnected, //!< Disconnected but not forgotten
+      Status_Pending, //!< Pending refresh
+      Status_Connected //!< Up-to-date and available
     };
   protected:
     DeviceID mID;
-    State mState;
-    Device( DeviceID id );
-    void onUnplug();
-    void onPlug();
-    void setState( State state );
+    Status mStatus;
+    Status mSavedStatus;
+    Type mType;
+    Device( DeviceID id, Type type );
+    void onDisconnect();
+    void onConnect();
+    void setStatus( Status status );
+    void saveStatus();
+    const Status getSavedStatus();
   public:
     virtual const DeviceID getID();
     virtual const Handler getHandler() = 0;
-    virtual const Type getType() = 0;
-    virtual const State getState();
+    virtual const Type getType();
+    virtual const Status getStatus();
   };
 
   class DirectInputDevice: public Device {
@@ -125,10 +119,9 @@ namespace nil {
   protected:
     GUID mProductID;
     GUID mInstanceID;
-    DirectInputDevice( DeviceID id, const GUID& productID, const GUID& instanceID );
+    DirectInputDevice( DeviceID id, LPCDIDEVICEINSTANCEW instance );
   public:
     virtual const Handler getHandler();
-    virtual const Type getType();
     virtual const GUID getProductID();
     virtual const GUID getInstanceID();
   };
@@ -140,19 +133,68 @@ namespace nil {
     XInputDevice( DeviceID id, int xinputID );
   public:
     virtual const Handler getHandler();
-    virtual const Type getType();
     virtual const int getXInputID();
   };
 
   typedef list<Device*> DeviceList;
+
+  class DeviceInstance {
+  protected:
+    System* mSystem;
+    Device* mDevice;
+  public:
+    DeviceInstance( System* system, Device* device );
+    virtual ~DeviceInstance();
+  };
+
+  class Controller: public DeviceInstance {
+  public:
+    enum Type {
+      Controller_Joystick,
+      Controller_Gamepad,
+      Controller_Firstperson,
+      Controller_Driving,
+      Controller_Flight,
+      Controller_DancePad,
+      Controller_Guitar,
+      Controller_Drumkit,
+      Controller_ArcadePad
+    };
+  protected:
+    Type mType;
+  public:
+    const Type getType();
+  };
+
+  class DirectInputMouse: public DeviceInstance {
+  protected:
+  public:
+  };
+
+  class DirectInputKeyboard: public DeviceInstance {
+  protected:
+  public:
+  };
+
+  class DirectInputController: public Controller {
+  protected:
+  public:
+  };
+
+  class XInputController: public Controller {
+  protected:
+  public:
+  };
 
   //! \class PnPListener
   //! Plug-n-Play event listener.
   class PnPListener {
   friend class PnPMonitor;
   protected:
-    virtual void onPlug( const GUID& deviceClass, const String& devicePath ) = 0;
-    virtual void onUnplug( const GUID& deviceClass, const String& devicePath ) = 0;
+    virtual void onPlug( const GUID& deviceClass,
+      const String& devicePath ) = 0;
+    virtual void onUnplug( const GUID& deviceClass,
+      const String& devicePath ) = 0;
   };
 
   //! \class PnPMonitor
@@ -179,14 +221,15 @@ namespace nil {
   //! The input system.
   class System: public PnPListener {
   protected:
-    DeviceID mIDPool;
-    vector<DeviceID> mXInputIDs;
-    vector<unsigned long> mXInputDeviceIDs;
+    DeviceID mIDPool; //!< Device indexing pool
+    vector<DeviceID> mXInputIDs; //!< XInput device ID mapping
+    vector<uint32_t> mXInputDeviceIDs; //!< Tracked list of XInput VIDs & PIDs
     IDirectInput8W* mDirectInput; //!< Our DirectInput instance
     HINSTANCE mInstance; //!< Host application instance handle
     HWND mWindow; //!< Host application window handle
     PnPMonitor* mMonitor; //!< Our Plug-n-Play event monitor
     DeviceList mDevices; //!< List of known devices
+    bool mInitializing; //!< Are we initializing
     void initializeDevices();
     void refreshDevices();
     void identifyXInputDevices();
@@ -198,6 +241,7 @@ namespace nil {
   public:
     System( HINSTANCE instance, HWND window );
     void update();
+    const bool isInitializing();
     ~System();
   };
 

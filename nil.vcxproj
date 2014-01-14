@@ -146,11 +146,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Device.cpp" />
+    <ClCompile Include="src\DirectInputController.cpp" />
     <ClCompile Include="src\DirectInputDevice.cpp" />
+    <ClCompile Include="src\DirectInputKeyboard.cpp" />
+    <ClCompile Include="src\DirectInputMouse.cpp" />
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\PnPMonitor.cpp" />
     <ClCompile Include="src\System.cpp" />
     <ClCompile Include="src\Utilities.cpp" />
+    <ClCompile Include="src\XInputController.cpp" />
     <ClCompile Include="src\XInputDevice.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

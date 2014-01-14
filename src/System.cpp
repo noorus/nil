@@ -18,9 +18,9 @@ namespace nil {
 
   const long cMaxXInputDevices = 4;
 
-  System::System( HINSTANCE instance, HWND window ):
-  mWindow( window ), mInstance( instance ),
-  mDirectInput( nullptr ), mMonitor( nullptr ), mIDPool( 0 )
+  System::System( HINSTANCE instance, HWND window ): mWindow( window ),
+  mInstance( instance ), mDirectInput( nullptr ), mMonitor( nullptr ),
+  mIDPool( 0 ), mInitializing( true )
   {
     // Make sure the window is a window
     if ( !IsWindow( mWindow ) )
@@ -40,6 +40,17 @@ namespace nil {
 
     initializeDevices();
     refreshDevices();
+
+    mInitializing = false;
+
+    wprintf_s( L"Initial devices:\r\n" );
+    for ( Device* device : mDevices )
+      if ( device->getStatus() == Device::Status_Connected )
+        wprintf_s( L"%d - %s %s\r\n",
+        device->getID(),
+        device->getHandler() == Device::Handler_XInput ? L"XInput" : L"DirectInput",
+        device->getType() == Device::Device_Mouse ? L"Mouse" : device->getType() == Device::Device_Keyboard ? L"Keyboard" : L"Controller"
+        );
   }
 
   DeviceID System::getNextID()
@@ -68,7 +79,6 @@ namespace nil {
     {
       mXInputIDs[i] = getNextID();
       auto device = new XInputDevice( mXInputIDs[i], i );
-      device->setState( Device::State_Pending );
       mDevices.push_back( device );
     }
   }
@@ -79,7 +89,10 @@ namespace nil {
 
     for ( Device* device : mDevices )
       if ( device->getHandler() == Device::Handler_DirectInput )
-        device->setState( Device::State_Pending );
+      {
+        device->saveStatus();
+        device->setStatus( Device::Status_Pending );
+      }
 
     auto hr = mDirectInput->EnumDevices( DI8DEVCLASS_ALL,
       diEnumCallback, this, DIEDFL_ATTACHEDONLY );
@@ -88,8 +101,9 @@ namespace nil {
 
     for ( Device* device : mDevices )
       if ( device->getHandler() == Device::Handler_DirectInput
-      && device->getState() == Device::State_Pending )
-        device->onUnplug();
+        && device->getSavedStatus() == Device::Status_Connected
+        && device->getStatus() == Device::Status_Pending )
+        device->onDisconnect();
 
     XINPUT_STATE state;
     for ( Device* device : mDevices )
@@ -100,17 +114,17 @@ namespace nil {
         auto status = XInputGetState( xDevice->getXInputID(), &state );
         if ( status == ERROR_DEVICE_NOT_CONNECTED )
         {
-          if ( xDevice->getState() == Device::State_Connected )
-            xDevice->onUnplug();
-          else if ( xDevice->getState() == Device::State_Pending )
-            xDevice->setState( Device::State_Disconnected );
+          if ( xDevice->getStatus() == Device::Status_Connected )
+            xDevice->onDisconnect();
+          else if ( xDevice->getStatus() == Device::Status_Pending )
+            xDevice->setStatus( Device::Status_Disconnected );
         }
         else if ( status == ERROR_SUCCESS )
         {
-          if ( xDevice->getState() == Device::State_Disconnected )
-            xDevice->onPlug();
-          else if ( xDevice->getState() == Device::State_Pending )
-            xDevice->setState( Device::State_Connected );
+          if ( xDevice->getStatus() == Device::Status_Disconnected )
+            xDevice->onConnect();
+          else if ( xDevice->getStatus() == Device::Status_Pending )
+            xDevice->setStatus( Device::Status_Connected );
         }
         else
           NIL_EXCEPT( L"XInputGetState failed" );
@@ -123,9 +137,7 @@ namespace nil {
   {
     auto system = static_cast<System*>( referer );
 
-    unsigned long deviceType = GET_DIDEVICE_TYPE( instance->dwDevType );
-
-    for ( unsigned long identifier : system->mXInputDeviceIDs )
+    for ( uint32_t identifier : system->mXInputDeviceIDs )
       if ( instance->guidProduct.Data1 == identifier )
         return DIENUM_CONTINUE;
 
@@ -136,19 +148,22 @@ namespace nil {
 
       auto diDevice = dynamic_cast<DirectInputDevice*>( device );
 
-      if ( diDevice->getInstanceID() == instance->guidInstance
-      && device->getState() == Device::State_Pending )
+      if ( diDevice->getInstanceID() == instance->guidInstance )
       {
-        device->setState( Device::State_Connected );
+        if ( device->getSavedStatus() == Device::Status_Disconnected )
+          device->onConnect();
+        else
+          device->setStatus( Device::Status_Connected );
+
         return DIENUM_CONTINUE;
       }
     }
 
-    Device* device = new DirectInputDevice(
-      system->getNextID(),
-      instance->guidProduct,
-      instance->guidInstance );
-
+    Device* device = new DirectInputDevice( system->getNextID(), instance );
+    if ( system->isInitializing() )
+      device->setStatus( Device::Status_Connected );
+    else
+      device->onConnect();
     system->mDevices.push_back( device );
 
     return DIENUM_CONTINUE;
@@ -209,6 +224,11 @@ namespace nil {
     }
 
     SetupDiDestroyDeviceInfoList( info );
+  }
+
+  const bool System::isInitializing()
+  {
+    return mInitializing;
   }
 
   void System::update()
