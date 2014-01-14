@@ -104,7 +104,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>dxguid.lib;dinput8.lib;xinput.lib;setupapi.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;dinput8.lib;xinput.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -135,7 +136,8 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>dxguid.lib;dinput8.lib;xinput.lib;setupapi.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;dinput8.lib;xinput.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -144,10 +146,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Device.cpp" />
+    <ClCompile Include="src\DirectInputDevice.cpp" />
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\PnPMonitor.cpp" />
     <ClCompile Include="src\System.cpp" />
     <ClCompile Include="src\Utilities.cpp" />
+    <ClCompile Include="src\XInputDevice.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -13,7 +13,6 @@
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #include <xinput.h>
-#include <setupapi.h>
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -27,6 +26,8 @@
 #include <boost/algorithm/string.hpp>
 
 namespace nil {
+
+# define NIL_MAX_XINPUT_DEVICES 4
 
   typedef std::string string;
   typedef std::wstring wstring;
@@ -73,9 +74,11 @@ namespace nil {
     virtual const char* what() const throw();
   };
 
-  //! \class DeviceEntry
+  typedef int DeviceID;
+
+  //! \class Device
   //! Input device information entry.
-  class DeviceEntry {
+  class Device {
   friend class System;
   public:
     enum Type {
@@ -85,28 +88,44 @@ namespace nil {
     enum State {
       State_Disconnected, //!< Disconnected but not forgotten
       State_Pending, //!< Pending refresh
-      State_Current //!< Up-to-date and available
+      State_Connected //!< Up-to-date and available
     };
   protected:
-    Type mType;
+    DeviceID mID;
     State mState;
-    GUID mProductID;
-    GUID mDeviceID;
-    struct XInput {
-      int deviceID;
-    } mXInput;
+    Device( DeviceID id );
+    void onUnplug();
+    void onPlug();
     void setState( State state );
-    void makeXInput( int index );
-    DeviceEntry( Type type, GUID productID, GUID deviceID );
-    ~DeviceEntry();
   public:
-    const Type getType();
-    const State getState();
-    const GUID getProductID();
-    const GUID getDeviceID();
+    virtual const DeviceID getID();
+    virtual const Type getType() = 0;
+    virtual const State getState();
   };
 
-  typedef list<DeviceEntry*> DeviceEntryList;
+  class DirectInputDevice: public Device {
+  friend class System;
+  protected:
+    GUID mProductID;
+    GUID mInstanceID;
+    DirectInputDevice( DeviceID id, const GUID& productID, const GUID& instanceID );
+  public:
+    virtual const Type getType();
+    virtual const GUID getProductID();
+    virtual const GUID getInstanceID();
+  };
+
+  class XInputDevice: public Device {
+  friend class System;
+  protected:
+    int mXInputID;
+    XInputDevice( DeviceID id, int xinputID );
+  public:
+    virtual const Type getType();
+    virtual const int getXInputID();
+  };
+
+  typedef list<Device*> DeviceList;
 
   //! \class PnPListener
   //! Plug-n-Play event listener.
@@ -121,11 +140,11 @@ namespace nil {
   //! Monitors for Plug-n-Play (USB) device events.
   class PnPMonitor {
   protected:
-    HINSTANCE mInstance;
-    ATOM mClass;
-    HWND mWindow;
-    HDEVNOTIFY mNotifications;
-    PnPListener* mListener;
+    HINSTANCE mInstance; //!< Host application instance handle
+    ATOM mClass; //!< Class registration handle
+    HWND mWindow; //!< Window handle
+    HDEVNOTIFY mNotifications; //!< Device notifications registration
+    PnPListener* mListener; //!< Our listener
   protected:
     void registerNotifications();
     void unregisterNotifications();
@@ -141,13 +160,18 @@ namespace nil {
   //! The input system.
   class System: public PnPListener {
   protected:
-    IDirectInput8* mDirectInput; //!< Our DirectInput instance
+    DeviceID mIDPool;
+    vector<DeviceID> mXInputIDs;
+    vector<unsigned long> mXInputDeviceIDs;
+    IDirectInput8W* mDirectInput; //!< Our DirectInput instance
     HINSTANCE mInstance; //!< Host application instance handle
     HWND mWindow; //!< Host application window handle
     PnPMonitor* mMonitor; //!< Our Plug-n-Play event monitor
-    DeviceEntryList mEntries; //!< List of possible devices
+    DeviceList mDevices; //!< List of known devices
+    void initializeDevices();
     void refreshDevices();
     void identifyXInputDevices();
+    DeviceID getNextID();
     virtual void onPlug( const GUID& deviceClass, const wstring& devicePath );
     virtual void onUnplug( const GUID& deviceClass, const wstring& devicePath );
     static BOOL CALLBACK diEnumCallback(
