@@ -1,5 +1,5 @@
 #pragma once
-#include <windows.h>
+#include "nil.h"
 #include <devguid.h>
 
 namespace nil {
@@ -22,11 +22,11 @@ namespace nil {
 
   static GUID g_HIDInterfaceGUID = { 0x4D1E55B2, 0xF16F, 0x11CF, { 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } };
 
-  static wstring guidToStr( GUID guid )
+  static String guidToStr( GUID guid )
   {
     OLECHAR* bstrGuid;
     StringFromCLSID( guid, &bstrGuid );
-    wstring str = bstrGuid;
+    String str = bstrGuid;
     ::CoTaskMemFree( bstrGuid );
     return str;
   }
@@ -35,7 +35,7 @@ namespace nil {
   protected:
     BSTR mStr;
   public:
-    COMString( const wstring& str ): mStr( NULL )
+    COMString( const String& str ): mStr( NULL )
     {
       mStr = SysAllocString( str.c_str() );
       if ( !mStr )
@@ -51,8 +51,8 @@ namespace nil {
 
   namespace util
   {
-    extern inline wstring utf8ToWide( const string& in ) throw();
-    extern inline string wideToUtf8( const wstring& in ) throw();
+    extern inline String utf8ToWide( const utf8String& in ) throw();
+    extern inline utf8String wideToUtf8( const String& in ) throw();
   }
 
 }

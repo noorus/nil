@@ -16,6 +16,8 @@ extern "C" {
 
 namespace nil {
 
+  const long cMaxXInputDevices = 4;
+
   System::System( HINSTANCE instance, HWND window ):
   mWindow( window ), mInstance( instance ),
   mDirectInput( nullptr ), mMonitor( nullptr ), mIDPool( 0 )
@@ -45,14 +47,14 @@ namespace nil {
     return mIDPool++;
   }
 
-  void System::onPlug( const GUID& deviceClass, const wstring& devicePath )
+  void System::onPlug( const GUID& deviceClass, const String& devicePath )
   {
     // Refresh all currently connected devices,
     // since IDirectInput8::FindDevice doesn't do jack shit
     refreshDevices();
   }
 
-  void System::onUnplug( const GUID& deviceClass, const wstring& devicePath )
+  void System::onUnplug( const GUID& deviceClass, const String& devicePath )
   {
     // Refresh all currently connected devices,
     // since IDirectInput8::FindDevice doesn't do jack shit
@@ -61,8 +63,8 @@ namespace nil {
 
   void System::initializeDevices()
   {
-    mXInputIDs.resize( NIL_MAX_XINPUT_DEVICES );
-    for ( int i = 0; i < NIL_MAX_XINPUT_DEVICES; i++ )
+    mXInputIDs.resize( cMaxXInputDevices );
+    for ( int i = 0; i < cMaxXInputDevices; i++ )
     {
       mXInputIDs[i] = getNextID();
       auto device = new XInputDevice( mXInputIDs[i], i );

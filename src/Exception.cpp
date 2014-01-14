@@ -5,8 +5,8 @@ namespace nil {
 
   struct DirectInputErrorEntry {
   public:
-    LONG code;
-    WCHAR* description;
+    long code;
+    wchar_t* description;
   };
 
   const int cErrorDescriptionCount = 32;
@@ -52,19 +52,19 @@ namespace nil {
     // Stub
   }
 
-  Exception::Exception( const wstring& description, Type type ):
+  Exception::Exception( const String& description, Type type ):
   mDescription( description ), mType( type )
   {
     handleAdditional();
   }
 
-  Exception::Exception( const wstring& description, const wstring& source, Type type ):
+  Exception::Exception( const String& description, const String& source, Type type ):
   mDescription( description ), mSource( source ), mType( type )
   {
     handleAdditional();
   }
 
-  Exception::Exception( const wstring& description, const wstring& source, HRESULT hr, Type type ):
+  Exception::Exception( const String& description, const String& source, HRESULT hr, Type type ):
   mDescription( description ), mSource( source ), mType( type )
   {
     handleAdditional( hr );
@@ -108,7 +108,7 @@ namespace nil {
     }
   }
 
-  const wstring& Exception::getFullDescription() const
+  const String& Exception::getFullDescription() const
   {
     if ( mFullDescription.empty() )
     {

@@ -27,10 +27,9 @@
 
 namespace nil {
 
-# define NIL_MAX_XINPUT_DEVICES 4
-
-  typedef std::string string;
-  typedef std::wstring wstring;
+  typedef std::string utf8String;
+  typedef std::wstring String;
+  typedef float Real;
 
   using std::list;
   using std::vector;
@@ -42,7 +41,7 @@ namespace nil {
   struct WinAPIError {
   public:
     uint32_t code;
-    wstring description;
+    String description;
   };
 
   //! \class Exception
@@ -58,19 +57,19 @@ namespace nil {
     Exception();
   protected:
     Type mType;
-    wstring mDescription;
-    wstring mSource;
-    mutable wstring mFullDescription;
-    mutable string mUTF8Description;
+    String mDescription;
+    String mSource;
+    mutable String mFullDescription;
+    mutable utf8String mUTF8Description;
     variant<WinAPIError> mAdditional;
     void handleAdditional( HRESULT hr = 0 );
   public:
-    Exception( const wstring& description, Type type = Generic );
-    Exception( const wstring& description, const wstring& source,
+    Exception( const String& description, Type type = Generic );
+    Exception( const String& description, const String& source,
       Type type = Generic );
-    Exception( const wstring& description, const wstring& source,
+    Exception( const String& description, const String& source,
       HRESULT hr, Type type = Generic );
-    virtual const wstring& getFullDescription() const;
+    virtual const String& getFullDescription() const;
     virtual const char* what() const throw();
   };
 
@@ -132,8 +131,8 @@ namespace nil {
   class PnPListener {
   friend class PnPMonitor;
   protected:
-    virtual void onPlug( const GUID& deviceClass, const wstring& devicePath ) = 0;
-    virtual void onUnplug( const GUID& deviceClass, const wstring& devicePath ) = 0;
+    virtual void onPlug( const GUID& deviceClass, const String& devicePath ) = 0;
+    virtual void onUnplug( const GUID& deviceClass, const String& devicePath ) = 0;
   };
 
   //! \class PnPMonitor
@@ -172,8 +171,8 @@ namespace nil {
     void refreshDevices();
     void identifyXInputDevices();
     DeviceID getNextID();
-    virtual void onPlug( const GUID& deviceClass, const wstring& devicePath );
-    virtual void onUnplug( const GUID& deviceClass, const wstring& devicePath );
+    virtual void onPlug( const GUID& deviceClass, const String& devicePath );
+    virtual void onUnplug( const GUID& deviceClass, const String& devicePath );
     static BOOL CALLBACK diEnumCallback(
       LPCDIDEVICEINSTANCE instance, LPVOID referer );
   public:
