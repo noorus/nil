@@ -5,25 +5,27 @@
 #include <devpkey.h>
 #include <wbemidl.h>
 #include <oleauto.h>
+#include <setupapi.h>
+
 extern "C" {
-#include <hidsdi.h>
+# include <hidsdi.h>
 };
-#pragma comment(lib, "hid.lib")
+
+#pragma comment( lib, "hid.lib" )
+#pragma comment( lib, "setupapi.lib" )
 
 namespace nil {
 
-  const int cMaxXInputDevices = 4;
-
   System::System( HINSTANCE instance, HWND window ):
   mWindow( window ), mInstance( instance ),
-  mDirectInput( nullptr ), mMonitor( nullptr )
+  mDirectInput( nullptr ), mMonitor( nullptr ), mIDPool( 0 )
   {
     // Make sure the window is a window
     if ( !IsWindow( mWindow ) )
       NIL_EXCEPT( L"Window handle is invalid" );
 
     // Get the HID device interface GUID
-    HidD_GetHidGuid( &g_HIDInterfaceGUID );
+    // HidD_GetHidGuid( &g_HIDInterfaceGUID );
 
     // Create DirectInput instance
     auto hr = DirectInput8Create( mInstance, DIRECTINPUT_VERSION,
@@ -34,36 +36,68 @@ namespace nil {
     // Initialize our Plug-n-Play monitor
     mMonitor = new PnPMonitor( mInstance, this );
 
-    // Enumerate currently connected devices
+    initializeDevices();
     refreshDevices();
+  }
+
+  DeviceID System::getNextID()
+  {
+    return mIDPool++;
   }
 
   void System::onPlug( const GUID& deviceClass, const wstring& devicePath )
   {
-    //
+    // Refresh all currently connected devices,
+    // since IDirectInput8::FindDevice doesn't do jack shit
+    refreshDevices();
   }
 
   void System::onUnplug( const GUID& deviceClass, const wstring& devicePath )
   {
-    //
+    // Refresh all currently connected devices,
+    // since IDirectInput8::FindDevice doesn't do jack shit
+    refreshDevices();
+  }
+
+  void System::initializeDevices()
+  {
+    for ( int i = 0; i < NIL_MAX_XINPUT_DEVICES; i++ )
+    {
+      mXInputIDs[i] = getNextID();
+      auto device = new XInputDevice( mXInputIDs[i], i );
+      mDevices.push_back( device );
+    }
   }
 
   void System::refreshDevices()
   {
-    mEntries.clear();
+    for ( Device* device : mDevices )
+      if ( device->getType() == Device::Device_DirectInput )
+        device->setState( Device::State_Pending );
 
     HRESULT hr = mDirectInput->EnumDevices( DI8DEVCLASS_ALL,
       diEnumCallback, this, DIEDFL_ATTACHEDONLY );
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, L"Could not enumerate DirectInput devices" );
 
-    for ( int i = 0; i < cMaxXInputDevices; i++ )
+    for ( Device* device : mDevices )
+      if ( device->getType() == Device::Device_DirectInput
+      && device->getState() == Device::State_Pending )
+        device->onUnplug();
+
+    XINPUT_STATE state;
+    for ( Device* device : mDevices )
     {
-      XINPUT_STATE state;
-      if ( XInputGetState( i, &state ) == ERROR_SUCCESS )
+      if ( device->getType() == Device::Device_XInput )
       {
-        identifyXInputDevices();
-        break;
+        auto xDevice = dynamic_cast<XInputDevice*>( device );
+        auto status = XInputGetState( xDevice->getXInputID(), &state );
+        if ( xDevice->getState() == Device::State_Connected
+        && status == ERROR_DEVICE_NOT_CONNECTED )
+          xDevice->onUnplug();
+        else if ( xDevice->getState() == Device::State_Disconnected
+        && status == ERROR_SUCCESS )
+          xDevice->onPlug();
       }
     }
   }
@@ -81,14 +115,27 @@ namespace nil {
     || deviceType == DI8DEVTYPE_FLIGHT
     || deviceType == DI8DEVTYPE_1STPERSON )
     {
-      DeviceEntry* device = new DeviceEntry(
-        DeviceEntry::Device_DirectInput,
+      for ( Device* device : system->mDevices )
+      {
+        if ( device->getType() != Device::Device_DirectInput )
+          continue;
+
+        auto diDevice = dynamic_cast<DirectInputDevice*>( device );
+
+        if ( diDevice->getInstanceID() == instance->guidInstance
+        && device->getState() == Device::State_Pending )
+        {
+          device->onPlug();
+          return DIENUM_CONTINUE;
+        }
+      }
+
+      Device* device = new DirectInputDevice(
+        system->getNextID(),
         instance->guidProduct,
         instance->guidInstance );
 
-      device->setState( DeviceEntry::State_Current );
-
-      system->mEntries.push_back( device );
+      system->mDevices.push_back( device );
     }
 
     return DIENUM_CONTINUE;
@@ -120,7 +167,8 @@ namespace nil {
 
       if ( SetupDiGetDeviceInterfaceDetailW( info, &interfaceData, detailData, length, NULL, NULL ) )
       {
-        if ( wcsstr( detailData->DevicePath, L"ig_" ) || wcsstr( detailData->DevicePath, L"IG_" ) )
+        if ( wcsstr( detailData->DevicePath, L"ig_" )
+        || wcsstr( detailData->DevicePath, L"IG_" ) )
         {
           auto handle = CreateFileW( detailData->DevicePath, 0,
             FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL );
@@ -135,15 +183,10 @@ namespace nil {
 
           unsigned long identifier = MAKELONG( attributes.VendorID, attributes.ProductID );
 
-          for ( auto entry : mEntries )
+          for ( Device* device : mDevices )
           {
-            if ( entry->getType() == DeviceEntry::Device_XInput )
+            if ( device->getType() == Device::Device_DirectInput )
               continue;
-            if ( entry->getProductID().Data1 == identifier )
-            {
-              entry->makeXInput( xinputIndex );
-              xinputIndex++;
-            }
           }
 
           CloseHandle( handle );
@@ -163,8 +206,8 @@ namespace nil {
 
   System::~System()
   {
-    for ( auto entry : mEntries )
-      delete entry;
+    for ( Device* device : mDevices )
+      delete device;
 
     SAFE_DELETE( mMonitor );
     SAFE_RELEASE( mDirectInput );

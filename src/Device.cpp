@@ -3,54 +3,33 @@
 
 namespace nil {
 
-  DeviceEntry::DeviceEntry( Type type, GUID productID, GUID deviceID ):
-  mType( type ), mProductID( productID ), mDeviceID( deviceID ),
-  mState( State_Disconnected )
+  Device::Device( DeviceID id ): mID( id ), mState( State_Pending )
   {
-    wprintf_s( L"DeviceEntry:\r\n  ProductID: %s\r\n  DeviceID: %s\r\n",
-      guidToStr( mProductID ).c_str(),
-      guidToStr( mDeviceID ).c_str() );
   }
 
-  void DeviceEntry::setState( State state )
+  void Device::onPlug()
+  {
+    mState = State_Connected;
+  }
+
+  void Device::onUnplug()
+  {
+    mState = State_Disconnected;
+  }
+
+  const DeviceID Device::getID()
+  {
+    return mID;
+  }
+
+  void Device::setState( State state )
   {
     mState = state;
   }
 
-  void DeviceEntry::makeXInput( int index )
-  {
-    mType = Device_XInput;
-    mXInput.deviceID = index;
-    wprintf_s( L"XInput:\r\n  DeviceID: %s\r\n  XInputID: %d\r\n",
-      guidToStr( mDeviceID ).c_str(),
-      mXInput.deviceID );
-  }
-
-  const DeviceEntry::Type DeviceEntry::getType()
-  {
-    return mType;
-  }
-
-  const DeviceEntry::State DeviceEntry::getState()
+  const Device::State Device::getState()
   {
     return mState;
-  }
-
-  const GUID DeviceEntry::getProductID()
-  {
-    return mProductID;
-  }
-
-  const GUID DeviceEntry::getDeviceID()
-  {
-    return mDeviceID;
-  }
-
-  DeviceEntry::~DeviceEntry()
-  {
-    wprintf_s( L"~DeviceEntry:\r\n  ProductID: %s\r\n  DeviceID: %s\r\n",
-      guidToStr( mProductID ).c_str(),
-      guidToStr( mDeviceID ).c_str() );
   }
 
 }
