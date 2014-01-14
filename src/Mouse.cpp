@@ -9,4 +9,9 @@ namespace nil {
     //
   }
 
+  Mouse::~Mouse()
+  {
+    //
+  }
+
 }
