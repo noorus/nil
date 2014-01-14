@@ -7,12 +7,17 @@ namespace nil {
   mXInputID( xinputID )
   {
     wprintf_s( L"Created: Device %d (%s)\r\n", mID,
-      getType() == Device_XInput ? L"XInput" : L"DirectInput" );
+      getHandler() == Handler_XInput ? L"XInput" : L"DirectInput" );
+  }
+
+  const Device::Handler XInputDevice::getHandler()
+  {
+    return Device::Handler_XInput;
   }
 
   const Device::Type XInputDevice::getType()
   {
-    return Device::Device_XInput;
+    return Device::Device_Controller;
   }
 
   const int XInputDevice::getXInputID()

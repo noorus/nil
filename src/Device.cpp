@@ -11,14 +11,14 @@ namespace nil {
   {
     mState = State_Connected;
     wprintf_s( L"Connected: Device %d (%s)\r\n", mID,
-      getType() == Device_XInput ? L"XInput" : L"DirectInput" );
+      getHandler() == Handler_XInput ? L"XInput" : L"DirectInput" );
   }
 
   void Device::onUnplug()
   {
     mState = State_Disconnected;
     wprintf_s( L"Disconnected: Device %d (%s)\r\n", mID,
-      getType() == Device_XInput ? L"XInput" : L"DirectInput" );
+      getHandler() == Handler_XInput ? L"XInput" : L"DirectInput" );
   }
 
   const DeviceID Device::getID()

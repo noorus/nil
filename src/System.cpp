@@ -78,7 +78,7 @@ namespace nil {
     identifyXInputDevices();
 
     for ( Device* device : mDevices )
-      if ( device->getType() == Device::Device_DirectInput )
+      if ( device->getHandler() == Device::Handler_DirectInput )
         device->setState( Device::State_Pending );
 
     auto hr = mDirectInput->EnumDevices( DI8DEVCLASS_ALL,
@@ -87,14 +87,14 @@ namespace nil {
       NIL_EXCEPT_DINPUT( hr, L"Could not enumerate DirectInput devices" );
 
     for ( Device* device : mDevices )
-      if ( device->getType() == Device::Device_DirectInput
+      if ( device->getHandler() == Device::Handler_DirectInput
       && device->getState() == Device::State_Pending )
         device->onUnplug();
 
     XINPUT_STATE state;
     for ( Device* device : mDevices )
     {
-      if ( device->getType() == Device::Device_XInput )
+      if ( device->getHandler() == Device::Handler_XInput )
       {
         auto xDevice = dynamic_cast<XInputDevice*>( device );
         auto status = XInputGetState( xDevice->getXInputID(), &state );
@@ -118,7 +118,7 @@ namespace nil {
     }
   }
 
-  BOOL CALLBACK System::diEnumCallback( LPCDIDEVICEINSTANCE instance,
+  BOOL CALLBACK System::diEnumCallback( LPCDIDEVICEINSTANCEW instance,
   LPVOID referer )
   {
     auto system = static_cast<System*>( referer );
@@ -131,7 +131,7 @@ namespace nil {
 
     for ( Device* device : system->mDevices )
     {
-      if ( device->getType() != Device::Device_DirectInput )
+      if ( device->getHandler() != Device::Handler_DirectInput )
         continue;
 
       auto diDevice = dynamic_cast<DirectInputDevice*>( device );

@@ -72,6 +72,18 @@ namespace nil {
     virtual const String& getFullDescription() const;
     virtual const char* what() const throw();
   };
+  
+  enum ControllerType {
+    Controller_Joystick,
+    Controller_Gamepad,
+    Controller_Firstperson,
+    Controller_Driving,
+    Controller_Flight,
+    Controller_DancePad,
+    Controller_Guitar,
+    Controller_Drumkit,
+    Controller_ArcadePad
+  };
 
   typedef int DeviceID;
 
@@ -80,9 +92,14 @@ namespace nil {
   class Device {
   friend class System;
   public:
+    enum Handler {
+      Handler_DirectInput,
+      Handler_XInput
+    };
     enum Type {
-      Device_DirectInput,
-      Device_XInput
+      Device_Keyboard,
+      Device_Mouse,
+      Device_Controller
     };
     enum State {
       State_Disconnected, //!< Disconnected but not forgotten
@@ -98,6 +115,7 @@ namespace nil {
     void setState( State state );
   public:
     virtual const DeviceID getID();
+    virtual const Handler getHandler() = 0;
     virtual const Type getType() = 0;
     virtual const State getState();
   };
@@ -109,6 +127,7 @@ namespace nil {
     GUID mInstanceID;
     DirectInputDevice( DeviceID id, const GUID& productID, const GUID& instanceID );
   public:
+    virtual const Handler getHandler();
     virtual const Type getType();
     virtual const GUID getProductID();
     virtual const GUID getInstanceID();
@@ -120,6 +139,7 @@ namespace nil {
     int mXInputID;
     XInputDevice( DeviceID id, int xinputID );
   public:
+    virtual const Handler getHandler();
     virtual const Type getType();
     virtual const int getXInputID();
   };
@@ -174,7 +194,7 @@ namespace nil {
     virtual void onPlug( const GUID& deviceClass, const String& devicePath );
     virtual void onUnplug( const GUID& deviceClass, const String& devicePath );
     static BOOL CALLBACK diEnumCallback(
-      LPCDIDEVICEINSTANCE instance, LPVOID referer );
+      LPCDIDEVICEINSTANCEW instance, LPVOID referer );
   public:
     System( HINSTANCE instance, HWND window );
     void update();
