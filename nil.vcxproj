@@ -145,12 +145,16 @@
     <ClInclude Include="include\nilUtil.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Controller.cpp" />
     <ClCompile Include="src\Device.cpp" />
+    <ClCompile Include="src\DeviceInstance.cpp" />
     <ClCompile Include="src\DirectInputController.cpp" />
     <ClCompile Include="src\DirectInputDevice.cpp" />
     <ClCompile Include="src\DirectInputKeyboard.cpp" />
     <ClCompile Include="src\DirectInputMouse.cpp" />
     <ClCompile Include="src\Exception.cpp" />
+    <ClCompile Include="src\Keyboard.cpp" />
+    <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\PnPMonitor.cpp" />
     <ClCompile Include="src\System.cpp" />
     <ClCompile Include="src\Utilities.cpp" />

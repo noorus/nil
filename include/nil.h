@@ -76,6 +76,7 @@ namespace nil {
   typedef int DeviceID;
 
   class System;
+  class DeviceInstance;
 
   //! \class Device
   //! Input device information entry.
@@ -102,7 +103,11 @@ namespace nil {
     Status mSavedStatus;
     String mName;
     Type mType;
-    Device( DeviceID id, Type type );
+    System* mSystem;
+    DeviceInstance* mInstance;
+    Device( System* system, DeviceID id, Type type );
+    virtual void create();
+    virtual void destroy();
     virtual void setStatus( Status status );
     virtual void saveStatus();
     virtual const Status getSavedStatus();
@@ -114,6 +119,7 @@ namespace nil {
     virtual const Type getType();
     virtual const Status getStatus();
     virtual const String& getName();
+    virtual System* getSystem();
   };
 
   class DirectInputDevice: public Device {
@@ -121,7 +127,8 @@ namespace nil {
   protected:
     GUID mProductID;
     GUID mInstanceID;
-    DirectInputDevice( DeviceID id, LPCDIDEVICEINSTANCEW instance );
+    DirectInputDevice( System* system, DeviceID id,
+      LPCDIDEVICEINSTANCEW instance );
   public:
     virtual const Handler getHandler();
     virtual const GUID getProductID();
@@ -134,8 +141,8 @@ namespace nil {
     int mXInputID;
     bool mIdentified;
     XINPUT_CAPABILITIES mCapabilities;
-    XInputDevice( DeviceID id, int xinputID );
-    void identify();
+    XInputDevice( System* system, DeviceID id, int xinputID );
+    virtual void identify();
     virtual void setStatus( Status status );
     virtual void onDisconnect();
     virtual void onConnect();
@@ -155,6 +162,20 @@ namespace nil {
     virtual ~DeviceInstance();
   };
 
+  class Mouse: public DeviceInstance {
+  protected:
+  public:
+    Mouse( System* system, Device* device );
+    virtual ~Mouse();
+  };
+
+  class Keyboard: public DeviceInstance {
+  protected:
+  public:
+    Keyboard( System* system, Device* device );
+    virtual ~Keyboard();
+  };
+
   class Controller: public DeviceInstance {
   public:
     enum Type {
@@ -171,27 +192,37 @@ namespace nil {
   protected:
     Type mType;
   public:
-    const Type getType();
+    Controller( System* system, Device* device );
+    virtual ~Controller();
+    virtual const Type getType();
   };
 
-  class DirectInputMouse: public DeviceInstance {
+  class DirectInputMouse: public Mouse {
   protected:
   public:
+    DirectInputMouse( DirectInputDevice* device );
+    virtual ~DirectInputMouse();
   };
 
-  class DirectInputKeyboard: public DeviceInstance {
+  class DirectInputKeyboard: public Keyboard {
   protected:
   public:
+    DirectInputKeyboard( DirectInputDevice* device );
+    virtual ~DirectInputKeyboard();
   };
 
   class DirectInputController: public Controller {
   protected:
   public:
+    DirectInputController( DirectInputDevice* device );
+    virtual ~DirectInputController();
   };
 
   class XInputController: public Controller {
   protected:
   public:
+    XInputController( XInputDevice* device );
+    virtual ~XInputController();
   };
 
   //! \class PnPListener

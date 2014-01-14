@@ -3,11 +3,49 @@
 
 namespace nil {
 
-  // Device class
-
-  Device::Device( DeviceID id, Type type ): mID( id ), mType( type ),
-  mStatus( Status_Pending ), mSavedStatus( Status_Pending )
+  Device::Device( System* system, DeviceID id, Type type ): mSystem( system ),
+  mID( id ), mType( type ), mStatus( Status_Pending ),
+  mSavedStatus( Status_Pending ), mInstance( nullptr )
   {
+  }
+
+  void Device::create()
+  {
+    if ( getHandler() == Handler_XInput )
+    {
+      XInputDevice* xDevice = dynamic_cast<XInputDevice*>( this );
+      if ( getType() == Device_Controller )
+      {
+        mInstance = new XInputController( xDevice );
+      }
+      else
+        NIL_EXCEPT( L"Unsupport device type for XInput; Cannot instantiate device!" );
+    }
+    else if ( getHandler() == Handler_DirectInput )
+    {
+      DirectInputDevice* diDevice = dynamic_cast<DirectInputDevice*>( this );
+      if ( getType() == Device_Mouse )
+      {
+        mInstance = new DirectInputMouse( diDevice );
+      }
+      else if ( getType() == Device_Keyboard )
+      {
+        mInstance = new DirectInputKeyboard( diDevice );
+      }
+      else if ( getType() == Device_Controller )
+      {
+        mInstance = new DirectInputController( diDevice );
+      }
+      else
+        NIL_EXCEPT( L"Unsupported device type for DirectInput; Cannot instantiate device!" );
+    }
+    else
+      NIL_EXCEPT( L"Unsupported device handler; Cannot instantiate device!" );
+  }
+
+  void Device::destroy()
+  {
+    SAFE_DELETE( mInstance );
   }
 
   void Device::onConnect()
@@ -28,6 +66,11 @@ namespace nil {
       getName().c_str(),
       getHandler() == Device::Handler_XInput ? L"XInput" : L"DirectInput",
       getType() == Device::Device_Mouse ? L"Mouse" : getType() == Device::Device_Keyboard ? L"Keyboard" : L"Controller" );
+  }
+
+  System* Device::getSystem()
+  {
+    return mSystem;
   }
 
   const DeviceID Device::getID()
@@ -63,26 +106,6 @@ namespace nil {
   const Device::Status Device::getStatus()
   {
     return mStatus;
-  }
-
-  // DeviceInstance class
-
-  DeviceInstance::DeviceInstance( System* system, Device* device ):
-  mSystem( system ), mDevice( device )
-  {
-    //
-  }
-
-  DeviceInstance::~DeviceInstance()
-  {
-    //
-  }
-
-  // Controller class
-
-  const Controller::Type Controller::getType()
-  {
-    return mType;
   }
 
 }

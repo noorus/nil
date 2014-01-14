@@ -3,8 +3,10 @@
 
 namespace nil {
 
-  DirectInputDevice::DirectInputDevice( DeviceID id, LPCDIDEVICEINSTANCEW instance ):
-  Device( id, Device_Controller ), mProductID( instance->guidProduct ),
+  DirectInputDevice::DirectInputDevice( System* system, DeviceID id,
+  LPCDIDEVICEINSTANCEW instance ):
+  Device( system, id, Device_Controller ),
+  mProductID( instance->guidProduct ),
   mInstanceID( instance->guidInstance )
   {
     mName = instance->tszInstanceName;

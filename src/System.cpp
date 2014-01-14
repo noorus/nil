@@ -80,7 +80,7 @@ namespace nil {
     for ( int i = 0; i < cMaxXInputDevices; i++ )
     {
       mXInputIDs[i] = getNextID();
-      auto device = new XInputDevice( mXInputIDs[i], i );
+      auto device = new XInputDevice( this, mXInputIDs[i], i );
       mDevices.push_back( device );
     }
   }
@@ -161,7 +161,7 @@ namespace nil {
       }
     }
 
-    Device* device = new DirectInputDevice( system->getNextID(), instance );
+    Device* device = new DirectInputDevice( system, system->getNextID(), instance );
     if ( system->isInitializing() )
       device->setStatus( Device::Status_Connected );
     else
