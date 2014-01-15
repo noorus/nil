@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LEDSliders2008", "LEDSliders2008.vcproj", "{C77B59E5-FE27-4C28-BC46-9B11FCC77BD8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C77B59E5-FE27-4C28-BC46-9B11FCC77BD8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C77B59E5-FE27-4C28-BC46-9B11FCC77BD8}.Debug|Win32.Build.0 = Debug|Win32
+		{C77B59E5-FE27-4C28-BC46-9B11FCC77BD8}.Release|Win32.ActiveCfg = Release|Win32
+		{C77B59E5-FE27-4C28-BC46-9B11FCC77BD8}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

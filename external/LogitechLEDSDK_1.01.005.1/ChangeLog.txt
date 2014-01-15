@@ -1,0 +1,19 @@
+MODIFICATION HISTORY
+
+
+Logitech Gaming LED SDK
+
+  1.01.001 - June 2012
+    Initial full featured SDK.
+
+  1.01.002 - June 2012
+    Simplified header by using .def file instead of dllexport.
+
+  1.01.003/4 - July 2012
+    Fixed an issue with saving and restoring lighting on G15s. A few other minor fixes (documentation, statically linked sample program).
+
+  1.01.005 - September 2012
+    Replaced bool with BOOL return values for compatibility with a gaming engine.
+
+  1.01.005.1
+    Exact same as 1.01.005, with addition of documentation for UDK developers.
