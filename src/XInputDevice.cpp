@@ -6,8 +6,9 @@ namespace nil {
   const String cXInputDefaultName = L"XInput Controller";
 
 #if(_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-  const long cMaxXInputModels = 10;
+  const long cMaxXInputModels = 11;
   static std::pair<int,String> cXInputModels[cMaxXInputModels] = {
+    std::make_pair( XINPUT_DEVSUBTYPE_UNKNOWN, cXInputDefaultName ),
     std::make_pair( XINPUT_DEVSUBTYPE_GAMEPAD, L"XBOX 360 Gamepad" ),
     std::make_pair( XINPUT_DEVSUBTYPE_WHEEL, L"XBOX 360 Racing Wheel" ),
     std::make_pair( XINPUT_DEVSUBTYPE_ARCADE_STICK, L"XBOX 360 Arcade Stick" ),
@@ -75,6 +76,11 @@ namespace nil {
   const int XInputDevice::getXInputID()
   {
     return mXInputID;
+  }
+
+  const XINPUT_CAPABILITIES& XInputDevice::getCapabilities()
+  {
+    return mCapabilities;
   }
 
 }

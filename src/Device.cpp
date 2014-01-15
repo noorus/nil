@@ -5,7 +5,8 @@ namespace nil {
 
   Device::Device( System* system, DeviceID id, Type type ): mSystem( system ),
   mID( id ), mType( type ), mStatus( Status_Pending ),
-  mSavedStatus( Status_Pending ), mInstance( nullptr )
+  mSavedStatus( Status_Pending ), mInstance( nullptr ),
+  mDisconnectFlagged( false )
   {
   }
 
@@ -48,6 +49,16 @@ namespace nil {
     SAFE_DELETE( mInstance );
   }
 
+  void Device::flagDisconnected()
+  {
+    mDisconnectFlagged = true;
+  }
+
+  const bool Device::isDisconnectFlagged()
+  {
+    return mDisconnectFlagged;
+  }
+
   void Device::onConnect()
   {
     mStatus = Status_Connected;
@@ -61,6 +72,7 @@ namespace nil {
   void Device::onDisconnect()
   {
     mStatus = Status_Disconnected;
+    mDisconnectFlagged = false;
     wprintf_s( L"Disconnected: (%d) %s (%s %s)\r\n",
       getID(),
       getName().c_str(),

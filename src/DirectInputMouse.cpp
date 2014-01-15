@@ -9,6 +9,11 @@ namespace nil {
     //
   }
 
+  void DirectInputMouse::update()
+  {
+    //
+  }
+
   DirectInputMouse::~DirectInputMouse()
   {
     //

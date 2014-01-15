@@ -4,7 +4,7 @@
 namespace nil {
 
   Controller::Controller( System* system, Device* device ):
-  DeviceInstance( system, device )
+  DeviceInstance( system, device ), mType( Controller_Unknown )
   {
     //
   }

@@ -9,6 +9,11 @@ namespace nil {
     //
   }
 
+  void DirectInputKeyboard::update()
+  {
+    //
+  }
+
   DirectInputKeyboard::~DirectInputKeyboard()
   {
     //

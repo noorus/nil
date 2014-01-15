@@ -82,6 +82,7 @@ namespace nil {
   //! Input device information entry.
   class Device {
   friend class System;
+  friend class XInputController;
   public:
     enum Handler {
       Handler_DirectInput,
@@ -105,6 +106,7 @@ namespace nil {
     Type mType;
     System* mSystem;
     DeviceInstance* mInstance;
+    bool mDisconnectFlagged;
     Device( System* system, DeviceID id, Type type );
     virtual void create();
     virtual void destroy();
@@ -113,6 +115,7 @@ namespace nil {
     virtual const Status getSavedStatus();
     virtual void onDisconnect();
     virtual void onConnect();
+    virtual void flagDisconnected();
   public:
     virtual const DeviceID getID();
     virtual const Handler getHandler() = 0;
@@ -120,6 +123,7 @@ namespace nil {
     virtual const Status getStatus();
     virtual const String& getName();
     virtual System* getSystem();
+    virtual const bool isDisconnectFlagged();
   };
 
   class DirectInputDevice: public Device {
@@ -149,6 +153,7 @@ namespace nil {
   public:
     virtual const Handler getHandler();
     virtual const int getXInputID();
+    virtual const XINPUT_CAPABILITIES& getCapabilities();
   };
 
   typedef list<Device*> DeviceList;
@@ -159,6 +164,7 @@ namespace nil {
     Device* mDevice;
   public:
     DeviceInstance( System* system, Device* device );
+    virtual void update() = 0;
     virtual ~DeviceInstance();
   };
 
@@ -166,6 +172,7 @@ namespace nil {
   protected:
   public:
     Mouse( System* system, Device* device );
+    virtual void update() = 0;
     virtual ~Mouse();
   };
 
@@ -173,12 +180,14 @@ namespace nil {
   protected:
   public:
     Keyboard( System* system, Device* device );
+    virtual void update() = 0;
     virtual ~Keyboard();
   };
 
   class Controller: public DeviceInstance {
   public:
     enum Type {
+      Controller_Unknown,
       Controller_Joystick,
       Controller_Gamepad,
       Controller_Firstperson,
@@ -186,6 +195,7 @@ namespace nil {
       Controller_Flight,
       Controller_DancePad,
       Controller_Guitar,
+      Controller_Bass,
       Controller_Drumkit,
       Controller_ArcadePad
     };
@@ -193,6 +203,7 @@ namespace nil {
     Type mType;
   public:
     Controller( System* system, Device* device );
+    virtual void update() = 0;
     virtual ~Controller();
     virtual const Type getType();
   };
@@ -201,6 +212,7 @@ namespace nil {
   protected:
   public:
     DirectInputMouse( DirectInputDevice* device );
+    virtual void update();
     virtual ~DirectInputMouse();
   };
 
@@ -208,6 +220,7 @@ namespace nil {
   protected:
   public:
     DirectInputKeyboard( DirectInputDevice* device );
+    virtual void update();
     virtual ~DirectInputKeyboard();
   };
 
@@ -215,13 +228,17 @@ namespace nil {
   protected:
   public:
     DirectInputController( DirectInputDevice* device );
+    virtual void update();
     virtual ~DirectInputController();
   };
 
   class XInputController: public Controller {
   protected:
+    DWORD mLastPacket;
+    XINPUT_STATE mState;
   public:
     XInputController( XInputDevice* device );
+    virtual void update();
     virtual ~XInputController();
   };
 

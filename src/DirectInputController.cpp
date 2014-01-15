@@ -9,6 +9,11 @@ namespace nil {
     //
   }
 
+  void DirectInputController::update()
+  {
+    //
+  }
+
   DirectInputController::~DirectInputController()
   {
     //
