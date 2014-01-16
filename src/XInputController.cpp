@@ -32,6 +32,12 @@ namespace nil {
       if ( cXInputTypes[i].first == device->getCapabilities().SubType )
         mType = cXInputTypes[i].second;
     }
+
+    switch ( mType )
+    {
+      case Controller_Gamepad:
+      break;
+    }
   }
 
   void XInputController::update()

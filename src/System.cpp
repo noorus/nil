@@ -31,7 +31,7 @@ namespace nil {
 
     // Create DirectInput instance
     auto hr = DirectInput8Create( mInstance, DIRECTINPUT_VERSION,
-      IID_IDirectInput8, (LPVOID*)&mDirectInput, NULL );
+      IID_IDirectInput8W, (LPVOID*)&mDirectInput, NULL );
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, L"Could not instance DirectInput 8" );
 
@@ -46,12 +46,22 @@ namespace nil {
     wprintf_s( L"Initial devices:\r\n" );
     for ( Device* device : mDevices )
       if ( device->getStatus() == Device::Status_Connected )
+      {
         wprintf_s( L"Initial: (%d) %s (%s %s)\r\n",
         device->getID(),
         device->getName().c_str(),
         device->getHandler() == Device::Handler_XInput ? L"XInput" : L"DirectInput",
         device->getType() == Device::Device_Mouse ? L"Mouse" : device->getType() == Device::Device_Keyboard ? L"Keyboard" : L"Controller"
         );
+        if ( device->getHandler() == Device::Handler_DirectInput )
+        {
+          DirectInputDevice* diDevice = dynamic_cast<DirectInputDevice*>( device );
+          wprintf_s( L"  product: %s\r\n  instance: %s\r\n",
+            guidToStr( diDevice->getProductID() ).c_str(),
+            guidToStr( diDevice->getInstanceID() ).c_str()
+          );
+        }
+      }
     wprintf_s( L"Running...\r\n" );
   }
 
@@ -235,7 +245,15 @@ namespace nil {
 
   void System::update()
   {
+    // Run PnP events if there are any
     mMonitor->update();
+
+    // First make sure that we disconnect failed devices
+    for ( Device* device : mDevices )
+      if ( device->isDisconnectFlagged() )
+        device->onDisconnect();
+
+    // TODO update devices!
   }
 
   System::~System()

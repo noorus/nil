@@ -27,14 +27,115 @@
 
 namespace nil {
 
+  // Types
   typedef std::string utf8String;
   typedef std::wstring String;
+  typedef uint32_t POVDirection;
   typedef float Real;
 
   using std::list;
   using std::vector;
   using std::wstringstream;
   using boost::variant;
+
+  struct Vector2i {
+  public:
+    int32_t x;
+    int32_t y;
+    Vector2i();
+  };
+
+  struct Vector3i {
+  public:
+    int32_t x;
+    int32_t y;
+    int32_t z;
+    Vector3i();
+  };
+
+  struct Vector2f {
+  public:
+    Real x;
+    Real y;
+    Vector2f();
+  };
+
+  struct Vector3f {
+  public:
+    Real x;
+    Real y;
+    Real z;
+    Vector3f();
+  };
+
+  // Components
+
+  class Component {
+  public:
+    enum Type {
+      Unknown = 0,
+      Button,
+      Axis,
+      Slider,
+      POV,
+      Orientation
+    };
+  protected:
+    Type mType;
+  public:
+    Component( Type type );
+    Type getType() const;
+  };
+
+  class Button: public Component {
+  protected:
+    bool mPushed;
+  public:
+    Button();
+    bool isPushed() const;
+  };
+
+  class Axis: public Component {
+  protected:
+    int32_t mAbsolute;
+  public:
+    Axis();
+    int32_t getAbsolute() const;
+  };
+
+  class Slider: public Component {
+  protected:
+    Vector2i mAbsolute;
+  public:
+    Slider();
+    const Vector2i& getAbsolute();
+  };
+
+  class POV: public Component {
+  protected:
+    POVDirection mDirection;
+  public:
+    static const int Centered   = 0x00000000;
+    static const int North      = 0x00000001;
+    static const int South      = 0x00000010;
+    static const int East       = 0x00000100;
+    static const int West       = 0x00001000;
+    static const int NorthEast  = 0x00000101;
+    static const int SouthEast  = 0x00000110;
+    static const int NorthWest  = 0x00001001;
+    static const int SouthWest  = 0x00001010;
+  public:
+    POV();
+    POVDirection getDirection() const;
+  };
+
+  class Orientation: public Component {
+  protected:
+    Vector3f mAbsolute;
+  public:
+    Orientation();
+    const Vector3f& getAbsolute();
+  };
 
   //! \class WinAPIError
   //! Container for a Windows API error description.
@@ -201,6 +302,11 @@ namespace nil {
     };
   protected:
     Type mType;
+    vector<Button> mButtons;
+    vector<Axis> mAxes;
+    vector<Slider> mSliders;
+    vector<POV> mPOVs;
+    vector<Orientation> mOrientations;
   public:
     Controller( System* system, Device* device );
     virtual void update() = 0;

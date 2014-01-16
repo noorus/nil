@@ -155,6 +155,7 @@
     <ClInclude Include="include\nilUtil.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Components.cpp" />
     <ClCompile Include="src\Controller.cpp" />
     <ClCompile Include="src\Device.cpp" />
     <ClCompile Include="src\DeviceInstance.cpp" />
@@ -167,6 +168,7 @@
     <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\PnPMonitor.cpp" />
     <ClCompile Include="src\System.cpp" />
+    <ClCompile Include="src\Types.cpp" />
     <ClCompile Include="src\Utilities.cpp" />
     <ClCompile Include="src\XInputController.cpp" />
     <ClCompile Include="src\XInputDevice.cpp" />
