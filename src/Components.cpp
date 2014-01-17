@@ -3,24 +3,20 @@
 
 namespace nil {
 
-  Component::Component( Type type ): mType( type )
+  Button::Button(): pushed( false )
   {
-    //
   }
 
-  Button::Button(): Component( Component::Button ), mPushed( false )
+  Axis::Axis(): absolute( 0 )
   {
-    //
   }
 
-  Axis::Axis(): Component( Component::Axis ), mAbsolute( 0 )
+  Slider::Slider(): absolute( 0, 0 )
   {
-    //
   }
 
-  Slider::Slider(): Component( Component::Slider )
+  POV::POV(): direction( POV::Centered )
   {
-    //
   }
 
 }

@@ -33,6 +33,8 @@ namespace nil {
   typedef uint32_t POVDirection;
   typedef float Real;
 
+  typedef int DeviceID;
+
   using std::list;
   using std::vector;
   using std::wstringstream;
@@ -42,7 +44,17 @@ namespace nil {
   public:
     int32_t x;
     int32_t y;
-    Vector2i();
+    inline Vector2i(): x( 0 ), y( 0 ) {}
+    inline explicit Vector2i( int32_t x_, int32_t y_ ): x( x_ ), y( y_ ) {}
+    inline bool operator == ( const Vector2i& other ) const
+    {
+      return ( x == other.x && y == other.y );
+    }
+    inline bool operator != ( const Vector2i& other ) const
+    {
+      return ( x != other.x || y != other.y  );
+    }
+    const static Vector2i ZERO;
   };
 
   struct Vector3i {
@@ -50,14 +62,35 @@ namespace nil {
     int32_t x;
     int32_t y;
     int32_t z;
-    Vector3i();
+    inline Vector3i(): x( 0 ), y( 0 ), z( 0 ) {}
+    inline explicit Vector3i( int32_t x_, int32_t y_, int32_t z_ ):
+    x( x_ ), y( y_ ), z( z_ ) {}
+    inline bool operator == ( const Vector3i& other ) const
+    {
+      return ( x == other.x && y == other.y && z == other.z );
+    }
+    inline bool operator != ( const Vector3i& other ) const
+    {
+      return ( x != other.x || y != other.y || z != other.z  );
+    }
+    const static Vector3i ZERO;
   };
 
   struct Vector2f {
   public:
     Real x;
     Real y;
-    Vector2f();
+    inline Vector2f(): x( 0.0f ), y( 0.0f ) {}
+    inline explicit Vector2f( Real x_, Real y_ ): x( x_ ), y( y_ ) {}
+    inline bool operator == ( const Vector2f& other ) const
+    {
+      return ( x == other.x && y == other.y );
+    }
+    inline bool operator != ( const Vector2f& other ) const
+    {
+      return ( x != other.x || y != other.y  );
+    }
+    const static Vector2f ZERO;
   };
 
   struct Vector3f {
@@ -65,76 +98,53 @@ namespace nil {
     Real x;
     Real y;
     Real z;
-    Vector3f();
+    inline Vector3f(): x( 0.0f ), y( 0.0f ), z( 0.0f ) {}
+    inline explicit Vector3f( Real x_, Real y_, Real z_ ):
+    x( x_ ), y( y_ ), z( z_ ) {}
+    inline bool operator == ( const Vector3f& other ) const
+    {
+      return ( x == other.x && y == other.y && z == other.z );
+    }
+    inline bool operator != ( const Vector3f& other ) const
+    {
+      return ( x != other.x || y != other.y || z != other.z  );
+    }
+    const static Vector3f ZERO;
   };
 
   // Components
 
-  class Component {
+  struct Button {
   public:
-    enum Type {
-      Unknown = 0,
-      Button,
-      Axis,
-      Slider,
-      POV,
-      Orientation
-    };
-  protected:
-    Type mType;
-  public:
-    Component( Type type );
-    Type getType() const;
-  };
-
-  class Button: public Component {
-  protected:
-    bool mPushed;
-  public:
+    bool pushed;
     Button();
-    bool isPushed() const;
   };
 
-  class Axis: public Component {
-  protected:
-    int32_t mAbsolute;
+  struct Axis {
   public:
+    Real absolute;
     Axis();
-    int32_t getAbsolute() const;
   };
 
-  class Slider: public Component {
-  protected:
-    Vector2i mAbsolute;
+  struct Slider {
   public:
+    Vector2i absolute;
     Slider();
-    const Vector2i& getAbsolute();
   };
 
-  class POV: public Component {
-  protected:
-    POVDirection mDirection;
+  struct POV {
   public:
-    static const int Centered   = 0x00000000;
-    static const int North      = 0x00000001;
-    static const int South      = 0x00000010;
-    static const int East       = 0x00000100;
-    static const int West       = 0x00001000;
-    static const int NorthEast  = 0x00000101;
-    static const int SouthEast  = 0x00000110;
-    static const int NorthWest  = 0x00001001;
-    static const int SouthWest  = 0x00001010;
-  public:
+    static const POVDirection Centered   = 0x00000000;
+    static const POVDirection North      = 0x00000001;
+    static const POVDirection South      = 0x00000010;
+    static const POVDirection East       = 0x00000100;
+    static const POVDirection West       = 0x00001000;
+    static const POVDirection NorthEast  = 0x00000101;
+    static const POVDirection SouthEast  = 0x00000110;
+    static const POVDirection NorthWest  = 0x00001001;
+    static const POVDirection SouthWest  = 0x00001010;
+    POVDirection direction;
     POV();
-    POVDirection getDirection() const;
-  };
-
-  class Orientation: public Component {
-  protected:
-    Vector3f mAbsolute;
-  public:
-    Orientation();
-    const Vector3f& getAbsolute();
   };
 
   //! \class WinAPIError
@@ -149,7 +159,7 @@ namespace nil {
   //! Main exception class. Descendant of std::exception.
   class Exception: public std::exception {
   public:
-    enum Type {
+    enum Type: int {
       Generic = 0,
       WinAPI,
       DirectInput
@@ -174,8 +184,6 @@ namespace nil {
     virtual const char* what() const throw();
   };
 
-  typedef int DeviceID;
-
   class System;
   class DeviceInstance;
 
@@ -185,17 +193,17 @@ namespace nil {
   friend class System;
   friend class XInputController;
   public:
-    enum Handler {
-      Handler_DirectInput,
+    enum Handler: int {
+      Handler_DirectInput = 0,
       Handler_XInput
     };
-    enum Type {
-      Device_Keyboard,
+    enum Type: int {
+      Device_Keyboard = 0,
       Device_Mouse,
       Device_Controller
     };
-    enum Status {
-      Status_Disconnected, //!< Disconnected but not forgotten
+    enum Status: int {
+      Status_Disconnected = 0, //!< Disconnected but not forgotten
       Status_Pending, //!< Pending refresh
       Status_Connected //!< Up-to-date and available
     };
@@ -209,7 +217,9 @@ namespace nil {
     DeviceInstance* mInstance;
     bool mDisconnectFlagged;
     Device( System* system, DeviceID id, Type type );
+    virtual ~Device();
     virtual void create();
+    virtual void update();
     virtual void destroy();
     virtual void setStatus( Status status );
     virtual void saveStatus();
@@ -285,10 +295,31 @@ namespace nil {
     virtual ~Keyboard();
   };
 
+  struct ControllerState {
+  public:
+    void clear();
+    ControllerState();
+    vector<Button> mButtons;
+    vector<Axis> mAxes;
+    vector<Slider> mSliders;
+    vector<POV> mPOVs;
+  };
+
+  class ControllerListener {
+  public:
+    virtual void onButtonPressed( const ControllerState& state, size_t button ) = 0;
+    virtual void onButtonReleased( const ControllerState& state, size_t button ) = 0;
+    virtual void onAxisMoved( const ControllerState& state, size_t axis ) = 0;
+    virtual void onSliderMoved( const ControllerState& state, size_t slider ) = 0;
+    virtual void onPOVMoved( const ControllerState& state, size_t pov ) = 0;
+  };
+
+  typedef list<ControllerListener*> ControllerListenerList;
+
   class Controller: public DeviceInstance {
   public:
-    enum Type {
-      Controller_Unknown,
+    enum Type: int {
+      Controller_Unknown = 0,
       Controller_Joystick,
       Controller_Gamepad,
       Controller_Firstperson,
@@ -302,16 +333,15 @@ namespace nil {
     };
   protected:
     Type mType;
-    vector<Button> mButtons;
-    vector<Axis> mAxes;
-    vector<Slider> mSliders;
-    vector<POV> mPOVs;
-    vector<Orientation> mOrientations;
+    ControllerState mState;
+    ControllerListenerList mListeners;
+    virtual void fireChanges( const ControllerState& lastState );
   public:
     Controller( System* system, Device* device );
     virtual void update() = 0;
     virtual ~Controller();
     virtual const Type getType();
+    virtual const ControllerState& getState() const;
   };
 
   class DirectInputMouse: public Mouse {
@@ -341,7 +371,10 @@ namespace nil {
   class XInputController: public Controller {
   protected:
     DWORD mLastPacket;
-    XINPUT_STATE mState;
+    XINPUT_STATE mXInputState;
+    inline Real filterLeftThumbAxis( int val );
+    inline Real filterRightThumbAxis( int val );
+    inline Real filterTrigger( int val );
   public:
     XInputController( XInputDevice* device );
     virtual void update();

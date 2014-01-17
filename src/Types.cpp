@@ -3,24 +3,12 @@
 
 namespace nil {
 
-  Vector2i::Vector2i(): x( 0 ), y( 0 )
-  {
-    //
-  }
+  const Vector2i Vector2i::ZERO( 0, 0 );
 
-  Vector3i::Vector3i(): x( 0 ), y( 0 ), z( 0 )
-  {
-    //
-  }
+  const Vector3i Vector3i::ZERO( 0, 0, 0 );
 
-  Vector2f::Vector2f(): x( 0.0f ), y( 0.0f )
-  {
-    //
-  }
+  const Vector2f Vector2f::ZERO( 0.0f, 0.0f );
 
-  Vector3f::Vector3f(): x( 0.0f ), y( 0.0f ), z( 0.0f )
-  {
-    //
-  }
+  const Vector3f Vector3f::ZERO( 0.0f, 0.0f, 0.0f );
 
 }

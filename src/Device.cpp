@@ -44,6 +44,12 @@ namespace nil {
       NIL_EXCEPT( L"Unsupported device handler; Cannot instantiate device!" );
   }
 
+  void Device::update()
+  {
+    if ( mInstance )
+      mInstance->update();
+  }
+
   void Device::destroy()
   {
     SAFE_DELETE( mInstance );
@@ -73,11 +79,7 @@ namespace nil {
   {
     mStatus = Status_Disconnected;
     mDisconnectFlagged = false;
-    wprintf_s( L"Disconnected: (%d) %s (%s %s)\r\n",
-      getID(),
-      getName().c_str(),
-      getHandler() == Device::Handler_XInput ? L"XInput" : L"DirectInput",
-      getType() == Device::Device_Mouse ? L"Mouse" : getType() == Device::Device_Keyboard ? L"Keyboard" : L"Controller" );
+    destroy();
   }
 
   System* Device::getSystem()
@@ -118,6 +120,11 @@ namespace nil {
   const Device::Status Device::getStatus()
   {
     return mStatus;
+  }
+
+  Device::~Device()
+  {
+    destroy();
   }
 
 }

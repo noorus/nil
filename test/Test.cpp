@@ -25,7 +25,9 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
     stopEvent = CreateEventW( 0, FALSE, FALSE, 0 );
     SetConsoleCtrlHandler( consoleHandler, TRUE );
 
-    while ( WaitForSingleObject( stopEvent, 250 ) == WAIT_TIMEOUT )
+    DWORD timeout = (DWORD)( ( 1.0f / 60.0f ) * 1000.0f );
+
+    while ( WaitForSingleObject( stopEvent, timeout ) == WAIT_TIMEOUT )
       system->update();
 
     SetConsoleCtrlHandler( NULL, FALSE );

@@ -16,8 +16,6 @@ extern "C" {
 
 namespace nil {
 
-  const long cMaxXInputDevices = 4;
-
   System::System( HINSTANCE instance, HWND window ): mWindow( window ),
   mInstance( instance ), mDirectInput( nullptr ), mMonitor( nullptr ),
   mIDPool( 0 ), mInitializing( true )
@@ -53,6 +51,7 @@ namespace nil {
         device->getHandler() == Device::Handler_XInput ? L"XInput" : L"DirectInput",
         device->getType() == Device::Device_Mouse ? L"Mouse" : device->getType() == Device::Device_Keyboard ? L"Keyboard" : L"Controller"
         );
+        device->create();
         if ( device->getHandler() == Device::Handler_DirectInput )
         {
           DirectInputDevice* diDevice = dynamic_cast<DirectInputDevice*>( device );
@@ -86,8 +85,8 @@ namespace nil {
 
   void System::initializeDevices()
   {
-    mXInputIDs.resize( cMaxXInputDevices );
-    for ( int i = 0; i < cMaxXInputDevices; i++ )
+    mXInputIDs.resize( XUSER_MAX_COUNT );
+    for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
     {
       mXInputIDs[i] = getNextID();
       auto device = new XInputDevice( this, mXInputIDs[i], i );
@@ -252,8 +251,8 @@ namespace nil {
     for ( Device* device : mDevices )
       if ( device->isDisconnectFlagged() )
         device->onDisconnect();
-
-    // TODO update devices!
+      else
+        device->update();
   }
 
   System::~System()

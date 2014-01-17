@@ -3,6 +3,32 @@
 
 namespace nil {
 
+  class StupidListener: public ControllerListener {
+  public:
+    virtual void onButtonPressed( const ControllerState& state, size_t button )
+    {
+      wprintf_s( L"Button %d pressed\r\n", button );
+    }
+    virtual void onButtonReleased( const ControllerState& state, size_t button )
+    {
+      wprintf_s( L"Button %d released\r\n", button );
+    }
+    virtual void onAxisMoved( const ControllerState& state, size_t axis )
+    {
+      wprintf_s( L"Axis %d moved: %f\r\n", axis, state.mAxes[axis].absolute );
+    }
+    virtual void onSliderMoved( const ControllerState& state, size_t slider )
+    {
+      wprintf_s( L"Slider %d moved: \r\n", slider );
+    }
+    virtual void onPOVMoved( const ControllerState& state, size_t pov )
+    {
+      wprintf_s( L"POV %d moved: \r\n", pov );
+    }
+  };
+
+  StupidListener gStupidListener;
+
 #if(_WIN32_WINNT >= _WIN32_WINNT_WIN8)
   const long cMaxXInputTypes = 11;
   static std::pair<int,Controller::Type> cXInputTypes[cMaxXInputTypes] = {
@@ -26,8 +52,10 @@ namespace nil {
 #endif
 
   XInputController::XInputController( XInputDevice* device ):
-  Controller( device->getSystem(), device )
+  Controller( device->getSystem(), device ), mLastPacket( 0 )
   {
+    mListeners.push_back( &gStupidListener );
+
     for ( int i = 0; i < cMaxXInputTypes; i++ ) {
       if ( cXInputTypes[i].first == device->getCapabilities().SubType )
         mType = cXInputTypes[i].second;
@@ -36,15 +64,71 @@ namespace nil {
     switch ( mType )
     {
       case Controller_Gamepad:
+        mState.mPOVs.resize( 1 );
+        mState.mButtons.resize( 12 );
+        mState.mAxes.resize( 6 );
       break;
     }
+  }
+
+  Real XInputController::filterLeftThumbAxis( int val )
+  {
+    if ( val < 0 )
+    {
+      if ( val > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
+        return 0.0f;
+      val += XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
+      Real ret = (Real)val / (Real)( 32768 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
+      return ( ret < -1.0f ? -1.0f : ret );
+    }
+    else if ( val > 0 )
+    {
+      if ( val < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
+        return 0.0f;
+      val -= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
+      Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
+      return ( ret > 1.0f ? 1.0f : ret );
+    }
+    else
+      return 0.0f;
+  }
+
+  Real XInputController::filterRightThumbAxis( int val )
+  {
+    if ( val < 0 )
+    {
+      if ( val > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
+        return 0.0f;
+      val += XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE;
+      Real ret = (Real)val / (Real)( 32768 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
+      return ( ret < -1.0f ? -1.0f : ret );
+    }
+    else if ( val > 0 )
+    {
+      if ( val < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
+        return 0.0f;
+      val -= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE;
+      Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
+      return ( ret > 1.0f ? 1.0f : ret );
+    }
+    else
+      return 0.0f;
+  }
+
+  Real XInputController::filterTrigger( int val )
+  {
+    if ( val < XINPUT_GAMEPAD_TRIGGER_THRESHOLD )
+      return 0.0f;
+    val -= XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
+    Real ret = (Real)val / (Real)( 255 - XINPUT_GAMEPAD_TRIGGER_THRESHOLD );
+    return ( ret > 1.0f ? 1.0f : ret );
   }
 
   void XInputController::update()
   {
     XInputDevice* xDevice = dynamic_cast<XInputDevice*>( mDevice );
 
-    DWORD ret = XInputGetState( xDevice->getXInputID(), &mState );
+    DWORD ret = XInputGetState( xDevice->getXInputID(), &mXInputState );
     if ( ret == ERROR_DEVICE_NOT_CONNECTED )
     {
       xDevice->flagDisconnected();
@@ -52,6 +136,44 @@ namespace nil {
     }
     else if ( ret != ERROR_SUCCESS )
       NIL_EXCEPT( L"XInputGetState failed!" );
+
+    if ( mXInputState.dwPacketNumber == mLastPacket )
+      return;
+
+    mLastPacket = mXInputState.dwPacketNumber;
+
+    ControllerState lastState = mState;
+
+    switch ( mType )
+    {
+      case Controller::Controller_Gamepad:
+        // Buttons
+        for ( size_t i = 0; i < mState.mButtons.size(); i++ )
+          mState.mButtons[i].pushed = ( ( mXInputState.Gamepad.wButtons & ( 1 << ( i + 4 ) ) ) != 0 );
+
+        // Axes
+        mState.mAxes[0].absolute = filterLeftThumbAxis( mXInputState.Gamepad.sThumbLX );
+        mState.mAxes[1].absolute = filterLeftThumbAxis( mXInputState.Gamepad.sThumbLY );
+        mState.mAxes[2].absolute = filterRightThumbAxis( mXInputState.Gamepad.sThumbRX );
+        mState.mAxes[3].absolute = filterRightThumbAxis( mXInputState.Gamepad.sThumbRY );
+        mState.mAxes[4].absolute = filterTrigger( mXInputState.Gamepad.bLeftTrigger );
+        mState.mAxes[5].absolute = filterTrigger( mXInputState.Gamepad.bRightTrigger );
+
+        // POV
+        POVDirection& xPov = mState.mPOVs[0].direction;
+        xPov = POV::Centered;
+        if ( mXInputState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP )
+          xPov |= POV::North;
+        else if ( mXInputState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN )
+          xPov |= POV::South;
+        if ( mXInputState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT )
+          xPov |= POV::West;
+        else if ( mXInputState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT )
+          xPov |= POV::East;
+      break;
+    }
+
+    fireChanges( lastState );
   }
 
   XInputController::~XInputController()
