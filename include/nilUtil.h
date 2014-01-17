@@ -31,24 +31,6 @@ namespace nil {
     return str;
   }
 
-  class COMString {
-  protected:
-    BSTR mStr;
-  public:
-    COMString( const String& str ): mStr( NULL )
-    {
-      mStr = SysAllocString( str.c_str() );
-      if ( !mStr )
-        NIL_EXCEPT( L"SysAllocString failed" );
-    }
-    operator BSTR() { return mStr; }
-    ~COMString()
-    {
-      if ( mStr )
-        SysFreeString( mStr );
-    }
-  };
-
   namespace util
   {
     extern inline String utf8ToWide( const utf8String& in ) throw();

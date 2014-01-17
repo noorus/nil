@@ -3,12 +3,14 @@
 
 namespace nil {
 
+  // ControllerState class
+
   ControllerState::ControllerState()
   {
-    clear();
+    reset();
   }
 
-  void ControllerState::clear()
+  void ControllerState::reset()
   {
     for ( auto button : mButtons )
       button.pushed = false;
@@ -19,6 +21,8 @@ namespace nil {
     for ( auto pov : mPOVs )
       pov.direction = POV::Centered;
   }
+
+  // Controller class
 
   Controller::Controller( System* system, Device* device ):
   DeviceInstance( system, device ), mType( Controller_Unknown )
@@ -55,6 +59,11 @@ namespace nil {
     }
   }
 
+  const Controller::Type Controller::getType() const
+  {
+    return mType;
+  }
+
   const ControllerState& Controller::getState() const
   {
     return mState;
@@ -63,11 +72,6 @@ namespace nil {
   Controller::~Controller()
   {
     //
-  }
-
-  const Controller::Type Controller::getType()
-  {
-    return mType;
   }
 
 }

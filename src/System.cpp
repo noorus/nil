@@ -108,7 +108,7 @@ namespace nil {
     auto hr = mDirectInput->EnumDevices( DI8DEVCLASS_ALL,
       diEnumCallback, this, DIEDFL_ATTACHEDONLY );
     if ( FAILED( hr ) )
-      NIL_EXCEPT_DINPUT( hr, L"Could not enumerate DirectInput devices" );
+      NIL_EXCEPT_DINPUT( hr, L"Could not enumerate DirectInput devices!" );
 
     for ( Device* device : mDevices )
       if ( device->getHandler() == Device::Handler_DirectInput

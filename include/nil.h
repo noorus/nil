@@ -23,7 +23,7 @@ namespace nil {
   //! Digital push button controller component.
   struct Button {
   public:
-    bool pushed;
+    bool pushed; //!< Pushed state
     Button();
   };
 
@@ -31,7 +31,7 @@ namespace nil {
   //! Analog axis controller component.
   struct Axis {
   public:
-    Real absolute;
+    Real absolute; //!< Absolute value in {-1..1}
     Axis();
   };
 
@@ -39,7 +39,7 @@ namespace nil {
   //! Two-dimensional analog controller component.
   struct Slider {
   public:
-    Vector2i absolute;
+    Vector2i absolute; //!< Absolute value in [{-1..1},{-1..1}]
     Slider();
   };
 
@@ -56,7 +56,7 @@ namespace nil {
     static const POVDirection SouthEast  = 0x00000110;
     static const POVDirection NorthWest  = 0x00001001;
     static const POVDirection SouthWest  = 0x00001010;
-    POVDirection direction;
+    POVDirection direction; //!< Absolute current directions
     POV();
   };
 
@@ -69,13 +69,13 @@ namespace nil {
   };
 
   //! \class Exception
-  //! Main exception class. Descendant of std::exception.
+  //! Main NIL exception class. Descendant of std::exception.
   class Exception: public std::exception {
   public:
     enum Type: int {
-      Generic = 0,
-      WinAPI,
-      DirectInput
+      Generic = 0, //!< Generic NIL error
+      WinAPI, //!< Windows API-specific error
+      DirectInput //!< DirectInput-specific error
     };
   private:
     Exception();
@@ -129,25 +129,25 @@ namespace nil {
     System* mSystem; //!< My owner
     DeviceInstance* mInstance; //!< My instance, if created
     bool mDisconnectFlagged; //!< Has there been a problem with me?
-    Device( System* system, DeviceID id, Type type );
+    explicit Device( System* system, DeviceID id, Type type );
     virtual ~Device();
-    virtual void create();
-    virtual void update();
-    virtual void destroy();
-    virtual void setStatus( Status status );
-    virtual void saveStatus();
-    virtual const Status getSavedStatus();
+    virtual void create(); //!< Create our instance
+    virtual void update(); //!< Update our instance
+    virtual void destroy(); //!< Destroy our instance
+    virtual void setStatus( Status status ); //!< Set status
+    virtual void saveStatus(); //!< Backup current status
+    virtual const Status getSavedStatus(); //!< Get backed up status
     virtual void onDisconnect(); //!< On unplugged or otherwise disabled
     virtual void onConnect(); //!< On plugged or otherwise enabled
-    virtual void flagDisconnected();
+    virtual void flagDisconnected(); //!< Flag for disconnection
   public:
-    virtual const DeviceID getID();
-    virtual const Handler getHandler() = 0;
-    virtual const Type getType();
-    virtual const Status getStatus();
-    virtual const String& getName();
-    virtual System* getSystem();
-    virtual const bool isDisconnectFlagged();
+    virtual const DeviceID getID(); //!< Get unique identifier
+    virtual const Handler getHandler() = 0; //!< Get handler
+    virtual const Type getType(); //!< Get type
+    virtual const Status getStatus(); //!< Get status
+    virtual const String& getName(); //!< Get name
+    virtual System* getSystem(); //!< Get owner system
+    virtual const bool isDisconnectFlagged(); //!< Are we flagged for disconnection?
   };
 
   //! \class DirectInputDevice
@@ -174,14 +174,14 @@ namespace nil {
     bool mIdentified;
     XINPUT_CAPABILITIES mCapabilities;
     XInputDevice( System* system, DeviceID id, int xinputID );
-    virtual void identify();
+    virtual void identify(); //!< Internally identify our type
     virtual void setStatus( Status status );
     virtual void onDisconnect();
     virtual void onConnect();
   public:
     virtual const Handler getHandler();
     virtual const int getXInputID();
-    virtual const XINPUT_CAPABILITIES& getCapabilities();
+    virtual const XINPUT_CAPABILITIES& getCapabilities(); //!< Get XInput caps
   };
 
   typedef list<Device*> DeviceList;
@@ -222,12 +222,12 @@ namespace nil {
   //! Game controller state structure.
   struct ControllerState {
   public:
-    void clear();
+    void reset(); //!< Reset the state of my components
     ControllerState();
-    vector<Button> mButtons;
-    vector<Axis> mAxes;
-    vector<Slider> mSliders;
-    vector<POV> mPOVs;
+    vector<Button> mButtons; //!< Our buttons
+    vector<Axis> mAxes; //!< Our axes
+    vector<Slider> mSliders; //!< Our sliders
+    vector<POV> mPOVs; //!< Our POVs
   };
 
   //! \class ControllerListener
@@ -254,28 +254,28 @@ namespace nil {
   class Controller: public DeviceInstance {
   public:
     enum Type: int {
-      Controller_Unknown = 0,
-      Controller_Joystick,
-      Controller_Gamepad,
-      Controller_Firstperson,
-      Controller_Driving,
-      Controller_Flight,
-      Controller_DancePad,
-      Controller_Guitar,
-      Controller_Bass,
-      Controller_Drumkit,
-      Controller_ArcadePad
+      Controller_Unknown = 0, //!< I don't know what I am
+      Controller_Joystick, //!< I'm a joystick
+      Controller_Gamepad, //!< I'm a gamepad
+      Controller_Firstperson, //!< I'm a shootie-thing
+      Controller_Driving, //!< I'm a driving wheel, I guess?
+      Controller_Flight, //!< I'm... A cockpit?
+      Controller_DancePad, //!< I'm steppy platform thing
+      Controller_Guitar, //!< I'm a guitar. I guess I have 5 strings.
+      Controller_Bass, //!< I'm a bass, so, 4 strings..?
+      Controller_Drumkit, //!< I'm a drumkit
+      Controller_ArcadePad //!< I'm a huge arcade controller
     };
   protected:
-    Type mType;
-    ControllerState mState;
-    ControllerListenerList mListeners;
+    Type mType; //!< The type of controller I am
+    ControllerState mState; //!< Current controls state
+    ControllerListenerList mListeners; //!< Registered state change listeners
     virtual void fireChanges( const ControllerState& lastState );
   public:
     Controller( System* system, Device* device );
     virtual void update() = 0;
     virtual ~Controller();
-    virtual const Type getType();
+    virtual const Type getType() const;
     virtual const ControllerState& getState() const;
   };
 
