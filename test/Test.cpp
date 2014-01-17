@@ -3,6 +3,32 @@
 
 HANDLE stopEvent = NULL;
 
+class StupidListener: public nil::ControllerListener {
+public:
+  virtual void onButtonPressed( const nil::ControllerState& state, size_t button )
+  {
+    wprintf_s( L"Button %d pressed\r\n", button );
+  }
+  virtual void onButtonReleased( const nil::ControllerState& state, size_t button )
+  {
+    wprintf_s( L"Button %d released\r\n", button );
+  }
+  virtual void onAxisMoved( const nil::ControllerState& state, size_t axis )
+  {
+    wprintf_s( L"Axis %d moved: %f\r\n", axis, state.mAxes[axis].absolute );
+  }
+  virtual void onSliderMoved( const nil::ControllerState& state, size_t slider )
+  {
+    wprintf_s( L"Slider %d moved: \r\n", slider );
+  }
+  virtual void onPOVMoved( const nil::ControllerState& state, size_t pov )
+  {
+    wprintf_s( L"POV %d moved: \r\n", pov );
+  }
+};
+
+StupidListener gStupidListener;
+
 BOOL WINAPI consoleHandler( DWORD ctrl )
 {
   if ( ctrl == CTRL_C_EVENT || ctrl == CTRL_CLOSE_EVENT )

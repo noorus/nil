@@ -9,129 +9,42 @@
 #include <windows.h>
 #include <dbt.h>
 #include <objbase.h>
+#include <stdlib.h>
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #include <xinput.h>
 
-#include <stdlib.h>
-#include <stdint.h>
-
-#include <exception>
-#include <string>
-#include <vector>
-#include <list>
-#include <sstream>
-#include <boost/variant.hpp>
-#include <boost/algorithm/string.hpp>
+#include "nilTypes.h"
 
 namespace nil {
 
-  // Types
-  typedef std::string utf8String;
-  typedef std::wstring String;
-  typedef uint32_t POVDirection;
-  typedef float Real;
-
-  typedef int DeviceID;
-
-  using std::list;
-  using std::vector;
-  using std::wstringstream;
-  using boost::variant;
-
-  struct Vector2i {
-  public:
-    int32_t x;
-    int32_t y;
-    inline Vector2i(): x( 0 ), y( 0 ) {}
-    inline explicit Vector2i( int32_t x_, int32_t y_ ): x( x_ ), y( y_ ) {}
-    inline bool operator == ( const Vector2i& other ) const
-    {
-      return ( x == other.x && y == other.y );
-    }
-    inline bool operator != ( const Vector2i& other ) const
-    {
-      return ( x != other.x || y != other.y  );
-    }
-    const static Vector2i ZERO;
-  };
-
-  struct Vector3i {
-  public:
-    int32_t x;
-    int32_t y;
-    int32_t z;
-    inline Vector3i(): x( 0 ), y( 0 ), z( 0 ) {}
-    inline explicit Vector3i( int32_t x_, int32_t y_, int32_t z_ ):
-    x( x_ ), y( y_ ), z( z_ ) {}
-    inline bool operator == ( const Vector3i& other ) const
-    {
-      return ( x == other.x && y == other.y && z == other.z );
-    }
-    inline bool operator != ( const Vector3i& other ) const
-    {
-      return ( x != other.x || y != other.y || z != other.z  );
-    }
-    const static Vector3i ZERO;
-  };
-
-  struct Vector2f {
-  public:
-    Real x;
-    Real y;
-    inline Vector2f(): x( 0.0f ), y( 0.0f ) {}
-    inline explicit Vector2f( Real x_, Real y_ ): x( x_ ), y( y_ ) {}
-    inline bool operator == ( const Vector2f& other ) const
-    {
-      return ( x == other.x && y == other.y );
-    }
-    inline bool operator != ( const Vector2f& other ) const
-    {
-      return ( x != other.x || y != other.y  );
-    }
-    const static Vector2f ZERO;
-  };
-
-  struct Vector3f {
-  public:
-    Real x;
-    Real y;
-    Real z;
-    inline Vector3f(): x( 0.0f ), y( 0.0f ), z( 0.0f ) {}
-    inline explicit Vector3f( Real x_, Real y_, Real z_ ):
-    x( x_ ), y( y_ ), z( z_ ) {}
-    inline bool operator == ( const Vector3f& other ) const
-    {
-      return ( x == other.x && y == other.y && z == other.z );
-    }
-    inline bool operator != ( const Vector3f& other ) const
-    {
-      return ( x != other.x || y != other.y || z != other.z  );
-    }
-    const static Vector3f ZERO;
-  };
-
-  // Components
-
+  //! \struct Button
+  //! Digital push button controller component.
   struct Button {
   public:
     bool pushed;
     Button();
   };
 
+  //! \struct Axis
+  //! Analog axis controller component.
   struct Axis {
   public:
     Real absolute;
     Axis();
   };
 
+  //! \struct Slider
+  //! Two-dimensional analog controller component.
   struct Slider {
   public:
     Vector2i absolute;
     Slider();
   };
 
+  //! \struct POV
+  //! Digital directional Point-of-View controller component.
   struct POV {
   public:
     static const POVDirection Centered   = 0x00000000;
@@ -194,13 +107,13 @@ namespace nil {
   friend class XInputController;
   public:
     enum Handler: int {
-      Handler_DirectInput = 0,
-      Handler_XInput
+      Handler_DirectInput = 0, //!< Implemented by DirectInput
+      Handler_XInput //!< Implemented by XInput
     };
     enum Type: int {
-      Device_Keyboard = 0,
-      Device_Mouse,
-      Device_Controller
+      Device_Keyboard = 0, //!< I'm a keyboard
+      Device_Mouse, //!< I'm a mouse
+      Device_Controller //!< No, I'm a controller
     };
     enum Status: int {
       Status_Disconnected = 0, //!< Disconnected but not forgotten
@@ -208,14 +121,14 @@ namespace nil {
       Status_Connected //!< Up-to-date and available
     };
   protected:
-    DeviceID mID;
-    Status mStatus;
-    Status mSavedStatus;
-    String mName;
-    Type mType;
-    System* mSystem;
-    DeviceInstance* mInstance;
-    bool mDisconnectFlagged;
+    DeviceID mID; //!< Unique nil-specific identifier
+    Status mStatus; //!< Current status
+    Status mSavedStatus; //!< Status backup when updating
+    String mName; //!< Device name
+    Type mType; //!< Device type
+    System* mSystem; //!< My owner
+    DeviceInstance* mInstance; //!< My instance, if created
+    bool mDisconnectFlagged; //!< Has there been a problem with me?
     Device( System* system, DeviceID id, Type type );
     virtual ~Device();
     virtual void create();
@@ -224,8 +137,8 @@ namespace nil {
     virtual void setStatus( Status status );
     virtual void saveStatus();
     virtual const Status getSavedStatus();
-    virtual void onDisconnect();
-    virtual void onConnect();
+    virtual void onDisconnect(); //!< On unplugged or otherwise disabled
+    virtual void onConnect(); //!< On plugged or otherwise enabled
     virtual void flagDisconnected();
   public:
     virtual const DeviceID getID();
@@ -237,6 +150,8 @@ namespace nil {
     virtual const bool isDisconnectFlagged();
   };
 
+  //! \class DirectInputDevice
+  //! Device abstraction base class for DirectInput devices.
   class DirectInputDevice: public Device {
   friend class System;
   protected:
@@ -250,6 +165,8 @@ namespace nil {
     virtual const GUID getInstanceID();
   };
 
+  //! \class XInputDevice
+  //! Device abstraction base class for XInput devices.
   class XInputDevice: public Device {
   friend class System;
   protected:
@@ -269,6 +186,8 @@ namespace nil {
 
   typedef list<Device*> DeviceList;
 
+  //! \class DeviceInstance
+  //! Device instance base class.
   class DeviceInstance {
   protected:
     System* mSystem;
@@ -279,6 +198,8 @@ namespace nil {
     virtual ~DeviceInstance();
   };
 
+  //! \class Mouse
+  //! Mouse device instance base class.
   class Mouse: public DeviceInstance {
   protected:
   public:
@@ -287,6 +208,8 @@ namespace nil {
     virtual ~Mouse();
   };
 
+  //! \class Keyboard
+  //! Keyboard device instance base class.
   class Keyboard: public DeviceInstance {
   protected:
   public:
@@ -295,6 +218,8 @@ namespace nil {
     virtual ~Keyboard();
   };
 
+  //! \struct ControllerState
+  //! Game controller state structure.
   struct ControllerState {
   public:
     void clear();
@@ -305,17 +230,27 @@ namespace nil {
     vector<POV> mPOVs;
   };
 
+  //! \class ControllerListener
+  //! Game controller event listener base class.
+  //! Derive your own listener from this class.
   class ControllerListener {
   public:
-    virtual void onButtonPressed( const ControllerState& state, size_t button ) = 0;
-    virtual void onButtonReleased( const ControllerState& state, size_t button ) = 0;
-    virtual void onAxisMoved( const ControllerState& state, size_t axis ) = 0;
-    virtual void onSliderMoved( const ControllerState& state, size_t slider ) = 0;
-    virtual void onPOVMoved( const ControllerState& state, size_t pov ) = 0;
+    virtual void onButtonPressed(
+      const ControllerState& state, size_t button ) = 0;
+    virtual void onButtonReleased(
+      const ControllerState& state, size_t button ) = 0;
+    virtual void onAxisMoved(
+      const ControllerState& state, size_t axis ) = 0;
+    virtual void onSliderMoved(
+      const ControllerState& state, size_t slider ) = 0;
+    virtual void onPOVMoved(
+      const ControllerState& state, size_t pov ) = 0;
   };
 
   typedef list<ControllerListener*> ControllerListenerList;
 
+  //! \class Controller
+  //! Game controller device instance base class.
   class Controller: public DeviceInstance {
   public:
     enum Type: int {
@@ -344,6 +279,8 @@ namespace nil {
     virtual const ControllerState& getState() const;
   };
 
+  //! \class DirectInputMouse
+  //! Mouse implemented by DirectInput.
   class DirectInputMouse: public Mouse {
   protected:
   public:
@@ -352,6 +289,8 @@ namespace nil {
     virtual ~DirectInputMouse();
   };
 
+  //! \class DirectInputKeyboard
+  //! Keyboard implemented by DirectInput.
   class DirectInputKeyboard: public Keyboard {
   protected:
   public:
@@ -360,6 +299,8 @@ namespace nil {
     virtual ~DirectInputKeyboard();
   };
 
+  //! \class DirectInputController
+  //! Game controller implemented by DirectInput.
   class DirectInputController: public Controller {
   protected:
   public:
@@ -368,6 +309,8 @@ namespace nil {
     virtual ~DirectInputController();
   };
 
+  //! \class XInputController
+  //! Game controller implemented by XInput.
   class XInputController: public Controller {
   protected:
     DWORD mLastPacket;
@@ -384,8 +327,7 @@ namespace nil {
   //! \class PnPListener
   //! Plug-n-Play event listener.
   class PnPListener {
-  friend class PnPMonitor;
-  protected:
+  public:
     virtual void onPlug( const GUID& deviceClass,
       const String& devicePath ) = 0;
     virtual void onUnplug( const GUID& deviceClass,
@@ -413,7 +355,7 @@ namespace nil {
   };
 
   //! \class System
-  //! The input system.
+  //! The input system root.
   class System: public PnPListener {
   protected:
     DeviceID mIDPool; //!< Device indexing pool
@@ -424,7 +366,7 @@ namespace nil {
     HWND mWindow; //!< Host application window handle
     PnPMonitor* mMonitor; //!< Our Plug-n-Play event monitor
     DeviceList mDevices; //!< List of known devices
-    bool mInitializing; //!< Are we initializing
+    bool mInitializing; //!< Are we initializing?
     void initializeDevices();
     void refreshDevices();
     void identifyXInputDevices();

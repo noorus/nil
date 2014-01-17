@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\nil.h" />
+    <ClInclude Include="include\nilTypes.h" />
     <ClInclude Include="include\nilUtil.h" />
   </ItemGroup>
   <ItemGroup>
