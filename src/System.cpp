@@ -106,7 +106,7 @@ namespace nil {
       }
 
     auto hr = mDirectInput->EnumDevices( DI8DEVCLASS_ALL,
-      diEnumCallback, this, DIEDFL_ATTACHEDONLY );
+      diDeviceEnumCallback, this, DIEDFL_ATTACHEDONLY );
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, L"Could not enumerate DirectInput devices!" );
 
@@ -143,7 +143,7 @@ namespace nil {
     }
   }
 
-  BOOL CALLBACK System::diEnumCallback( LPCDIDEVICEINSTANCEW instance,
+  BOOL CALLBACK System::diDeviceEnumCallback( LPCDIDEVICEINSTANCEW instance,
   LPVOID referer )
   {
     auto system = static_cast<System*>( referer );

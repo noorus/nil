@@ -303,6 +303,13 @@ namespace nil {
   //! Game controller implemented by DirectInput.
   class DirectInputController: public Controller {
   protected:
+    IDirectInputDevice8W* mDIDevice;
+    DIDEVCAPS mDICapabilities;
+    int mAxisEnum;
+    int mSliderEnum;
+    inline Real filterAxis( int val );
+    static BOOL CALLBACK diComponentsEnumCallback(
+      LPCDIDEVICEOBJECTINSTANCEW component, LPVOID referer );
   public:
     DirectInputController( DirectInputDevice* device );
     virtual void update();
@@ -357,6 +364,7 @@ namespace nil {
   //! \class System
   //! The input system root.
   class System: public PnPListener {
+  friend class DirectInputController;
   protected:
     DeviceID mIDPool; //!< Device indexing pool
     vector<DeviceID> mXInputIDs; //!< XInput device ID mapping
@@ -373,7 +381,7 @@ namespace nil {
     DeviceID getNextID();
     virtual void onPlug( const GUID& deviceClass, const String& devicePath );
     virtual void onUnplug( const GUID& deviceClass, const String& devicePath );
-    static BOOL CALLBACK diEnumCallback(
+    static BOOL CALLBACK diDeviceEnumCallback(
       LPCDIDEVICEINSTANCEW instance, LPVOID referer );
   public:
     System( HINSTANCE instance, HWND window );
