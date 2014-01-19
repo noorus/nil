@@ -1,10 +1,5 @@
 #include "nil.h"
 #include "nilUtil.h"
-#include <initguid.h>
-#include <devguid.h>
-#include <devpkey.h>
-#include <wbemidl.h>
-#include <oleauto.h>
 
 namespace nil {
 
@@ -158,9 +153,9 @@ namespace nil {
   void System::identifyXInputDevices()
   {
     mXInputDeviceIDs.clear();
-    for ( auto device : mHIDManager->getDevices() )
-      if ( device->isXInput() )
-        mXInputDeviceIDs.push_back( device->getIdentifier() );
+    for ( auto hidRecord : mHIDManager->getRecords() )
+      if ( hidRecord->isXInput() )
+        mXInputDeviceIDs.push_back( hidRecord->getIdentifier() );
   }
 
   const bool System::isInitializing()

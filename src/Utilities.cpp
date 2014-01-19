@@ -1,9 +1,18 @@
 #include "nil.h"
 #include "nilUtil.h"
+#include <boost/algorithm/string/trim_all.hpp>
 
 namespace nil {
 
   namespace util {
+
+    inline String cleanupName( String name ) throw()
+    {
+      if ( boost::iequals( name, L"?" ) )
+        return String();
+      boost::algorithm::trim_all( name );
+      return name;
+    }
 
     inline String utf8ToWide( const utf8String& in ) throw()
     {

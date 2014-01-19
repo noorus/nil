@@ -1,27 +1,9 @@
 #pragma once
 
-#ifndef NTDDI_VERSION
-# define NTDDI_VERSION NTDDI_VISTA
-# define _WIN32_WINNT _WIN32_WINNT_VISTA
-#endif
-#include <sdkddkver.h>
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <dbt.h>
-#include <objbase.h>
-#include <stdlib.h>
-
-extern "C" {
-#include <setupapi.h>
-#include <winioctl.h>
-#include <hidsdi.h>
-};
-
-#define DIRECTINPUT_VERSION 0x0800
-#include <dinput.h>
-#include <xinput.h>
-
 #include "nilTypes.h"
+#include "nilException.h"
+#include "nilPnP.h"
+#include "nilHID.h"
 
 namespace nil {
 
@@ -64,43 +46,6 @@ namespace nil {
     static const POVDirection SouthWest  = 0x00001010;
     POVDirection direction; //!< Absolute current directions
     POV();
-  };
-
-  //! \class WinAPIError
-  //! Container for a Windows API error description.
-  struct WinAPIError {
-  public:
-    uint32_t code;
-    String description;
-  };
-
-  //! \class Exception
-  //! Main NIL exception class. Descendant of std::exception.
-  class Exception: public std::exception {
-  public:
-    enum Type: int {
-      Generic = 0, //!< Generic NIL error
-      WinAPI, //!< Windows API-specific error
-      DirectInput //!< DirectInput-specific error
-    };
-  private:
-    Exception();
-  protected:
-    Type mType;
-    String mDescription;
-    String mSource;
-    mutable String mFullDescription;
-    mutable utf8String mUTF8Description;
-    variant<WinAPIError> mAdditional;
-    void handleAdditional( HRESULT hr = 0 );
-  public:
-    Exception( const String& description, Type type = Generic );
-    Exception( const String& description, const String& source,
-      Type type = Generic );
-    Exception( const String& description, const String& source,
-      HRESULT hr, Type type = Generic );
-    virtual const String& getFullDescription() const;
-    virtual const char* what() const throw();
   };
 
   class System;
@@ -335,78 +280,6 @@ namespace nil {
     XInputController( XInputDevice* device );
     virtual void update();
     virtual ~XInputController();
-  };
-
-  //! \class PnPListener
-  //! Plug-n-Play event listener.
-  class PnPListener {
-  public:
-    virtual void onPlug( const GUID& deviceClass,
-      const String& devicePath ) = 0;
-    virtual void onUnplug( const GUID& deviceClass,
-      const String& devicePath ) = 0;
-  };
-
-  typedef list<PnPListener*> PnPListenerList;
-
-  //! \class PnPMonitor
-  //! Monitors for Plug-n-Play (USB) device events.
-  class PnPMonitor {
-  protected:
-    HINSTANCE mInstance; //!< Host application instance handle
-    ATOM mClass; //!< Class registration handle
-    HWND mWindow; //!< Window handle
-    HDEVNOTIFY mNotifications; //!< Device notifications registration
-    PnPListenerList mListeners; //!< Our listeners
-  protected:
-    void registerNotifications();
-    void unregisterNotifications();
-    void handleArrival( const GUID& deviceClass,
-      const String& devicePath );
-    void handleRemoval( const GUID& deviceClass,
-      const String& devicePath );
-    static LRESULT CALLBACK wndProc( HWND window, UINT message,
-      WPARAM wParam, LPARAM lParam );
-  public:
-    PnPMonitor( HINSTANCE instance, PnPListener* listener );
-    void registerListener( PnPListener* listener );
-    void unregisterListener( PnPListener* listener );
-    void update();
-    ~PnPMonitor();
-  };
-
-  class HIDDevice {
-  protected:
-    String mPath;
-    HANDLE mHandle;
-    uint16_t mVendorID;
-    uint16_t mProductID;
-    uint32_t mIdentifier;
-    HIDP_CAPS mCapabilities;
-    bool mIsXInput;
-    void identify();
-  public:
-    HIDDevice( const String& path );
-    bool isXInput() const;
-    const String& getPath() const;
-    uint32_t getIdentifier() const;
-    ~HIDDevice();
-  };
-
-  typedef list<HIDDevice*> HIDDeviceList;
-
-  class HIDManager: public PnPListener {
-  protected:
-    HIDDeviceList mDevices;
-    virtual void onPlug( const GUID& deviceClass, const String& devicePath );
-    virtual void onUnplug( const GUID& deviceClass, const String& devicePath );
-    void processDevice( SP_DEVICE_INTERFACE_DATA& interfaceData,
-      SP_DEVINFO_DATA& deviceData, const String& devicePath );
-    void initialize();
-  public:
-    HIDManager();
-    const HIDDeviceList& getDevices() const;
-    ~HIDManager();
   };
 
   //! \class System

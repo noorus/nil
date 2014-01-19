@@ -1,6 +1,5 @@
 #pragma once
 #include "nil.h"
-#include <devguid.h>
 
 namespace nil {
 
@@ -10,6 +9,10 @@ namespace nil {
 
 # ifndef SAFE_RELEASE
 #   define SAFE_RELEASE(p) {if(p){p->Release();(p)=NULL;}}
+# endif
+
+# ifndef SAFE_CLOSEHANDLE
+#   define SAFE_CLOSEHANDLE(p) {if(p!=INVALID_HANDLE_VALUE){CloseHandle(p);(p)=INVALID_HANDLE_VALUE;}}
 # endif
 
 # if defined(NIL_EXCEPT) || defined(NIL_EXCEPT_WINAPI) || defined(NIL_EXCEPT_DINPUT)
@@ -33,6 +36,7 @@ namespace nil {
 
   namespace util
   {
+    extern inline String cleanupName( String name ) throw();
     extern inline String utf8ToWide( const utf8String& in ) throw();
     extern inline utf8String wideToUtf8( const String& in ) throw();
   }

@@ -1,15 +1,12 @@
 #include "nil.h"
 #include "nilUtil.h"
 
-#undef DIJOFS_BUTTON
-#undef DIJOFS_POV
-
-#define DIJOFS_BUTTON(n)  (FIELD_OFFSET(DIJOYSTATE2, rgbButtons) + (n))
-#define DIJOFS_POV(n)     (FIELD_OFFSET(DIJOYSTATE2, rgdwPOV)+(n)*sizeof(DWORD))
-#define DIJOFS_SLIDER0(n) (FIELD_OFFSET(DIJOYSTATE2, rglSlider)+(n) * sizeof(LONG))
-#define DIJOFS_SLIDER1(n) (FIELD_OFFSET(DIJOYSTATE2, rglVSlider)+(n) * sizeof(LONG))
-#define DIJOFS_SLIDER2(n) (FIELD_OFFSET(DIJOYSTATE2, rglASlider)+(n) * sizeof(LONG))
-#define DIJOFS_SLIDER3(n) (FIELD_OFFSET(DIJOYSTATE2, rglFSlider)+(n) * sizeof(LONG))
+#define DIJ2OFS_BUTTON(n)  (FIELD_OFFSET(DIJOYSTATE2, rgbButtons)+(n))
+#define DIJ2OFS_POV(n)     (FIELD_OFFSET(DIJOYSTATE2, rgdwPOV)+(n)*sizeof(DWORD))
+#define DIJ2OFS_SLIDER0(n) (FIELD_OFFSET(DIJOYSTATE2, rglSlider)+(n)*sizeof(LONG))
+#define DIJ2OFS_SLIDER1(n) (FIELD_OFFSET(DIJOYSTATE2, rglVSlider)+(n)*sizeof(LONG))
+#define DIJ2OFS_SLIDER2(n) (FIELD_OFFSET(DIJOYSTATE2, rglASlider)+(n)*sizeof(LONG))
+#define DIJ2OFS_SLIDER3(n) (FIELD_OFFSET(DIJOYSTATE2, rglFSlider)+(n)*sizeof(LONG))
 
 namespace nil {
 
@@ -163,10 +160,10 @@ namespace nil {
 
       for ( unsigned long i = 0; i < entries; i++ )
       {
-        if ( buffers[i].dwOfs >= DIJOFS_POV( 0 )
-        && buffers[i].dwOfs < DIJOFS_POV( mState.mPOVs.size() ) )
+        if ( buffers[i].dwOfs >= DIJ2OFS_POV( 0 )
+        && buffers[i].dwOfs < DIJ2OFS_POV( mState.mPOVs.size() ) )
         {
-          int pov = buffers[i].dwOfs - DIJOFS_POV( 0 );
+          int pov = buffers[i].dwOfs - DIJ2OFS_POV( 0 );
           if ( LOWORD( buffers[i].dwData ) == 0xFFFF )
             mState.mPOVs[pov].direction = POV::Centered;
           else
@@ -184,10 +181,10 @@ namespace nil {
             }
           }
         }
-        else if ( buffers[i].dwOfs >= DIJOFS_BUTTON( 0 )
-        && buffers[i].dwOfs < DIJOFS_BUTTON( mState.mButtons.size() ) )
+        else if ( buffers[i].dwOfs >= DIJ2OFS_BUTTON( 0 )
+        && buffers[i].dwOfs < DIJ2OFS_BUTTON( mState.mButtons.size() ) )
         {
-          int button = buffers[i].dwOfs - DIJOFS_BUTTON( 0 );
+          int button = buffers[i].dwOfs - DIJ2OFS_BUTTON( 0 );
           mState.mButtons[button].pushed = ( buffers[i].dwData & 0x80 ? true : false );
         }
         else if ( (uint16_t)( buffers[i].uAppData >> 16 ) == 0x6E69 )

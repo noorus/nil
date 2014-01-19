@@ -1,4 +1,4 @@
-#include "nil.h"
+#include "nilPnP.h"
 #include "nilUtil.h"
 
 const wchar_t* cPnPMonitorClass = L"NILPNP";

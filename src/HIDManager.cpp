@@ -1,82 +1,16 @@
-#include "nil.h"
+#include "nilHID.h"
 #include "nilUtil.h"
 
-#pragma comment( lib, "hid.lib" )
-#pragma comment( lib, "setupapi.lib" )
-
 namespace nil {
-
-  // HIDDevice class
-
-  HIDDevice::HIDDevice( const String& path ): mPath( path ), mIsXInput( false )
-  {
-    mHandle = CreateFileW( path.c_str(), 0,
-      FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL );
-
-    if ( mHandle == INVALID_HANDLE_VALUE )
-      NIL_EXCEPT_WINAPI( L"CreateFileW failed" );
-
-    HIDD_ATTRIBUTES attributes = { sizeof( HIDD_ATTRIBUTES ) };
-
-    if ( !HidD_GetAttributes( mHandle, &attributes ) )
-      NIL_EXCEPT( L"HidD_GetAttributes failed" );
-
-    mVendorID = attributes.VendorID;
-    mProductID = attributes.ProductID;
-
-    mIdentifier = MAKELONG( mVendorID, mProductID );
-
-    PHIDP_PREPARSED_DATA preparsedData;
-    if ( HidD_GetPreparsedData( mHandle, &preparsedData ) )
-    {
-      HidP_GetCaps( preparsedData, &mCapabilities );
-      HidD_FreePreparsedData( preparsedData );
-    }
-
-    CloseHandle( mHandle );
-    mHandle = INVALID_HANDLE_VALUE;
-
-    identify();
-  }
-
-  void HIDDevice::identify()
-  {
-    if ( wcsstr( mPath.c_str(), L"ig_" ) || wcsstr( mPath.c_str(), L"IG_" ) )
-    {
-      mIsXInput = true;
-    }
-  }
-
-  bool HIDDevice::isXInput() const
-  {
-    return mIsXInput;
-  }
-
-  uint32_t HIDDevice::getIdentifier() const
-  {
-    return mIdentifier;
-  }
-
-  const String& HIDDevice::getPath() const
-  {
-    return mPath;
-  }
-
-  HIDDevice::~HIDDevice()
-  {
-    //
-  }
-
-  // HIDManager class
 
   HIDManager::HIDManager()
   {
     initialize();
   }
 
-  const HIDDeviceList& HIDManager::getDevices() const
+  const HIDRecordList& HIDManager::getRecords() const
   {
-    return mDevices;
+    return mRecords;
   }
 
   void HIDManager::onPlug( const GUID& deviceClass, const String& devicePath )
@@ -84,13 +18,13 @@ namespace nil {
     if ( deviceClass != g_HIDInterfaceGUID )
       return;
 
-    for ( auto device : mDevices )
-      if ( !_wcsicmp( device->getPath().c_str(), devicePath.c_str() ) )
+    for ( auto record : mRecords )
+      if ( !_wcsicmp( record->getPath().c_str(), devicePath.c_str() ) )
         return;
 
     try {
-      auto device = new HIDDevice( devicePath );
-      mDevices.push_back( device );
+      auto record = new HIDRecord( devicePath );
+      mRecords.push_back( record );
     } catch ( nil::Exception& e ) {
       // Ignore inaccessible devices
     }
@@ -101,11 +35,11 @@ namespace nil {
     if ( deviceClass != g_HIDInterfaceGUID )
       return;
 
-    for ( auto device : mDevices )
-      if ( !_wcsicmp( device->getPath().c_str(), devicePath.c_str() ) )
+    for ( auto record : mRecords )
+      if ( !_wcsicmp( record->getPath().c_str(), devicePath.c_str() ) )
       {
-        mDevices.remove( device );
-        delete device;
+        mRecords.remove( record );
+        delete record;
         return;
       }
   }
@@ -116,13 +50,15 @@ namespace nil {
     if ( interfaceData.InterfaceClassGuid != g_HIDInterfaceGUID )
       return;
 
-    for ( auto device : mDevices )
-      if ( !_wcsicmp( device->getPath().c_str(), devicePath.c_str() ) )
+    // Well, this string comparison is kind of nasty, but it seems
+    // to be what everyone does. Nothing else seems quite unique enough.
+    for ( auto record : mRecords )
+      if ( !_wcsicmp( record->getPath().c_str(), devicePath.c_str() ) )
         return;
 
     try {
-      auto device = new HIDDevice( devicePath );
-      mDevices.push_back( device );
+      auto record = new HIDRecord( devicePath );
+      mRecords.push_back( record );
     } catch ( nil::Exception& e ) {
       // Ignore inaccessible devices
     }
@@ -166,8 +102,8 @@ namespace nil {
 
   HIDManager::~HIDManager()
   {
-    for ( auto device : mDevices )
-      delete device;
+    for ( auto record : mRecords )
+      delete record;
   }
 
 }

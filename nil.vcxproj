@@ -105,7 +105,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>dxguid.lib;dinput8.lib;xinput.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;dinput8.lib;xinput.lib;ole32.lib;hid.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
     <ProjectReference>
@@ -143,7 +143,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>dxguid.lib;dinput8.lib;xinput.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dxguid.lib;dinput8.lib;xinput.lib;ole32.lib;hid.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4006 /ignore:4221 %(AdditionalOptions)</AdditionalOptions>
     </Lib>
     <ProjectReference>
@@ -152,6 +152,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\nil.h" />
+    <ClInclude Include="include\nilException.h" />
+    <ClInclude Include="include\nilHID.h" />
+    <ClInclude Include="include\nilPnP.h" />
     <ClInclude Include="include\nilTypes.h" />
     <ClInclude Include="include\nilUtil.h" />
   </ItemGroup>
@@ -166,6 +169,7 @@
     <ClCompile Include="src\DirectInputMouse.cpp" />
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\HIDManager.cpp" />
+    <ClCompile Include="src\HIDRecord.cpp" />
     <ClCompile Include="src\Keyboard.cpp" />
     <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\PnPMonitor.cpp" />
