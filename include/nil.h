@@ -11,6 +11,12 @@
 #include <objbase.h>
 #include <stdlib.h>
 
+extern "C" {
+#include <setupapi.h>
+#include <winioctl.h>
+#include <hidsdi.h>
+};
+
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #include <xinput.h>
@@ -341,6 +347,8 @@ namespace nil {
       const String& devicePath ) = 0;
   };
 
+  typedef list<PnPListener*> PnPListenerList;
+
   //! \class PnPMonitor
   //! Monitors for Plug-n-Play (USB) device events.
   class PnPMonitor {
@@ -349,16 +357,56 @@ namespace nil {
     ATOM mClass; //!< Class registration handle
     HWND mWindow; //!< Window handle
     HDEVNOTIFY mNotifications; //!< Device notifications registration
-    PnPListener* mListener; //!< Our listener
+    PnPListenerList mListeners; //!< Our listeners
   protected:
     void registerNotifications();
     void unregisterNotifications();
+    void handleArrival( const GUID& deviceClass,
+      const String& devicePath );
+    void handleRemoval( const GUID& deviceClass,
+      const String& devicePath );
     static LRESULT CALLBACK wndProc( HWND window, UINT message,
       WPARAM wParam, LPARAM lParam );
   public:
     PnPMonitor( HINSTANCE instance, PnPListener* listener );
+    void registerListener( PnPListener* listener );
+    void unregisterListener( PnPListener* listener );
     void update();
     ~PnPMonitor();
+  };
+
+  class HIDDevice {
+  protected:
+    String mPath;
+    HANDLE mHandle;
+    uint16_t mVendorID;
+    uint16_t mProductID;
+    uint32_t mIdentifier;
+    HIDP_CAPS mCapabilities;
+    bool mIsXInput;
+    void identify();
+  public:
+    HIDDevice( const String& path );
+    bool isXInput() const;
+    const String& getPath() const;
+    uint32_t getIdentifier() const;
+    ~HIDDevice();
+  };
+
+  typedef list<HIDDevice*> HIDDeviceList;
+
+  class HIDManager: public PnPListener {
+  protected:
+    HIDDeviceList mDevices;
+    virtual void onPlug( const GUID& deviceClass, const String& devicePath );
+    virtual void onUnplug( const GUID& deviceClass, const String& devicePath );
+    void processDevice( SP_DEVICE_INTERFACE_DATA& interfaceData,
+      SP_DEVINFO_DATA& deviceData, const String& devicePath );
+    void initialize();
+  public:
+    HIDManager();
+    const HIDDeviceList& getDevices() const;
+    ~HIDManager();
   };
 
   //! \class System
@@ -374,6 +422,7 @@ namespace nil {
     HWND mWindow; //!< Host application window handle
     PnPMonitor* mMonitor; //!< Our Plug-n-Play event monitor
     DeviceList mDevices; //!< List of known devices
+    HIDManager* mHIDManager; //!< Our HID manager
     bool mInitializing; //!< Are we initializing?
     void initializeDevices();
     void refreshDevices();

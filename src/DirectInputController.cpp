@@ -18,8 +18,6 @@ namespace nil {
   DirectInputController::DirectInputController( DirectInputDevice* device ):
   Controller( device->getSystem(), device ), mDIDevice( nullptr ), mAxisEnum( 0 )
   {
-    mListeners.push_back( &gStupidListener );
-
     HRESULT hr = device->getSystem()->mDirectInput->CreateDevice(
       device->getInstanceID(), &mDIDevice, NULL );
     if ( FAILED( hr ) )

@@ -165,6 +165,7 @@
     <ClCompile Include="src\DirectInputKeyboard.cpp" />
     <ClCompile Include="src\DirectInputMouse.cpp" />
     <ClCompile Include="src\Exception.cpp" />
+    <ClCompile Include="src\HIDManager.cpp" />
     <ClCompile Include="src\Keyboard.cpp" />
     <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\PnPMonitor.cpp" />

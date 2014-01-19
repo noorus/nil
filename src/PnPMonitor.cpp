@@ -6,8 +6,7 @@ const wchar_t* cPnPMonitorClass = L"NILPNP";
 namespace nil {
 
   PnPMonitor::PnPMonitor( HINSTANCE instance, PnPListener* listener ):
-  mInstance( instance ), mListener( listener ),
-  mClass( 0 ), mWindow( 0 ), mNotifications( 0 )
+  mInstance( instance ), mClass( 0 ), mWindow( 0 ), mNotifications( 0 )
   {
     WNDCLASSEXW wx   = { 0 };
     wx.cbSize        = sizeof( WNDCLASSEXW );
@@ -25,6 +24,30 @@ namespace nil {
       NIL_EXCEPT_WINAPI( L"Window creation failed" );
 
     registerNotifications();
+  }
+
+  void PnPMonitor::registerListener( PnPListener* listener )
+  {
+    mListeners.push_back( listener );
+  }
+
+  void PnPMonitor::unregisterListener( PnPListener* listener )
+  {
+    mListeners.remove( listener );
+  }
+
+  void PnPMonitor::handleArrival( const GUID& deviceClass,
+  const String& devicePath )
+  {
+    for ( auto listener : mListeners )
+      listener->onPlug( deviceClass, devicePath );
+  }
+
+  void PnPMonitor::handleRemoval( const GUID& deviceClass,
+  const String& devicePath )
+  {
+    for ( auto listener : mListeners )
+      listener->onUnplug( deviceClass, devicePath );
   }
 
   void PnPMonitor::registerNotifications()
@@ -69,11 +92,11 @@ namespace nil {
         {
           if ( wParam == DBT_DEVICEARRIVAL )
           {
-            me->mListener->onPlug( broadcast->dbcc_classguid, broadcast->dbcc_name );
+            me->handleArrival( broadcast->dbcc_classguid, broadcast->dbcc_name );
           }
           else if ( wParam == DBT_DEVICEREMOVECOMPLETE )
           {
-            me->mListener->onUnplug( broadcast->dbcc_classguid, broadcast->dbcc_name );
+            me->handleRemoval( broadcast->dbcc_classguid, broadcast->dbcc_name );
           }
         }
         return TRUE;
