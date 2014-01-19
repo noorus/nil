@@ -6,7 +6,8 @@ A gaming input library for Windows, inspired by the Open Input System.
 ### Building
 
 Builds as a statically linked x64 library under Visual Studio 2012.  
-Feel free to use it as a dynamic link library instead if you feel like it.
+Feel free to use it as a dynamic link library instead if you feel like it.  
+To compile nil you will need to have the Windows Driver Development Kit installed.
 
 ### License
 
