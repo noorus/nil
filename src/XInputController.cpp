@@ -28,24 +28,23 @@ namespace nil {
   XInputController::XInputController( XInputDevice* device ):
   Controller( device->getSystem(), device ), mLastPacket( 0 )
   {
-    for ( int i = 0; i < cMaxXInputTypes; i++ ) {
+    for ( int i = 0; i < cMaxXInputTypes; i++ )
       if ( cXInputTypes[i].first == device->getCapabilities().SubType )
         mType = cXInputTypes[i].second;
-    }
 
     mState.mPOVs.resize( 1 );
     mState.mButtons.resize( 12 );
     mState.mAxes.resize( 6 );
   }
 
-  Real XInputController::filterLeftThumbAxis( int val )
+  Real XInputController::filterThumbAxis( int val )
   {
     if ( val < 0 )
     {
       if ( val > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
         return 0.0f;
       val += XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
-      Real ret = (Real)val / (Real)( 32768 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
+      Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
       return ( ret < -1.0f ? -1.0f : ret );
     }
     else if ( val > 0 )
@@ -54,28 +53,6 @@ namespace nil {
         return 0.0f;
       val -= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
       Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
-      return ( ret > 1.0f ? 1.0f : ret );
-    }
-    else
-      return 0.0f;
-  }
-
-  Real XInputController::filterRightThumbAxis( int val )
-  {
-    if ( val < 0 )
-    {
-      if ( val > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
-        return 0.0f;
-      val += XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE;
-      Real ret = (Real)val / (Real)( 32768 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
-      return ( ret < -1.0f ? -1.0f : ret );
-    }
-    else if ( val > 0 )
-    {
-      if ( val < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
-        return 0.0f;
-      val -= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE;
-      Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
       return ( ret > 1.0f ? 1.0f : ret );
     }
     else
@@ -116,10 +93,10 @@ namespace nil {
       mState.mButtons[i].pushed = ( ( mXInputState.Gamepad.wButtons & ( 1 << ( i + 4 ) ) ) != 0 );
 
     // Axes
-    mState.mAxes[0].absolute = filterLeftThumbAxis( mXInputState.Gamepad.sThumbLX );
-    mState.mAxes[1].absolute = filterLeftThumbAxis( mXInputState.Gamepad.sThumbLY );
-    mState.mAxes[2].absolute = filterRightThumbAxis( mXInputState.Gamepad.sThumbRX );
-    mState.mAxes[3].absolute = filterRightThumbAxis( mXInputState.Gamepad.sThumbRY );
+    mState.mAxes[0].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbLX );
+    mState.mAxes[1].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbLY );
+    mState.mAxes[2].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbRX );
+    mState.mAxes[3].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbRY );
     mState.mAxes[4].absolute = filterTrigger( mXInputState.Gamepad.bLeftTrigger );
     mState.mAxes[5].absolute = filterTrigger( mXInputState.Gamepad.bRightTrigger );
 
