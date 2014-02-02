@@ -165,14 +165,15 @@
     <ClCompile Include="src\DeviceInstance.cpp" />
     <ClCompile Include="src\DirectInputController.cpp" />
     <ClCompile Include="src\DirectInputDevice.cpp" />
-    <ClCompile Include="src\DirectInputKeyboard.cpp" />
-    <ClCompile Include="src\DirectInputMouse.cpp" />
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\HIDManager.cpp" />
     <ClCompile Include="src\HIDRecord.cpp" />
     <ClCompile Include="src\Keyboard.cpp" />
     <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\PnPMonitor.cpp" />
+    <ClCompile Include="src\RawInputDevice.cpp" />
+    <ClCompile Include="src\RawInputKeyboard.cpp" />
+    <ClCompile Include="src\RawInputMouse.cpp" />
     <ClCompile Include="src\System.cpp" />
     <ClCompile Include="src\Types.cpp" />
     <ClCompile Include="src\Utilities.cpp" />

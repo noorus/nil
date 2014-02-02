@@ -9,7 +9,7 @@ namespace nil {
   mProductID( instance->guidProduct ),
   mInstanceID( instance->guidInstance )
   {
-    mName = instance->tszInstanceName;
+    mName = util::cleanupName( instance->tszInstanceName );
 
     unsigned long deviceType = GET_DIDEVICE_TYPE( instance->dwDevType );
 

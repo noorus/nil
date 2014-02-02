@@ -12,25 +12,30 @@ extern "C" {
 
 class StupidListener: public nil::ControllerListener {
 public:
-  virtual void onButtonPressed( const nil::ControllerState& state, size_t button )
+  virtual void onControllerButtonPressed( nil::Controller* controller,
+  const nil::ControllerState& state, size_t button )
   {
-    wprintf_s( L"Button %d pressed\r\n", button );
+    wprintf_s( L"Controller button %d pressed\r\n", button );
   }
-  virtual void onButtonReleased( const nil::ControllerState& state, size_t button )
+  virtual void onControllerButtonReleased( nil::Controller* controller,
+  const nil::ControllerState& state, size_t button )
   {
-    wprintf_s( L"Button %d released\r\n", button );
+    wprintf_s( L"Controller button %d released\r\n", button );
   }
-  virtual void onAxisMoved( const nil::ControllerState& state, size_t axis )
+  virtual void onControllerAxisMoved( nil::Controller* controller,
+  const nil::ControllerState& state, size_t axis )
   {
-    wprintf_s( L"Axis %d moved: %f\r\n", axis, state.mAxes[axis].absolute );
+    wprintf_s( L"Controller axis %d moved: %f\r\n", axis, state.mAxes[axis].absolute );
   }
-  virtual void onSliderMoved( const nil::ControllerState& state, size_t slider )
+  virtual void onControllerSliderMoved( nil::Controller* controller,
+  const nil::ControllerState& state, size_t slider )
   {
-    wprintf_s( L"Slider %d moved: \r\n", slider );
+    wprintf_s( L"Controller slider %d moved: \r\n", slider );
   }
-  virtual void onPOVMoved( const nil::ControllerState& state, size_t pov )
+  virtual void onControllerPOVMoved( nil::Controller* controller,
+  const nil::ControllerState& state, size_t pov )
   {
-    wprintf_s( L"POV %d moved: \r\n", pov );
+    wprintf_s( L"Controller POV %d moved: \r\n", pov );
   }
 };
 

@@ -14,10 +14,13 @@ namespace nil {
   {
     for ( auto button : mButtons )
       button.pushed = false;
+
     for ( auto axis : mAxes )
       axis.absolute = 0.0f;
+
     for ( auto slider : mSliders )
       slider.absolute = Vector2i::ZERO;
+
     for ( auto pov : mPOVs )
       pov.direction = POV::Centered;
   }
@@ -38,24 +41,24 @@ namespace nil {
       // Buttons
       for ( size_t i = 0; i < mState.mButtons.size(); i++ )
         if ( !lastState.mButtons[i].pushed && mState.mButtons[i].pushed )
-          listener->onButtonPressed( mState, i );
+          listener->onControllerButtonPressed( this, mState, i );
         else if ( lastState.mButtons[i].pushed && !mState.mButtons[i].pushed )
-          listener->onButtonReleased( mState, i );
+          listener->onControllerButtonReleased( this, mState, i );
 
       // Axes
       for ( size_t i = 0; i < mState.mAxes.size(); i++ )
         if ( lastState.mAxes[i].absolute != mState.mAxes[i].absolute )
-          listener->onAxisMoved( mState, i );
+          listener->onControllerAxisMoved( this, mState, i );
 
       // Sliders
       for ( size_t i = 0; i < mState.mSliders.size(); i++ )
         if ( lastState.mSliders[i].absolute != mState.mSliders[i].absolute )
-          listener->onSliderMoved( mState, i );
+          listener->onControllerSliderMoved( this, mState, i );
 
       // POVs
       for ( size_t i = 0; i < mState.mPOVs.size(); i++ )
         if ( lastState.mPOVs[i].direction != mState.mPOVs[i].direction )
-          listener->onPOVMoved( mState, i );
+          listener->onControllerPOVMoved( this, mState, i );
     }
   }
 

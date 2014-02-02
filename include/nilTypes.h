@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <exception>
 #include <string>
+#include <map>
 #include <vector>
 #include <list>
 #include <sstream>
@@ -37,6 +38,7 @@ namespace nil {
 
   typedef int DeviceID;
 
+  using std::map;
   using std::list;
   using std::vector;
   using std::wstringstream;
@@ -57,6 +59,10 @@ namespace nil {
     inline bool operator != ( const Vector2i& other ) const
     {
       return ( x != other.x || y != other.y  );
+    }
+    inline Vector2i operator - ( const Vector2i& other ) const
+    {
+      return Vector2i( x - other.x, y - other.y );
     }
     const static Vector2i ZERO;
   };

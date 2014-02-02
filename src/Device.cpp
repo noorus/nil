@@ -15,6 +15,8 @@ namespace nil {
     if ( getHandler() == Handler_XInput )
     {
       XInputDevice* xDevice = dynamic_cast<XInputDevice*>( this );
+      if ( !xDevice )
+        NIL_EXCEPT( L"Dynamic cast failed for XInputDevice" );
       if ( getType() == Device_Controller )
       {
         mInstance = new XInputController( xDevice );
@@ -25,20 +27,30 @@ namespace nil {
     else if ( getHandler() == Handler_DirectInput )
     {
       DirectInputDevice* diDevice = dynamic_cast<DirectInputDevice*>( this );
-      if ( getType() == Device_Mouse )
-      {
-        mInstance = new DirectInputMouse( diDevice );
-      }
-      else if ( getType() == Device_Keyboard )
-      {
-        mInstance = new DirectInputKeyboard( diDevice );
-      }
-      else if ( getType() == Device_Controller )
+      if ( !diDevice )
+        NIL_EXCEPT( L"Dynamic cast failed for DirectInputDevice" );
+      if ( getType() == Device_Controller )
       {
         mInstance = new DirectInputController( diDevice );
       }
       else
         NIL_EXCEPT( L"Unsupported device type for DirectInput; Cannot instantiate device!" );
+    }
+    else if ( getHandler() == Handler_RawInput )
+    {
+      RawInputDevice* rawDevice = dynamic_cast<RawInputDevice*>( this );
+      if ( !rawDevice )
+        NIL_EXCEPT( L"Dynamic cast failed for RawInputDevice" );
+      if ( getType() == Device_Mouse )
+      {
+        mInstance = new RawInputMouse( rawDevice );
+      }
+      else if ( getType() == Device_Keyboard )
+      {
+        mInstance = new RawInputKeyboard( rawDevice );
+      }
+      else
+        NIL_EXCEPT( L"Unsupported device type for RawInput; cannot instantiate device!" );
     }
     else
       NIL_EXCEPT( L"Unsupported device handler; Cannot instantiate device!" );
@@ -71,13 +83,15 @@ namespace nil {
     wprintf_s( L"Connected: (%d) %s (%s %s)\r\n",
       getID(),
       getName().c_str(),
-      getHandler() == Device::Handler_XInput ? L"XInput" : L"DirectInput",
+      getHandler() == Device::Handler_XInput ? L"XInput" : getHandler() == Device::Handler_DirectInput ? L"DirectInput" : L"RawInput",
       getType() == Device::Device_Mouse ? L"Mouse" : getType() == Device::Device_Keyboard ? L"Keyboard" : L"Controller" );
+    create();
   }
 
   void Device::onDisconnect()
   {
     mStatus = Status_Disconnected;
+    wprintf_s( L"Disconnected: %d\r\n", getID() );
     mDisconnectFlagged = false;
     destroy();
   }
@@ -114,6 +128,8 @@ namespace nil {
 
   void Device::setStatus( Status status )
   {
+    if ( mStatus != Status_Connected && status == Status_Connected )
+      create();
     mStatus = status;
   }
 

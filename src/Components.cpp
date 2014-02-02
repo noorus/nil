@@ -19,4 +19,12 @@ namespace nil {
   {
   }
 
+  Wheel::Wheel(): relative( 0 )
+  {
+  }
+
+  Movement::Movement(): relative( 0, 0 )
+  {
+  }
+
 }

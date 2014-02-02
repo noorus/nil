@@ -7,8 +7,15 @@
 
 namespace nil {
 
+  class System;
+  class DeviceInstance;
+
+  class Mouse;
+  class Keyboard;
+  class Controller;
+
   //! \struct Button
-  //! Digital push button controller component.
+  //! Digital push button component.
   struct Button {
   public:
     bool pushed; //!< Pushed state
@@ -33,6 +40,7 @@ namespace nil {
 
   //! \struct POV
   //! Digital directional Point-of-View controller component.
+  //! Also known as the D-pad.
   struct POV {
   public:
     static const POVDirection Centered   = 0x00000000;
@@ -48,8 +56,21 @@ namespace nil {
     POV();
   };
 
-  class System;
-  class DeviceInstance;
+  //! \struct Wheel
+  //! Mouse wheel component.
+  struct Wheel {
+  public:
+    int relative; //!< Wheel rotation delta, in eights of a degree
+    Wheel();
+  };
+
+  //! \struct Movement
+  //! Mouse movement component.
+  struct Movement {
+  public:
+    Vector2i relative; //!< Relative value change in pixels
+    Movement();
+  };
 
   //! \class Device
   //! Input device information entry.
@@ -59,7 +80,8 @@ namespace nil {
   public:
     enum Handler: int {
       Handler_DirectInput = 0, //!< Implemented by DirectInput
-      Handler_XInput //!< Implemented by XInput
+      Handler_XInput, //!< Implemented by XInput
+      Handler_RawInput //!< Implemented by Raw Input API
     };
     enum Type: int {
       Device_Keyboard = 0, //!< I'm a keyboard
@@ -99,6 +121,23 @@ namespace nil {
     virtual const String& getName(); //!< Get name
     virtual System* getSystem(); //!< Get owner system
     virtual const bool isDisconnectFlagged(); //!< Are we flagged for disconnection?
+  };
+
+  //! \class RawInputDevice
+  //! Device abstraction base class for Raw Input API devices.
+  class RawInputDevice: public Device {
+  friend class System;
+  protected:
+    HANDLE mRawHandle;
+    String mRawPath;
+    RID_DEVICE_INFO* mRawInfo;
+    RawInputDevice( System* system, DeviceID id, HANDLE rawHandle, String& rawPath );
+  public:
+    virtual ~RawInputDevice();
+    virtual const Handler getHandler();
+    virtual const HANDLE getRawHandle();
+    virtual const String& getRawPath();
+    virtual const RID_DEVICE_INFO* getRawInfo();
   };
 
   //! \class DirectInputDevice
@@ -149,14 +188,59 @@ namespace nil {
     virtual ~DeviceInstance();
   };
 
+  //! \struct MouseState
+  //! Mouse state structure.
+  struct MouseState {
+  public:
+    void reset(); //!< Reset the state of one-shot components
+    MouseState();
+    vector<Button> mButtons; //!< My buttons
+    Wheel mWheel; //!< My wheel
+    Movement mMovement; //!< My movement
+  };
+
+  //! \class MouseListener
+  //! Mouse event listener base class.
+  //! Derive your own listener from this class.
+  class MouseListener {
+  public:
+    virtual void onMouseMoved(
+      Mouse* mouse, const MouseState& state ) = 0;
+    virtual void onMouseButtonPressed(
+      Mouse* mouse, const MouseState& state, size_t button ) = 0;
+    virtual void onMouseButtonReleased(
+      Mouse* mouse, const MouseState& state, size_t button ) = 0;
+    virtual void onMouseWheelMoved(
+      Mouse* mouse, const MouseState& state ) = 0;
+  };
+
+  typedef list<MouseListener*> MouseListenerList;
+
   //! \class Mouse
   //! Mouse device instance base class.
   class Mouse: public DeviceInstance {
   protected:
+    MouseState mState; //!< Current state
+    Vector2i mLastPosition; //!< Previous position when mouse gives absolutes
+    MouseListenerList mListeners; //!< Registered state change listeners
   public:
     Mouse( System* system, Device* device );
     virtual void update() = 0;
     virtual ~Mouse();
+  };
+
+  //! \class RawInputMouse
+  //! Mouse implemented by Raw Input API.
+  class RawInputMouse: public Mouse {
+  friend class System;
+  protected:
+    unsigned int mSampleRate;
+    bool mHorizontalWheel;
+    virtual void onRawInput( const RAWMOUSE& input );
+  public:
+    RawInputMouse( RawInputDevice* device );
+    virtual void update();
+    virtual ~RawInputMouse();
   };
 
   //! \class Keyboard
@@ -169,16 +253,28 @@ namespace nil {
     virtual ~Keyboard();
   };
 
+  //! \class RawInputKeyboard
+  //! Keyboard implemented by Raw Input API.
+  class RawInputKeyboard: public Keyboard {
+  friend class System;
+  protected:
+    virtual void onRawInput( const RAWKEYBOARD& input );
+  public:
+    RawInputKeyboard( RawInputDevice* device );
+    virtual void update();
+    virtual ~RawInputKeyboard();
+  };
+
   //! \struct ControllerState
   //! Game controller state structure.
   struct ControllerState {
   public:
     void reset(); //!< Reset the state of my components
     ControllerState();
-    vector<Button> mButtons; //!< Our buttons
-    vector<Axis> mAxes; //!< Our axes
-    vector<Slider> mSliders; //!< Our sliders
-    vector<POV> mPOVs; //!< Our POVs
+    vector<Button> mButtons; //!< My buttons
+    vector<Axis> mAxes; //!< My axes
+    vector<Slider> mSliders; //!< My sliders
+    vector<POV> mPOVs; //!< My POVs
   };
 
   //! \class ControllerListener
@@ -186,16 +282,16 @@ namespace nil {
   //! Derive your own listener from this class.
   class ControllerListener {
   public:
-    virtual void onButtonPressed(
-      const ControllerState& state, size_t button ) = 0;
-    virtual void onButtonReleased(
-      const ControllerState& state, size_t button ) = 0;
-    virtual void onAxisMoved(
-      const ControllerState& state, size_t axis ) = 0;
-    virtual void onSliderMoved(
-      const ControllerState& state, size_t slider ) = 0;
-    virtual void onPOVMoved(
-      const ControllerState& state, size_t pov ) = 0;
+    virtual void onControllerButtonPressed(
+      Controller* controller, const ControllerState& state, size_t button ) = 0;
+    virtual void onControllerButtonReleased(
+      Controller* controller, const ControllerState& state, size_t button ) = 0;
+    virtual void onControllerAxisMoved(
+      Controller* controller, const ControllerState& state, size_t axis ) = 0;
+    virtual void onControllerSliderMoved(
+      Controller* controller, const ControllerState& state, size_t slider ) = 0;
+    virtual void onControllerPOVMoved(
+      Controller* controller, const ControllerState& state, size_t pov ) = 0;
   };
 
   typedef list<ControllerListener*> ControllerListenerList;
@@ -208,10 +304,10 @@ namespace nil {
       Controller_Unknown = 0, //!< I don't know what I am
       Controller_Joystick, //!< I'm a joystick
       Controller_Gamepad, //!< I'm a gamepad
-      Controller_Firstperson, //!< I'm a shootie-thing
+      Controller_Firstperson, //!< I'm a shootie-thingie
       Controller_Driving, //!< I'm a driving wheel, I guess?
       Controller_Flight, //!< I'm... A cockpit?
-      Controller_DancePad, //!< I'm steppy platform thing
+      Controller_DancePad, //!< I'm a steppy platform thing
       Controller_Guitar, //!< I'm a guitar. I guess I have 5 strings.
       Controller_Bass, //!< I'm a bass, so, 4 strings..?
       Controller_Drumkit, //!< I'm a drumkit
@@ -224,30 +320,9 @@ namespace nil {
     virtual void fireChanges( const ControllerState& lastState );
   public:
     Controller( System* system, Device* device );
-    virtual void update() = 0;
     virtual ~Controller();
     virtual const Type getType() const;
     virtual const ControllerState& getState() const;
-  };
-
-  //! \class DirectInputMouse
-  //! Mouse implemented by DirectInput.
-  class DirectInputMouse: public Mouse {
-  protected:
-  public:
-    DirectInputMouse( DirectInputDevice* device );
-    virtual void update();
-    virtual ~DirectInputMouse();
-  };
-
-  //! \class DirectInputKeyboard
-  //! Keyboard implemented by DirectInput.
-  class DirectInputKeyboard: public Keyboard {
-  protected:
-  public:
-    DirectInputKeyboard( DirectInputDevice* device );
-    virtual void update();
-    virtual ~DirectInputKeyboard();
   };
 
   //! \class DirectInputController
@@ -273,8 +348,7 @@ namespace nil {
   protected:
     DWORD mLastPacket;
     XINPUT_STATE mXInputState;
-    inline Real filterLeftThumbAxis( int val );
-    inline Real filterRightThumbAxis( int val );
+    inline Real filterThumbAxis( int val );
     inline Real filterTrigger( int val );
   public:
     XInputController( XInputDevice* device );
@@ -282,10 +356,15 @@ namespace nil {
     virtual ~XInputController();
   };
 
+  typedef map<HANDLE,RawInputMouse*> RawMouseMap;
+  typedef map<HANDLE,RawInputKeyboard*> RawKeyboardMap;
+
   //! \class System
   //! The input system root.
-  class System: public PnPListener {
+  class System: public PnPListener, public RawListener {
   friend class DirectInputController;
+  friend class RawInputKeyboard;
+  friend class RawInputMouse;
   protected:
     DeviceID mIDPool; //!< Device indexing pool
     vector<DeviceID> mXInputIDs; //!< XInput device ID mapping
@@ -297,12 +376,22 @@ namespace nil {
     DeviceList mDevices; //!< List of known devices
     HIDManager* mHIDManager; //!< Our HID manager
     bool mInitializing; //!< Are we initializing?
+    RawMouseMap mMouseMapping; //!< Mouse events mapping
+    RawKeyboardMap mKeyboardMapping; //!< Keyboard events mapping
     void initializeDevices();
     void refreshDevices();
     void identifyXInputDevices();
     DeviceID getNextID();
-    virtual void onPlug( const GUID& deviceClass, const String& devicePath );
-    virtual void onUnplug( const GUID& deviceClass, const String& devicePath );
+    void mapMouse( HANDLE handle, RawInputMouse* mouse );
+    void unmapMouse( HANDLE handle );
+    void mapKeyboard( HANDLE handle, RawInputKeyboard* keyboard );
+    void unmapKeyboard( HANDLE handle );
+    virtual void onPnPPlug( const GUID& deviceClass, const String& devicePath );
+    virtual void onPnPUnplug( const GUID& deviceClass, const String& devicePath );
+    virtual void onRawArrival( HANDLE handle );
+    virtual void onRawMouseInput( HANDLE handle, const RAWMOUSE& input );
+    virtual void onRawKeyboardInput( HANDLE handle, const RAWKEYBOARD& input );
+    virtual void onRawRemoval( HANDLE handle );
     static BOOL CALLBACK diDeviceEnumCallback(
       LPCDIDEVICEINSTANCEW instance, LPVOID referer );
   public:

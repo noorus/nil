@@ -1,12 +1,14 @@
 #include "nilPnP.h"
 #include "nilUtil.h"
 
-const wchar_t* cPnPMonitorClass = L"NILPNP";
-
 namespace nil {
 
+  const wchar_t* cPnPMonitorClass = L"NIL_MONITOR";
+
   PnPMonitor::PnPMonitor( HINSTANCE instance, PnPListener* listener ):
-  mInstance( instance ), mClass( 0 ), mWindow( 0 ), mNotifications( 0 )
+  mInstance( instance ), mClass( 0 ), mWindow( 0 ), mNotifications( 0 ),
+  mInputBuffer( nullptr ),
+  mInputBufferSize( 10240 ) // 10KB default
   {
     WNDCLASSEXW wx   = { 0 };
     wx.cbSize        = sizeof( WNDCLASSEXW );
@@ -23,31 +25,95 @@ namespace nil {
     if ( !mWindow )
       NIL_EXCEPT_WINAPI( L"Window creation failed" );
 
+    mInputBuffer = malloc( mInputBufferSize );
+    if ( !mInputBuffer )
+      NIL_EXCEPT( L"Couldn't allocate input read buffer" );
+
     registerNotifications();
   }
 
-  void PnPMonitor::registerListener( PnPListener* listener )
+  void PnPMonitor::registerPnPListener( PnPListener* listener )
   {
-    mListeners.push_back( listener );
+    mPnPListeners.push_back( listener );
   }
 
-  void PnPMonitor::unregisterListener( PnPListener* listener )
+  void PnPMonitor::unregisterPnPListener( PnPListener* listener )
   {
-    mListeners.remove( listener );
+    mPnPListeners.remove( listener );
   }
 
-  void PnPMonitor::handleArrival( const GUID& deviceClass,
+  void PnPMonitor::registerRawListener( RawListener* listener )
+  {
+    mRawListeners.push_back( listener );
+  }
+
+  void PnPMonitor::unregisterRawListener( RawListener* listener )
+  {
+    mRawListeners.remove( listener );
+  }
+
+  void PnPMonitor::handleInterfaceArrival( const GUID& deviceClass,
   const String& devicePath )
   {
-    for ( auto listener : mListeners )
-      listener->onPlug( deviceClass, devicePath );
+    for ( auto listener : mPnPListeners )
+      listener->onPnPPlug( deviceClass, devicePath );
   }
 
-  void PnPMonitor::handleRemoval( const GUID& deviceClass,
+  void PnPMonitor::handleInterfaceRemoval( const GUID& deviceClass,
   const String& devicePath )
   {
-    for ( auto listener : mListeners )
-      listener->onUnplug( deviceClass, devicePath );
+    for ( auto listener : mPnPListeners )
+      listener->onPnPUnplug( deviceClass, devicePath );
+  }
+
+  void PnPMonitor::handleRawArrival( HANDLE handle )
+  {
+    for ( auto listener : mRawListeners )
+      listener->onRawArrival( handle );
+  }
+
+  void PnPMonitor::handleRawInput( HRAWINPUT input )
+  {
+    unsigned int dataSize;
+
+    // TODO:LOW We could probably get away with just one GetRawInputData call?
+    if ( GetRawInputData( input, RID_INPUT, NULL, &dataSize, sizeof( RAWINPUTHEADER ) ) == (UINT)-1 )
+      return;
+
+    if ( !dataSize )
+      return;
+
+    // Resize our input buffer if packet size exceeds previous cap
+    if ( dataSize > mInputBufferSize )
+    {
+      mInputBufferSize = dataSize;
+      mInputBuffer = realloc( mInputBuffer, dataSize );
+      if ( !mInputBuffer )
+        NIL_EXCEPT( L"Couldn't reallocate input read buffer" );
+    }
+
+    if ( GetRawInputData( input, RID_INPUT, mInputBuffer, &dataSize, sizeof( RAWINPUTHEADER ) ) == (UINT)-1 )
+      return;
+
+    auto raw = (const RAWINPUT*)mInputBuffer;
+
+    // Ping our listeners
+    if ( raw->header.dwType == RIM_TYPEMOUSE )
+    {
+      for ( auto listener : mRawListeners )
+        listener->onRawMouseInput( raw->header.hDevice, raw->data.mouse );
+    }
+    else if ( raw->header.dwType == RIM_TYPEKEYBOARD )
+    {
+      for ( auto listener : mRawListeners )
+        listener->onRawKeyboardInput( raw->header.hDevice, raw->data.keyboard );
+    }
+  }
+
+  void PnPMonitor::handleRawRemoval( HANDLE handle )
+  {
+    for ( auto listener : mRawListeners )
+      listener->onRawRemoval( handle );
   }
 
   void PnPMonitor::registerNotifications()
@@ -59,10 +125,25 @@ namespace nil {
     filter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
     filter.dbcc_classguid  = g_HIDInterfaceGUID;
 
-    mNotifications = RegisterDeviceNotification( mWindow, &filter,
+    mNotifications = RegisterDeviceNotificationW( mWindow, &filter,
       DEVICE_NOTIFY_WINDOW_HANDLE );
     if ( !mNotifications )
-      NIL_EXCEPT_WINAPI( L"Couldn't register device notification handler" );
+      NIL_EXCEPT_WINAPI( L"Couldn't register for device interface notifications" );
+
+    RAWINPUTDEVICE rawDevices[2];
+
+    rawDevices[0].dwFlags = RIDEV_DEVNOTIFY | RIDEV_INPUTSINK | RIDEV_NOLEGACY;
+    rawDevices[0].hwndTarget = mWindow;
+    rawDevices[0].usUsagePage = USBUsagePage_Desktop;
+    rawDevices[0].usUsage = USBUsage_Mice;
+
+    rawDevices[1].dwFlags = RIDEV_DEVNOTIFY | RIDEV_INPUTSINK | RIDEV_NOLEGACY;
+    rawDevices[1].hwndTarget = mWindow;
+    rawDevices[1].usUsagePage = USBUsagePage_Desktop;
+    rawDevices[1].usUsage = USBUsage_Keyboards;
+
+    if ( !RegisterRawInputDevices( rawDevices, 2, sizeof( RAWINPUTDEVICE ) ) )
+      NIL_EXCEPT_WINAPI( L"Couldn't register for raw input notifications" );
   }
 
   LRESULT CALLBACK PnPMonitor::wndProc( HWND window, UINT message,
@@ -92,14 +173,32 @@ namespace nil {
         {
           if ( wParam == DBT_DEVICEARRIVAL )
           {
-            me->handleArrival( broadcast->dbcc_classguid, broadcast->dbcc_name );
+            me->handleInterfaceArrival( broadcast->dbcc_classguid, broadcast->dbcc_name );
           }
           else if ( wParam == DBT_DEVICEREMOVECOMPLETE )
           {
-            me->handleRemoval( broadcast->dbcc_classguid, broadcast->dbcc_name );
+            me->handleInterfaceRemoval( broadcast->dbcc_classguid, broadcast->dbcc_name );
           }
         }
         return TRUE;
+      break;
+      case WM_INPUT_DEVICE_CHANGE:
+        if ( wParam == GIDC_ARRIVAL )
+        {
+          me->handleRawArrival( (HANDLE)lParam );
+        }
+        else if ( wParam == GIDC_REMOVAL )
+        {
+          me->handleRawRemoval( (HANDLE)lParam );
+        }
+        return 0;
+      break;
+      case WM_INPUT:
+        if ( GET_RAWINPUT_CODE_WPARAM( wParam ) == RIM_INPUTSINK )
+        {
+          me->handleRawInput( (HRAWINPUT)lParam );
+        }
+        return DefWindowProcW( window, message, wParam, lParam );
       break;
       case WM_CLOSE:
         return 0;
@@ -116,6 +215,20 @@ namespace nil {
 
   void PnPMonitor::unregisterNotifications()
   {
+    RAWINPUTDEVICE rawDevices[2];
+
+    rawDevices[0].dwFlags = RIDEV_REMOVE;
+    rawDevices[0].hwndTarget = 0;
+    rawDevices[0].usUsagePage = USBUsagePage_Desktop;
+    rawDevices[0].usUsage = USBUsage_Mice;
+
+    rawDevices[0].dwFlags = RIDEV_REMOVE;
+    rawDevices[0].hwndTarget = 0;
+    rawDevices[0].usUsagePage = USBUsagePage_Desktop;
+    rawDevices[0].usUsage = USBUsage_Keyboards;
+
+    RegisterRawInputDevices( rawDevices, 2, sizeof( RAWINPUTDEVICE ) );
+
     if ( mNotifications )
     {
       UnregisterDeviceNotification( mNotifications );
@@ -128,7 +241,7 @@ namespace nil {
     MSG msg;
     while ( PeekMessageW( &msg, mWindow, 0, 0, PM_REMOVE ) > 0 )
     {
-      TranslateMessage( &msg );
+      //TranslateMessage( &msg );
       DispatchMessage( &msg );
     }
   }
@@ -136,6 +249,8 @@ namespace nil {
   PnPMonitor::~PnPMonitor()
   {
     unregisterNotifications();
+    if ( mInputBuffer )
+      free( mInputBuffer );
     if ( mWindow )
       DestroyWindow( mWindow );
     if ( mClass )

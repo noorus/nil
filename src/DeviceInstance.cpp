@@ -6,7 +6,7 @@ namespace nil {
   DeviceInstance::DeviceInstance( System* system, Device* device ):
   mSystem( system ), mDevice( device )
   {
-    //
+    assert( mDevice );
   }
 
   DeviceInstance::~DeviceInstance()

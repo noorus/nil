@@ -120,7 +120,7 @@ namespace nil {
   {
     if ( val < 0 )
     {
-      Real ret = (Real)val / (Real)( 32768 );
+      Real ret = (Real)val / (Real)( 32767 );
       return ( ret < -1.0f ? -1.0f : ret );
     }
     else if ( val > 0 )
@@ -149,11 +149,11 @@ namespace nil {
 
       hr = mDIDevice->Poll();
       if ( FAILED( hr ) )
-        NIL_EXCEPT_DINPUT( hr, L"Could not poll DirectInput8 device" );
+        return; // NIL_EXCEPT_DINPUT( hr, L"Could not poll DirectInput8 device" );
 
       hr = mDIDevice->GetDeviceData( sizeof( DIDEVICEOBJECTDATA ), buffers, &entries, 0 );
       if ( FAILED( hr ) )
-        NIL_EXCEPT_DINPUT( hr, L"Could not get DirectInput8 device data" );
+        return; // NIL_EXCEPT_DINPUT( hr, L"Could not get DirectInput8 device data" );
 
       if ( entries < cJoystickEvents )
         done = true;
