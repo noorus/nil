@@ -13,7 +13,7 @@ namespace nil {
     return mRecords;
   }
 
-  void HIDManager::onPlug( const GUID& deviceClass, const String& devicePath )
+  void HIDManager::onPnPPlug( const GUID& deviceClass, const String& devicePath )
   {
     if ( deviceClass != g_HIDInterfaceGUID )
       return;
@@ -22,15 +22,17 @@ namespace nil {
       if ( !_wcsicmp( record->getPath().c_str(), devicePath.c_str() ) )
         return;
 
-    try {
-      auto record = new HIDRecord( devicePath );
+    auto handle = CreateFileW( devicePath.c_str(), 0,
+      FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL );
+
+    if ( handle != INVALID_HANDLE_VALUE )
+    {
+      auto record = new HIDRecord( devicePath, handle );
       mRecords.push_back( record );
-    } catch ( nil::Exception& e ) {
-      // Ignore inaccessible devices
     }
   }
 
-  void HIDManager::onUnplug( const GUID& deviceClass, const String& devicePath )
+  void HIDManager::onPnPUnplug( const GUID& deviceClass, const String& devicePath )
   {
     if ( deviceClass != g_HIDInterfaceGUID )
       return;
@@ -51,16 +53,18 @@ namespace nil {
       return;
 
     // Well, this string comparison is kind of nasty, but it seems
-    // to be what everyone does. Nothing else seems quite unique enough.
+    // to be what everyone does. Nothing else is quite reliable enough.
     for ( auto record : mRecords )
       if ( !_wcsicmp( record->getPath().c_str(), devicePath.c_str() ) )
         return;
 
-    try {
-      auto record = new HIDRecord( devicePath );
+    auto handle = CreateFileW( devicePath.c_str(), 0,
+      FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL );
+
+    if ( handle != INVALID_HANDLE_VALUE )
+    {
+      auto record = new HIDRecord( devicePath, handle );
       mRecords.push_back( record );
-    } catch ( nil::Exception& e ) {
-      // Ignore inaccessible devices
     }
   }
 

@@ -3,18 +3,12 @@
 
 namespace nil {
 
-  HIDRecord::HIDRecord( const String& path ): mPath( path ),
-    mHandle( INVALID_HANDLE_VALUE ), mIsXInput( false )
+  HIDRecord::HIDRecord( const String& path, HANDLE handle ):
+  mPath( path ), mIsXInput( false )
   {
-    mHandle = CreateFileW( path.c_str(), 0,
-      FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL );
-
-    if ( mHandle == INVALID_HANDLE_VALUE )
-      NIL_EXCEPT_WINAPI( L"CreateFileW failed" );
-
     HIDD_ATTRIBUTES attributes = { sizeof( HIDD_ATTRIBUTES ) };
 
-    if ( !HidD_GetAttributes( mHandle, &attributes ) )
+    if ( !HidD_GetAttributes( handle, &attributes ) )
       NIL_EXCEPT( L"HidD_GetAttributes failed" );
 
     mVendorID = attributes.VendorID;
@@ -23,21 +17,19 @@ namespace nil {
     mIdentifier = MAKELONG( mVendorID, mProductID );
 
     PHIDP_PREPARSED_DATA preparsedData;
-    if ( !HidD_GetPreparsedData( mHandle, &preparsedData ) )
+    if ( !HidD_GetPreparsedData( handle, &preparsedData ) )
       NIL_EXCEPT( L"HIdD_GetPreparsedData failed" );
 
     HidP_GetCaps( preparsedData, &mCapabilities );
     HidD_FreePreparsedData( preparsedData );
 
     wchar_t buffer[256];
-    if ( HidD_GetProductString( mHandle, &buffer, 256 ) )
+    if ( HidD_GetProductString( handle, &buffer, 256 ) )
       mName = util::cleanupName( buffer );
-    if ( HidD_GetManufacturerString( mHandle, &buffer, 256 ) )
+    if ( HidD_GetManufacturerString( handle, &buffer, 256 ) )
       mManufacturer = util::cleanupName( buffer );
-    if ( HidD_GetSerialNumberString( mHandle, &buffer, 256 ) )
+    if ( HidD_GetSerialNumberString( handle, &buffer, 256 ) )
       mSerialNumber = buffer;
-
-    SAFE_CLOSEHANDLE( mHandle );
 
     identify();
   }
@@ -92,7 +84,6 @@ namespace nil {
 
   HIDRecord::~HIDRecord()
   {
-    SAFE_CLOSEHANDLE( mHandle );
   }
 
 }
