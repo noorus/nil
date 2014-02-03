@@ -29,6 +29,7 @@ namespace nil {
     {
       auto record = new HIDRecord( devicePath, handle );
       mRecords.push_back( record );
+      CloseHandle( handle );
     }
   }
 
@@ -65,6 +66,7 @@ namespace nil {
     {
       auto record = new HIDRecord( devicePath, handle );
       mRecords.push_back( record );
+      CloseHandle( handle );
     }
   }
 
