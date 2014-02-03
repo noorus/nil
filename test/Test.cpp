@@ -2,13 +2,6 @@
 #include "nilUtil.h"
 
 HANDLE stopEvent = NULL;
-#include <setupapi.h>
-extern "C" {
-# include <hidsdi.h>
-};
-
-#pragma comment( lib, "hid.lib" )
-#pragma comment( lib, "setupapi.lib" )
 
 BOOL WINAPI consoleHandler( DWORD ctrl )
 {

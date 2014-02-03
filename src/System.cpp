@@ -1,15 +1,19 @@
 #include "nil.h"
 #include "nilUtil.h"
+#include "nilLogitech.h"
 
 namespace nil {
 
   System::System( HINSTANCE instance, HWND window ): mWindow( window ),
   mInstance( instance ), mDirectInput( nullptr ), mMonitor( nullptr ),
-  mIDPool( 0 ), mInitializing( true ), mHIDManager( nullptr )
+  mIDPool( 0 ), mInitializing( true ), mHIDManager( nullptr ),
+  mLogitechGKeys( nullptr )
   {
     // Validate the passes window handle
     if ( !IsWindow( mWindow ) )
       NIL_EXCEPT( L"Window handle is invalid" );
+
+    mLogitechGKeys = new Logitech::GKeySDK();
 
     // Create DirectInput instance
     auto hr = DirectInput8Create( mInstance, DIRECTINPUT_VERSION,
@@ -275,6 +279,8 @@ namespace nil {
         device->onDisconnect();
       else
         device->update();
+
+    mLogitechGKeys->update();
   }
 
   System::~System()
@@ -285,6 +291,7 @@ namespace nil {
     SAFE_DELETE( mHIDManager );
     SAFE_DELETE( mMonitor );
     SAFE_RELEASE( mDirectInput );
+    SAFE_DELETE( mLogitechGKeys );
   }
 
 }

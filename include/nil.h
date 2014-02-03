@@ -14,6 +14,10 @@ namespace nil {
   class Keyboard;
   class Controller;
 
+  namespace Logitech {
+    class GKeySDK;
+  }
+
   //! \struct Button
   //! Digital push button component.
   struct Button {
@@ -405,6 +409,7 @@ namespace nil {
     bool mInitializing; //!< Are we initializing?
     RawMouseMap mMouseMapping; //!< Mouse events mapping
     RawKeyboardMap mKeyboardMapping; //!< Keyboard events mapping
+    Logitech::GKeySDK* mLogitechGKeys;
     void initializeDevices();
     void refreshDevices();
     void identifyXInputDevices();

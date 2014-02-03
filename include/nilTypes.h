@@ -26,6 +26,7 @@
 #include <vector>
 #include <list>
 #include <sstream>
+#include <queue>
 #include <boost/variant.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -41,6 +42,7 @@ namespace nil {
 
   using std::map;
   using std::list;
+  using std::queue;
   using std::vector;
   using std::wstringstream;
   using boost::variant;

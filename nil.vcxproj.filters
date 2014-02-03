@@ -33,6 +33,9 @@
     <ClInclude Include="include\nilException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\nilLogitech.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\System.cpp">
@@ -93,6 +96,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\RawInputMouse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LogitechGkeySDK.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
