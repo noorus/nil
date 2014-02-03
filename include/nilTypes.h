@@ -35,6 +35,7 @@ namespace nil {
   typedef std::wstring String;
   typedef uint32_t POVDirection;
   typedef float Real;
+  typedef unsigned int VirtualKeyCode;
 
   typedef int DeviceID;
 

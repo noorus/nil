@@ -243,11 +243,36 @@ namespace nil {
     virtual ~RawInputMouse();
   };
 
+  //! \class KeyboardListener
+  //! Keyboard event listener base class.
+  //! Derive your own listener from this class.
+  class KeyboardListener {
+  public:
+    virtual void onKeyPressed(
+      Keyboard* keyboard, const VirtualKeyCode keycode ) = 0;
+    virtual void onKeyRepeat(
+      Keyboard* keyboard, const VirtualKeyCode keycode ) = 0;
+    virtual void onKeyReleased(
+      Keyboard* keyboard, const VirtualKeyCode keycode ) = 0;
+  };
+
+  typedef list<KeyboardListener*> KeyboardListenerList;
+
   //! \class Keyboard
   //! Keyboard device instance base class.
   class Keyboard: public DeviceInstance {
   protected:
+    KeyboardListenerList mListeners;
   public:
+    enum KeyCode: VirtualKeyCode {
+      Key_LeftShift = 0xA0, // As defined by Windows
+      Key_RightShift,
+      Key_LeftControl,
+      Key_RightControl,
+      Key_LeftAlt,
+      Key_RightAlt,
+      Key_NumpadEnter = 0xD8 // Random unused code for our repurposing
+    };
     Keyboard( System* system, Device* device );
     virtual void update() = 0;
     virtual ~Keyboard();
@@ -258,6 +283,7 @@ namespace nil {
   class RawInputKeyboard: public Keyboard {
   friend class System;
   protected:
+    list<VirtualKeyCode> mPressedKeys;
     virtual void onRawInput( const RAWKEYBOARD& input );
   public:
     RawInputKeyboard( RawInputDevice* device );

@@ -99,7 +99,7 @@ namespace nil {
 
   void RawInputMouse::update()
   {
-    // Nothing to update, since the events are relayed as-is
+    // Nothing to update, since we process events as they come
   }
 
   RawInputMouse::~RawInputMouse()
