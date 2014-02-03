@@ -68,7 +68,7 @@ namespace nil {
     Device::setStatus( status );
   }
 
-  const Device::Handler XInputDevice::getHandler()
+  const Device::Handler XInputDevice::getHandler() const
   {
     return Device::Handler_XInput;
   }

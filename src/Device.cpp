@@ -72,7 +72,7 @@ namespace nil {
     mDisconnectFlagged = true;
   }
 
-  const bool Device::isDisconnectFlagged()
+  const bool Device::isDisconnectFlagged() const
   {
     return mDisconnectFlagged;
   }
@@ -96,12 +96,12 @@ namespace nil {
     destroy();
   }
 
-  System* Device::getSystem()
+  System* Device::getSystem() const
   {
     return mSystem;
   }
 
-  const DeviceID Device::getID()
+  const DeviceID Device::getID() const
   {
     return mID;
   }
@@ -116,12 +116,12 @@ namespace nil {
     return mSavedStatus;
   }
 
-  const String& Device::getName()
+  const String& Device::getName() const
   {
     return mName;
   }
 
-  const Device::Type Device::getType()
+  const Device::Type Device::getType() const
   {
     return mType;
   }
@@ -133,7 +133,7 @@ namespace nil {
     mStatus = status;
   }
 
-  const Device::Status Device::getStatus()
+  const Device::Status Device::getStatus() const
   {
     return mStatus;
   }

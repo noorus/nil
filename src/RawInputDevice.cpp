@@ -27,6 +27,17 @@ namespace nil {
         mType = Device_Keyboard;
       break;
     }
+
+    auto handle = CreateFileW( mRawPath.c_str(), 0,
+      FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL );
+
+    if ( handle != INVALID_HANDLE_VALUE )
+    {
+      wchar_t buffer[256];
+      if ( HidD_GetProductString( handle, &buffer, 256 ) )
+        mName = util::cleanupName( buffer );
+      CloseHandle( handle );
+    }
   }
 
   RawInputDevice::~RawInputDevice()
@@ -35,7 +46,7 @@ namespace nil {
       free( mRawInfo );
   }
 
-  const Device::Handler RawInputDevice::getHandler()
+  const Device::Handler RawInputDevice::getHandler() const
   {
     return Device::Handler_RawInput;
   }

@@ -9,6 +9,11 @@ namespace nil {
     assert( mDevice );
   }
 
+  const Device* DeviceInstance::getDevice()
+  {
+    return mDevice;
+  }
+
   DeviceInstance::~DeviceInstance()
   {
     //

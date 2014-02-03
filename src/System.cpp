@@ -135,25 +135,21 @@ namespace nil {
   void System::mapMouse( HANDLE handle, RawInputMouse* mouse )
   {
     mMouseMapping[handle] = mouse;
-    wprintf_s( L"Mapped mouse 0x%X to 0x%X\r\n", handle, mouse );
   }
 
   void System::unmapMouse( HANDLE handle )
   {
     mMouseMapping.erase( handle );
-    wprintf_s( L"Unmapped mouse 0x%X\r\n", handle );
   }
 
   void System::mapKeyboard( HANDLE handle, RawInputKeyboard* keyboard )
   {
     mKeyboardMapping[handle] = keyboard;
-    wprintf_s( L"Mapped keyboard 0x%X to 0x%X\r\n", handle, keyboard );
   }
 
   void System::unmapKeyboard( HANDLE handle )
   {
     mKeyboardMapping.erase( handle );
-    wprintf_s( L"Unmapped keyboard 0x%X\r\n", handle );
   }
 
   void System::initializeDevices()

@@ -24,7 +24,7 @@ namespace nil {
     }
   }
 
-  const Device::Handler DirectInputDevice::getHandler()
+  const Device::Handler DirectInputDevice::getHandler() const
   {
     return Device::Handler_DirectInput;
   }

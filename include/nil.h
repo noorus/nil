@@ -114,13 +114,13 @@ namespace nil {
     virtual void onConnect(); //!< On plugged or otherwise enabled
     virtual void flagDisconnected(); //!< Flag for disconnection
   public:
-    virtual const DeviceID getID(); //!< Get unique identifier
-    virtual const Handler getHandler() = 0; //!< Get handler
-    virtual const Type getType(); //!< Get type
-    virtual const Status getStatus(); //!< Get status
-    virtual const String& getName(); //!< Get name
-    virtual System* getSystem(); //!< Get owner system
-    virtual const bool isDisconnectFlagged(); //!< Are we flagged for disconnection?
+    virtual const DeviceID getID() const; //!< Get unique identifier
+    virtual const Handler getHandler() const = 0; //!< Get handler
+    virtual const Type getType() const; //!< Get type
+    virtual const Status getStatus() const; //!< Get status
+    virtual const String& getName() const; //!< Get name
+    virtual System* getSystem() const; //!< Get owner system
+    virtual const bool isDisconnectFlagged() const; //!< Are we flagged for disconnection?
   };
 
   //! \class RawInputDevice
@@ -134,7 +134,7 @@ namespace nil {
     RawInputDevice( System* system, DeviceID id, HANDLE rawHandle, String& rawPath );
   public:
     virtual ~RawInputDevice();
-    virtual const Handler getHandler();
+    virtual const Handler getHandler() const;
     virtual const HANDLE getRawHandle();
     virtual const String& getRawPath();
     virtual const RID_DEVICE_INFO* getRawInfo();
@@ -150,7 +150,7 @@ namespace nil {
     DirectInputDevice( System* system, DeviceID id,
       LPCDIDEVICEINSTANCEW instance );
   public:
-    virtual const Handler getHandler();
+    virtual const Handler getHandler() const;
     virtual const GUID getProductID();
     virtual const GUID getInstanceID();
   };
@@ -169,7 +169,7 @@ namespace nil {
     virtual void onDisconnect();
     virtual void onConnect();
   public:
-    virtual const Handler getHandler();
+    virtual const Handler getHandler() const;
     virtual const int getXInputID();
     virtual const XINPUT_CAPABILITIES& getCapabilities(); //!< Get XInput caps
   };
@@ -185,6 +185,7 @@ namespace nil {
   public:
     DeviceInstance( System* system, Device* device );
     virtual void update() = 0;
+    virtual const Device* getDevice();
     virtual ~DeviceInstance();
   };
 
