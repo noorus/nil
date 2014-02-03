@@ -3,7 +3,7 @@
 
 namespace nil {
 
-  class DummyListener: public KeyboardListener {
+  class DummyKeyboardListener: public KeyboardListener {
   public:
     virtual void onKeyPressed( Keyboard* keyboard, const VirtualKeyCode keycode )
     {
@@ -19,12 +19,12 @@ namespace nil {
     }
   };
 
-  DummyListener gDummyListener;
+  DummyKeyboardListener gDummyKeyboardListener;
 
   Keyboard::Keyboard( System* system, Device* device ):
   DeviceInstance( system, device )
   {
-    mListeners.push_back( &gDummyListener );
+    mListeners.push_back( &gDummyKeyboardListener );
   }
 
   Keyboard::~Keyboard()
