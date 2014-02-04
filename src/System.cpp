@@ -287,6 +287,16 @@ namespace nil {
       mLogitechGKeys->update();
   }
 
+  Logitech::GKeySDK* System::getLogitechGKeys()
+  {
+    return mLogitechGKeys;
+  }
+
+  Logitech::LedSDK* System::getLogitechLEDs()
+  {
+    return mLogitechLEDs;
+  }
+
   System::~System()
   {
     for ( Device* device : mDevices )

@@ -1,4 +1,5 @@
 #include "nil.h"
+#include "nilLogitech.h"
 
 namespace nil {
 

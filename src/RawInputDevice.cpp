@@ -28,7 +28,6 @@ namespace nil {
       break;
     }
 
-    wprintf_s( L"path %s\r\n", mRawPath.c_str() );
     auto handle = CreateFileW( mRawPath.c_str(), 0,
       FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL );
 

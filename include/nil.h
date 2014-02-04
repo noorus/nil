@@ -4,6 +4,7 @@
 #include "nilException.h"
 #include "nilPnP.h"
 #include "nilHID.h"
+#include "nilLogitech.h"
 
 namespace nil {
 
@@ -13,11 +14,6 @@ namespace nil {
   class Mouse;
   class Keyboard;
   class Controller;
-
-  namespace Logitech {
-    class GKeySDK;
-    class LedSDK;
-  }
 
   //! \struct Button
   //! Digital push button component.
@@ -391,25 +387,6 @@ namespace nil {
   typedef map<HANDLE,RawInputMouse*> RawMouseMap;
   typedef map<HANDLE,RawInputKeyboard*> RawKeyboardMap;
 
-  //! \class ExternalModule
-  //! Base class for an external, optional module supported by the system.
-  class ExternalModule {
-  protected:
-    HMODULE mModule;
-    bool mInitialized;
-  public:
-    enum InitReturn: unsigned int {
-      Initialization_OK = 0,
-      Initialization_ModuleNotFound,
-      Initialization_MissingExports,
-      Initialization_Unavailable
-    };
-    ExternalModule();
-    virtual InitReturn initialize() = 0;
-    virtual void shutdown() = 0;
-    virtual bool isInitialized() const;
-  };
-
   //! \class System
   //! The input system root.
   class System: public PnPListener, public RawListener {
@@ -450,6 +427,8 @@ namespace nil {
   public:
     System( HINSTANCE instance, HWND window );
     void update();
+    Logitech::GKeySDK* getLogitechGKeys();
+    Logitech::LedSDK* getLogitechLEDs();
     const bool isInitializing();
     ~System();
   };
