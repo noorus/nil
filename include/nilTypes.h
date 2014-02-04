@@ -91,6 +91,15 @@ namespace nil {
     const static Vector3i ZERO;
   };
 
+  //! \struct Color
+  //! A color value.
+  struct Color {
+  public:
+    Real r; //!< Red color component amount in {0..1}
+    Real g; //!< Green color component amount in {0..1}
+    Real b; //!< Blue color component amount in {0..1}
+  };
+
   //! \struct Vector2f
   //! Two-dimensional floating point vector.
   struct Vector2f {

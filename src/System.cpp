@@ -7,13 +7,14 @@ namespace nil {
   System::System( HINSTANCE instance, HWND window ): mWindow( window ),
   mInstance( instance ), mDirectInput( nullptr ), mMonitor( nullptr ),
   mIDPool( 0 ), mInitializing( true ), mHIDManager( nullptr ),
-  mLogitechGKeys( nullptr )
+  mLogitechGKeys( nullptr ), mLogitechLEDs( nullptr )
   {
     // Validate the passes window handle
     if ( !IsWindow( mWindow ) )
       NIL_EXCEPT( L"Window handle is invalid" );
 
     mLogitechGKeys = new Logitech::GKeySDK();
+    mLogitechLEDs = new Logitech::LedSDK();
 
     // Create DirectInput instance
     auto hr = DirectInput8Create( mInstance, DIRECTINPUT_VERSION,
@@ -273,14 +274,17 @@ namespace nil {
     // Run PnP & raw events if there are any
     mMonitor->update();
 
-    // First make sure that we disconnect failed devices
+    // Make sure that we disconnect failed devices,
+    // and update the rest
     for ( Device* device : mDevices )
       if ( device->isDisconnectFlagged() )
         device->onDisconnect();
       else
         device->update();
 
-    mLogitechGKeys->update();
+    // Run queued G-key events if using the SDK
+    if ( mLogitechGKeys->isInitialized() )
+      mLogitechGKeys->update();
   }
 
   System::~System()
@@ -291,6 +295,7 @@ namespace nil {
     SAFE_DELETE( mHIDManager );
     SAFE_DELETE( mMonitor );
     SAFE_RELEASE( mDirectInput );
+    SAFE_DELETE( mLogitechLEDs );
     SAFE_DELETE( mLogitechGKeys );
   }
 

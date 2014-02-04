@@ -32,15 +32,18 @@ namespace nil {
     {
     }
 
-    GKeySDK::GKeySDK(): mModule( NULL )
+    GKeySDK::GKeySDK(): ExternalModule()
     {
       InitializeSRWLock( &mLock );
 
       mListeners.push_back( &gDummyGKeyListener );
+    }
 
+    GKeySDK::InitReturn GKeySDK::initialize()
+    {
       mModule = LoadLibraryW( cLogitechGKeyModuleName );
       if ( !mModule )
-        NIL_EXCEPT_WINAPI( L"Couldn't load Logitech GKey module" );
+        return Initialization_ModuleNotFound;
 
       NIL_LOAD_SDK_FUNC( LogiGkeyInit );
       NIL_LOAD_SDK_FUNC( LogiGkeyGetMouseButtonString );
@@ -51,13 +54,17 @@ namespace nil {
         || !mFunctions.pfnLogiGkeyGetMouseButtonString
         || !mFunctions.pfnLogiGkeyGetKeyboardGkeyString
         || !mFunctions.pfnLogiGkeyShutdown )
-        NIL_EXCEPT( L"Couldn't load Logitech GKey module" );
+        return Initialization_MissingExports;
 
       mContext.gkeyContext = this;
       mContext.gkeyCallBack = keyCallback;
 
       if ( !mFunctions.pfnLogiGkeyInit( &mContext ) )
-        NIL_EXCEPT( L"Couldn't initialize Logitech GKey module" );
+        return Initialization_Unavailable;
+
+      mInitialized = true;
+
+      return Initialization_OK;
     }
 
     void GKeySDK::keyCallback( GkeyCode key, const wchar_t* name, void* context )
@@ -85,14 +92,23 @@ namespace nil {
       ReleaseSRWLockExclusive( &mLock );
     }
 
-    GKeySDK::~GKeySDK()
+    void GKeySDK::shutdown()
     {
+      AcquireSRWLockExclusive( &mLock );
       if ( mModule )
       {
-        if ( mFunctions.pfnLogiGkeyShutdown )
+        if ( mInitialized )
           mFunctions.pfnLogiGkeyShutdown();
         FreeLibrary( mModule );
+        mModule = NULL;
       }
+      mInitialized = false;
+      ReleaseSRWLockExclusive( &mLock );
+    }
+
+    GKeySDK::~GKeySDK()
+    {
+      shutdown();
     }
 
   }

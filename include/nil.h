@@ -16,6 +16,7 @@ namespace nil {
 
   namespace Logitech {
     class GKeySDK;
+    class LedSDK;
   }
 
   //! \struct Button
@@ -90,7 +91,7 @@ namespace nil {
     enum Type: int {
       Device_Keyboard = 0, //!< I'm a keyboard
       Device_Mouse, //!< I'm a mouse
-      Device_Controller //!< No, I'm a controller
+      Device_Controller //!< I'm a controller
     };
     enum Status: int {
       Status_Disconnected = 0, //!< Disconnected but not forgotten
@@ -390,6 +391,25 @@ namespace nil {
   typedef map<HANDLE,RawInputMouse*> RawMouseMap;
   typedef map<HANDLE,RawInputKeyboard*> RawKeyboardMap;
 
+  //! \class ExternalModule
+  //! Base class for an external, optional module supported by the system.
+  class ExternalModule {
+  protected:
+    HMODULE mModule;
+    bool mInitialized;
+  public:
+    enum InitReturn: unsigned int {
+      Initialization_OK = 0,
+      Initialization_ModuleNotFound,
+      Initialization_MissingExports,
+      Initialization_Unavailable
+    };
+    ExternalModule();
+    virtual InitReturn initialize() = 0;
+    virtual void shutdown() = 0;
+    virtual bool isInitialized() const;
+  };
+
   //! \class System
   //! The input system root.
   class System: public PnPListener, public RawListener {
@@ -409,7 +429,8 @@ namespace nil {
     bool mInitializing; //!< Are we initializing?
     RawMouseMap mMouseMapping; //!< Mouse events mapping
     RawKeyboardMap mKeyboardMapping; //!< Keyboard events mapping
-    Logitech::GKeySDK* mLogitechGKeys;
+    Logitech::GKeySDK* mLogitechGKeys; //!< External module for Logitech G-Keys
+    Logitech::LedSDK* mLogitechLEDs; //!< External module for Logitech LEDs
     void initializeDevices();
     void refreshDevices();
     void identifyXInputDevices();

@@ -1,12 +1,13 @@
 #pragma once
 #include <windows.h>
 #include <LogitechGkey.h>
+#include <LogitechLed.h>
 
 namespace nil {
 
   namespace Logitech {
 
-    // G-Key SDK
+    // G-Key SDK (1.02.004)
 
     typedef unsigned int GKey;
 
@@ -25,9 +26,8 @@ namespace nil {
 
     typedef queue<GkeyCode> GKeyQueue;
 
-    class GKeySDK {
+    class GKeySDK: public ExternalModule {
     protected:
-      HMODULE mModule;
       struct Functions {
         fnLogiGkeyInit pfnLogiGkeyInit;
         fnLogiGkeyGetMouseButtonString pfnLogiGkeyGetMouseButtonString;
@@ -42,8 +42,37 @@ namespace nil {
       static void __cdecl keyCallback( GkeyCode key, const wchar_t* name, void* context );
     public:
       GKeySDK();
+      virtual InitReturn initialize();
       void update();
+      virtual void shutdown();
       ~GKeySDK();
+    };
+
+    // LED SDK (1.01.005.1)
+
+    typedef BOOL (*fnLogiLedInit)();
+    typedef BOOL (*fnLogiLedSaveCurrentLighting)( int deviceType );
+    typedef BOOL (*fnLogiLedSetLighting)( int deviceType, int redPercentage, int greenPercentage, int bluePercentage );
+    typedef BOOL (*fnLogiLedRestoreLighting)( int deviceType );
+    typedef void (*fnLogiLedShutdown)();
+
+    class LedSDK: public ExternalModule {
+    protected:
+      struct Functions {
+        fnLogiLedInit pfnLogiLedInit;
+        fnLogiLedSaveCurrentLighting pfnLogiLedSaveCurrentLighting;
+        fnLogiLedSetLighting pfnLogiLedSetLighting;
+        fnLogiLedRestoreLighting pfnLogiLedRestoreLighting;
+        fnLogiLedShutdown pfnLogiLedShutdown;
+        Functions();
+      } mFunctions;
+      bool mSavedOriginal;
+    public:
+      LedSDK();
+      virtual InitReturn initialize();
+      void setLighting( const Color& color );
+      virtual void shutdown();
+      ~LedSDK();
     };
 
   }
