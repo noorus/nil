@@ -47,6 +47,16 @@ namespace nil {
     return mIsXInput;
   }
 
+  bool HIDRecord::isMicrosoft() const
+  {
+    return ( mVendorID == USBVendor_Microsoft );
+  }
+
+  bool HIDRecord::isLogitech() const
+  {
+    return ( mVendorID == USBVendor_Logitech );
+  }
+
   uint32_t HIDRecord::getIdentifier() const
   {
     return mIdentifier;

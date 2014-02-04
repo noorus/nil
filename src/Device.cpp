@@ -12,6 +12,9 @@ namespace nil {
 
   void Device::create()
   {
+    if ( mInstance )
+      return;
+
     if ( getHandler() == Handler_XInput )
     {
       XInputDevice* xDevice = dynamic_cast<XInputDevice*>( this );
