@@ -88,7 +88,7 @@ public:
   }
   virtual void onControllerPOVMoved( nil::Controller* controller, const nil::ControllerState& state, size_t pov )
   {
-    wprintf_s( L"Controller POV %d moved (%s)\r\n", pov, controller->getDevice()->getName().c_str() );
+    wprintf_s( L"Controller POV %d moved: 0x%08X (%s)\r\n", pov, state.mPOVs[pov].direction, controller->getDevice()->getName().c_str() );
   }
 };
 
