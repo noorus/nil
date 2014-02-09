@@ -1,7 +1,11 @@
 Nice Input Library
 ==================
 
-NIL is a gaming input library for Windows, inspired by the Open Input System.  
+NIL is a gaming input library for Windows, inspired by the Open Input System.
+
+### Platform
+
+Supported platforms are Windows Vista and newer. XP is not supported.
 
 ### Building
 
@@ -23,8 +27,7 @@ from the computer, and remembers previously-connected devices when reconnected.
 
 Additionally, NIL is capable of receiving direct input from the [G-keys](https://logitech-en-amr.custhelp.com/app/answers/detail/a_id/21506) of certain Logitech Gaming keyboards & mice.
 
-NIL is single-threaded, buffered and fully listener-based.  
-Supported platforms are Windows Vista and newer. Windows XP is not supported.
+NIL is single-threaded, buffered and fully listener-based.
 
 ### License
 
