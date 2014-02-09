@@ -3,28 +3,6 @@
 
 namespace nil {
 
-  class DummyMouseListener: public MouseListener {
-  public:
-    virtual void onMouseMoved( Mouse* mouse, const MouseState& state )
-    {
-      //
-    }
-    virtual void onMouseButtonPressed( Mouse* mouse, const MouseState& state, size_t button )
-    {
-      wprintf_s( L"Mouse button pressed: %d (%s)\r\n", button, mouse->getDevice()->getName().c_str() );
-    }
-    virtual void onMouseButtonReleased( Mouse* mouse, const MouseState& state, size_t button )
-    {
-      wprintf_s( L"Mouse button released: %d (%s)\r\n", button, mouse->getDevice()->getName().c_str() );
-    }
-    virtual void onMouseWheelMoved( Mouse* mouse, const MouseState& state )
-    {
-      wprintf_s( L"Mouse wheel moved: %d (%s)\r\n", state.mWheel.relative, mouse->getDevice()->getName().c_str() );
-    }
-  };
-
-  DummyMouseListener gDummyMouseListener;
-
   // MouseState class
 
   MouseState::MouseState()
@@ -47,7 +25,16 @@ namespace nil {
   Mouse::Mouse( System* system, Device* device ):
   DeviceInstance( system, device )
   {
-    mListeners.push_back( &gDummyMouseListener );
+  }
+
+  void Mouse::addListener( MouseListener* listener )
+  {
+    mListeners.push_back( listener );
+  }
+
+  void Mouse::removeListener( MouseListener* listener )
+  {
+    mListeners.remove( listener );
   }
 
   Mouse::~Mouse()

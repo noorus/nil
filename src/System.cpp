@@ -4,11 +4,14 @@
 
 namespace nil {
 
-  System::System( HINSTANCE instance, HWND window ): mWindow( window ),
-  mInstance( instance ), mDirectInput( nullptr ), mMonitor( nullptr ),
-  mIDPool( 0 ), mInitializing( true ), mHIDManager( nullptr ),
-  mLogitechGKeys( nullptr ), mLogitechLEDs( nullptr )
+  System::System( HINSTANCE instance, HWND window, SystemListener* listener ):
+  mWindow( window ), mInstance( instance ), mDirectInput( nullptr ),
+  mMonitor( nullptr ), mIDPool( 0 ), mInitializing( true ),
+  mHIDManager( nullptr ), mLogitechGKeys( nullptr ), mLogitechLEDs( nullptr ),
+  mListener( listener )
   {
+    assert( mListener );
+
     // Validate the passes window handle
     if ( !IsWindow( mWindow ) )
       NIL_EXCEPT( L"Window handle is invalid" );
@@ -85,7 +88,7 @@ namespace nil {
 
       if ( !_wcsicmp( rawDevice->getRawPath().c_str(), rawPath.c_str() ) )
       {
-        rawDevice->onConnect();
+        deviceConnect( rawDevice );
         return;
       }
     }
@@ -95,7 +98,7 @@ namespace nil {
     if ( isInitializing() )
       device->setStatus( Device::Status_Connected );
     else
-      device->onConnect();
+      deviceConnect( device );
 
     mDevices.push_back( device );
   }
@@ -131,7 +134,7 @@ namespace nil {
 
       if ( rawDevice->getRawHandle() == handle )
       {
-        rawDevice->onDisconnect();
+        deviceDisconnect( rawDevice );
         return;
       }
     }
@@ -188,7 +191,7 @@ namespace nil {
       if ( device->getHandler() == Device::Handler_DirectInput
         && device->getSavedStatus() == Device::Status_Connected
         && device->getStatus() == Device::Status_Pending )
-        device->onDisconnect();
+        deviceDisconnect( device );
 
     XINPUT_STATE state;
     for ( Device* device : mDevices )
@@ -200,14 +203,14 @@ namespace nil {
         if ( status == ERROR_DEVICE_NOT_CONNECTED )
         {
           if ( xDevice->getStatus() == Device::Status_Connected )
-            xDevice->onDisconnect();
+            deviceDisconnect( xDevice );
           else if ( xDevice->getStatus() == Device::Status_Pending )
             xDevice->setStatus( Device::Status_Disconnected );
         }
         else if ( status == ERROR_SUCCESS )
         {
           if ( xDevice->getStatus() == Device::Status_Disconnected )
-            xDevice->onConnect();
+            deviceConnect( xDevice );
           else if ( xDevice->getStatus() == Device::Status_Pending )
             xDevice->setStatus( Device::Status_Connected );
         }
@@ -236,7 +239,7 @@ namespace nil {
       if ( diDevice->getInstanceID() == instance->guidInstance )
       {
         if ( device->getSavedStatus() == Device::Status_Disconnected )
-          device->onConnect();
+          system->deviceConnect( device );
         else
           device->setStatus( Device::Status_Connected );
 
@@ -249,11 +252,53 @@ namespace nil {
     if ( system->isInitializing() )
       device->setStatus( Device::Status_Connected );
     else
-      device->onConnect();
+      system->deviceConnect( device );
 
     system->mDevices.push_back( device );
 
     return DIENUM_CONTINUE;
+  }
+
+  void System::deviceConnect( Device* device )
+  {
+    device->onConnect();
+    mListener->onDeviceConnected( device );
+  }
+
+  void System::deviceDisconnect( Device* device )
+  {
+    device->onDisconnect();
+    mListener->onDeviceDisconnected( device );
+  }
+
+  void System::mouseEnabled( Device* device, Mouse* instance )
+  {
+    mListener->onMouseEnabled( device, instance );
+  }
+
+  void System::mouseDisabled( Device* device, Mouse* instance )
+  {
+    mListener->onMouseDisabled( device, instance );
+  }
+
+  void System::keyboardEnabled( Device* device, Keyboard* instance )
+  {
+    mListener->onKeyboardEnabled( device, instance );
+  }
+
+  void System::keyboardDisabled( Device* device, Keyboard* instance )
+  {
+    mListener->onKeyboardDisabled( device, instance );
+  }
+
+  void System::controllerEnabled( Device* device, Controller* instance )
+  {
+    mListener->onControllerEnabled( device, instance );
+  }
+
+  void System::controllerDisabled( Device* device, Controller* instance )
+  {
+    mListener->onControllerDisabled( device, instance );
   }
 
   void System::identifyXInputDevices()
@@ -262,6 +307,11 @@ namespace nil {
     for ( auto hidRecord : mHIDManager->getRecords() )
       if ( hidRecord->isXInput() )
         mXInputDeviceIDs.push_back( hidRecord->getIdentifier() );
+  }
+
+  DeviceList& System::getDevices()
+  {
+    return mDevices;
   }
 
   const bool System::isInitializing()
@@ -278,7 +328,7 @@ namespace nil {
     // and update the rest
     for ( Device* device : mDevices )
       if ( device->isDisconnectFlagged() )
-        device->onDisconnect();
+        deviceDisconnect( device );
       else
         device->update();
 

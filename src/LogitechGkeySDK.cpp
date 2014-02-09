@@ -8,20 +8,6 @@ namespace nil {
 
   namespace Logitech {
 
-    class DummyGKeyListener: public GKeyListener {
-    public:
-      virtual void onGKeyPressed( GKey key )
-      {
-        wprintf_s( L"G-Key pressed: %d\r\n", key );
-      }
-      virtual void onGKeyReleased( GKey key )
-      {
-        wprintf_s( L"G-Key released: %d\r\n", key );
-      }
-    };
-
-    DummyGKeyListener gDummyGKeyListener;
-
     const wchar_t* cLogitechGKeyModuleName = L"LogitechGkey.dll";
 
     GKeySDK::Functions::Functions():
@@ -35,8 +21,16 @@ namespace nil {
     GKeySDK::GKeySDK(): ExternalModule()
     {
       InitializeSRWLock( &mLock );
+    }
 
-      mListeners.push_back( &gDummyGKeyListener );
+    void GKeySDK::addListener( GKeyListener* listener )
+    {
+      mListeners.push_back( listener );
+    }
+
+    void GKeySDK::removeListener( GKeyListener* listener )
+    {
+      mListeners.remove( listener );
     }
 
     GKeySDK::InitReturn GKeySDK::initialize()

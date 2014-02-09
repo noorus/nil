@@ -10,7 +10,7 @@ namespace nil {
   {
   }
 
-  void Device::create()
+  void Device::enable()
   {
     if ( mInstance )
       return;
@@ -23,6 +23,7 @@ namespace nil {
       if ( getType() == Device_Controller )
       {
         mInstance = new XInputController( xDevice );
+        mSystem->controllerEnabled( this, (Controller*)mInstance );
       }
       else
         NIL_EXCEPT( L"Unsupport device type for XInput; Cannot instantiate device!" );
@@ -35,6 +36,7 @@ namespace nil {
       if ( getType() == Device_Controller )
       {
         mInstance = new DirectInputController( diDevice );
+        mSystem->controllerEnabled( this, (Controller*)mInstance );
       }
       else
         NIL_EXCEPT( L"Unsupported device type for DirectInput; Cannot instantiate device!" );
@@ -47,10 +49,12 @@ namespace nil {
       if ( getType() == Device_Mouse )
       {
         mInstance = new RawInputMouse( rawDevice );
+        mSystem->mouseEnabled( this, (Mouse*)mInstance );
       }
       else if ( getType() == Device_Keyboard )
       {
         mInstance = new RawInputKeyboard( rawDevice );
+        mSystem->keyboardEnabled( this, (Keyboard*)mInstance );
       }
       else
         NIL_EXCEPT( L"Unsupported device type for RawInput; cannot instantiate device!" );
@@ -59,14 +63,36 @@ namespace nil {
       NIL_EXCEPT( L"Unsupported device handler; Cannot instantiate device!" );
   }
 
+  DeviceInstance* Device::getInstance()
+  {
+    return mInstance;
+  }
+
   void Device::update()
   {
     if ( mInstance )
       mInstance->update();
   }
 
-  void Device::destroy()
+  void Device::disable()
   {
+    if ( !mInstance )
+      return;
+    switch ( getType() )
+    {
+      case Device_Controller:
+        mSystem->controllerDisabled( this, (Controller*)mInstance );
+      break;
+      case Device_Mouse:
+        mSystem->mouseDisabled( this, (Mouse*)mInstance );
+      break;
+      case Device_Keyboard:
+        mSystem->keyboardDisabled( this, (Keyboard*)mInstance );
+      break;
+      default:
+        NIL_EXCEPT( L"Unimplemented device type" );
+      break;
+    }
     SAFE_DELETE( mInstance );
   }
 
@@ -83,20 +109,13 @@ namespace nil {
   void Device::onConnect()
   {
     mStatus = Status_Connected;
-    wprintf_s( L"Connected: (%d) %s (%s %s)\r\n",
-      getID(),
-      getName().c_str(),
-      getHandler() == Device::Handler_XInput ? L"XInput" : getHandler() == Device::Handler_DirectInput ? L"DirectInput" : L"RawInput",
-      getType() == Device::Device_Mouse ? L"Mouse" : getType() == Device::Device_Keyboard ? L"Keyboard" : L"Controller" );
-    create();
   }
 
   void Device::onDisconnect()
   {
+    disable();
     mStatus = Status_Disconnected;
-    wprintf_s( L"Disconnected: %d\r\n", getID() );
     mDisconnectFlagged = false;
-    destroy();
   }
 
   System* Device::getSystem() const
@@ -131,8 +150,6 @@ namespace nil {
 
   void Device::setStatus( Status status )
   {
-    if ( mStatus != Status_Connected && status == Status_Connected )
-      create();
     mStatus = status;
   }
 
@@ -143,7 +160,6 @@ namespace nil {
 
   Device::~Device()
   {
-    destroy();
   }
 
 }

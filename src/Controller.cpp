@@ -3,32 +3,6 @@
 
 namespace nil {
 
-  class DummyControllerListener: public ControllerListener {
-  public:
-    virtual void onControllerButtonPressed( Controller* controller, const ControllerState& state, size_t button )
-    {
-      wprintf_s( L"Controller button %d pressed (%s)\r\n", button, controller->getDevice()->getName().c_str() );
-    }
-    virtual void onControllerButtonReleased( Controller* controller, const ControllerState& state, size_t button )
-    {
-      wprintf_s( L"Controller button %d released (%s)\r\n", button, controller->getDevice()->getName().c_str() );
-    }
-    virtual void onControllerAxisMoved( Controller* controller, const ControllerState& state, size_t axis )
-    {
-      wprintf_s( L"Controller axis %d moved: %f (%s)\r\n", axis, state.mAxes[axis].absolute, controller->getDevice()->getName().c_str() );
-    }
-    virtual void onControllerSliderMoved( Controller* controller, const ControllerState& state, size_t slider )
-    {
-      wprintf_s( L"Controller slider %d moved (%s)\r\n", slider, controller->getDevice()->getName().c_str() );
-    }
-    virtual void onControllerPOVMoved( Controller* controller, const ControllerState& state, size_t pov )
-    {
-      wprintf_s( L"Controller POV %d moved (%s)\r\n", pov, controller->getDevice()->getName().c_str() );
-    }
-  };
-
-  DummyControllerListener gDummyControllerListener;
-
   // ControllerState class
 
   ControllerState::ControllerState()
@@ -56,7 +30,6 @@ namespace nil {
   Controller::Controller( System* system, Device* device ):
   DeviceInstance( system, device ), mType( Controller_Unknown )
   {
-    mListeners.push_back( &gDummyControllerListener );
   }
 
   void Controller::fireChanges( const ControllerState& lastState )
@@ -86,6 +59,16 @@ namespace nil {
         if ( lastState.mPOVs[i].direction != mState.mPOVs[i].direction )
           listener->onControllerPOVMoved( this, mState, i );
     }
+  }
+
+  void Controller::addListener( ControllerListener* listener )
+  {
+    mListeners.push_back( listener );
+  }
+
+  void Controller::removeListener( ControllerListener* listener )
+  {
+    mListeners.remove( listener );
   }
 
   const Controller::Type Controller::getType() const

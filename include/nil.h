@@ -15,6 +15,8 @@ namespace nil {
   class Keyboard;
   class Controller;
 
+  // Components
+
   //! \struct Button
   //! Digital push button component.
   struct Button {
@@ -69,9 +71,11 @@ namespace nil {
   //! Mouse movement component.
   struct Movement {
   public:
-    Vector2i relative; //!< Relative value change in pixels
+    Vector2i relative; //!< Relative value delta in points
     Movement();
   };
+
+  // Device implementations
 
   //! \class Device
   //! Input device information entry.
@@ -95,7 +99,7 @@ namespace nil {
       Status_Connected //!< Up-to-date and available
     };
   protected:
-    DeviceID mID; //!< Unique nil-specific identifier
+    DeviceID mID; //!< Unique identifier, only valid per System-session
     Status mStatus; //!< Current status
     Status mSavedStatus; //!< Status backup when updating
     String mName; //!< Device name
@@ -105,9 +109,7 @@ namespace nil {
     bool mDisconnectFlagged; //!< Has there been a problem with me?
     explicit Device( System* system, DeviceID id, Type type );
     virtual ~Device();
-    virtual void create(); //!< Create our instance
     virtual void update(); //!< Update our instance
-    virtual void destroy(); //!< Destroy our instance
     virtual void setStatus( Status status ); //!< Set status
     virtual void saveStatus(); //!< Backup current status
     virtual const Status getSavedStatus(); //!< Get backed up status
@@ -115,6 +117,9 @@ namespace nil {
     virtual void onConnect(); //!< On plugged or otherwise enabled
     virtual void flagDisconnected(); //!< Flag for disconnection
   public:
+    virtual void enable(); //!< Create our instance
+    virtual void disable(); //!< Destroy our instance
+    virtual DeviceInstance* getInstance(); //!< Get our instance, if available
     virtual const DeviceID getID() const; //!< Get unique identifier
     virtual const Handler getHandler() const = 0; //!< Get handler
     virtual const Type getType() const; //!< Get type
@@ -123,6 +128,8 @@ namespace nil {
     virtual System* getSystem() const; //!< Get owner system
     virtual const bool isDisconnectFlagged() const; //!< Are we flagged for disconnection?
   };
+
+  typedef list<Device*> DeviceList;
 
   //! \class RawInputDevice
   //! Device abstraction base class for Raw Input API devices.
@@ -175,8 +182,6 @@ namespace nil {
     virtual const XINPUT_CAPABILITIES& getCapabilities(); //!< Get XInput caps
   };
 
-  typedef list<Device*> DeviceList;
-
   //! \class DeviceInstance
   //! Device instance base class.
   class DeviceInstance {
@@ -190,12 +195,16 @@ namespace nil {
     virtual ~DeviceInstance();
   };
 
+  typedef list<DeviceInstance*> DeviceInstanceList;
+
+  // Mouse implementations
+
   //! \struct MouseState
   //! Mouse state structure.
   struct MouseState {
   public:
-    void reset(); //!< Reset the state of one-shot components
     MouseState();
+    void reset(); //!< Reset the state of one-shot components
     vector<Button> mButtons; //!< My buttons
     Wheel mWheel; //!< My wheel
     Movement mMovement; //!< My movement
@@ -224,9 +233,11 @@ namespace nil {
   protected:
     MouseState mState; //!< Current state
     Vector2i mLastPosition; //!< Previous position when mouse gives absolutes
-    MouseListenerList mListeners; //!< Registered state change listeners
+    MouseListenerList mListeners; //!< Registered event listeners
   public:
     Mouse( System* system, Device* device );
+    virtual void addListener( MouseListener* listener );
+    virtual void removeListener( MouseListener* listener );
     virtual void update() = 0;
     virtual ~Mouse();
   };
@@ -244,6 +255,8 @@ namespace nil {
     virtual void update();
     virtual ~RawInputMouse();
   };
+
+  // Keyboard implementations
 
   //! \class KeyboardListener
   //! Keyboard event listener base class.
@@ -264,7 +277,7 @@ namespace nil {
   //! Keyboard device instance base class.
   class Keyboard: public DeviceInstance {
   protected:
-    KeyboardListenerList mListeners;
+    KeyboardListenerList mListeners; //!< Registered event listeners
   public:
     enum KeyCode: VirtualKeyCode {
       Key_LeftShift = 0xA0, // As defined by Windows
@@ -276,6 +289,8 @@ namespace nil {
       Key_NumpadEnter = 0xD8 // Random unused code for our repurposing
     };
     Keyboard( System* system, Device* device );
+    virtual void addListener( KeyboardListener* listener );
+    virtual void removeListener( KeyboardListener* listener );
     virtual void update() = 0;
     virtual ~Keyboard();
   };
@@ -285,7 +300,7 @@ namespace nil {
   class RawInputKeyboard: public Keyboard {
   friend class System;
   protected:
-    list<VirtualKeyCode> mPressedKeys;
+    list<VirtualKeyCode> mPressedKeys; //!< List of keys that are currently down
     virtual void onRawInput( const RAWKEYBOARD& input );
   public:
     RawInputKeyboard( RawInputDevice* device );
@@ -293,12 +308,14 @@ namespace nil {
     virtual ~RawInputKeyboard();
   };
 
+  // Controller implementations
+
   //! \struct ControllerState
   //! Game controller state structure.
   struct ControllerState {
   public:
-    void reset(); //!< Reset the state of my components
     ControllerState();
+    void reset(); //!< Reset the state of my components
     vector<Button> mButtons; //!< My buttons
     vector<Axis> mAxes; //!< My axes
     vector<Slider> mSliders; //!< My sliders
@@ -349,6 +366,8 @@ namespace nil {
   public:
     Controller( System* system, Device* device );
     virtual ~Controller();
+    virtual void addListener( ControllerListener* listener );
+    virtual void removeListener( ControllerListener* listener );
     virtual const Type getType() const;
     virtual const ControllerState& getState() const;
   };
@@ -384,12 +403,30 @@ namespace nil {
     virtual ~XInputController();
   };
 
+  // System implementation
+
   typedef map<HANDLE,RawInputMouse*> RawMouseMap;
   typedef map<HANDLE,RawInputKeyboard*> RawKeyboardMap;
+
+  //! \class SystemListener
+  //! System event listener base class.
+  //! Derive your own listener from this class.
+  class SystemListener {
+  public:
+    virtual void onDeviceConnected( Device* device ) = 0;
+    virtual void onDeviceDisconnected( Device* device ) = 0;
+    virtual void onMouseEnabled( Device* device, Mouse* instance ) = 0;
+    virtual void onKeyboardEnabled( Device* device, Keyboard* instance ) = 0;
+    virtual void onControllerEnabled( Device* device, Controller* instance ) = 0;
+    virtual void onMouseDisabled( Device* device, Mouse* instance ) = 0;
+    virtual void onKeyboardDisabled( Device* device, Keyboard* instance ) = 0;
+    virtual void onControllerDisabled( Device* device, Controller* instance ) = 0;
+  };
 
   //! \class System
   //! The input system root.
   class System: public PnPListener, public RawListener {
+  friend class Device;
   friend class DirectInputController;
   friend class RawInputKeyboard;
   friend class RawInputMouse;
@@ -404,14 +441,23 @@ namespace nil {
     DeviceList mDevices; //!< List of known devices
     HIDManager* mHIDManager; //!< Our HID manager
     bool mInitializing; //!< Are we initializing?
-    RawMouseMap mMouseMapping; //!< Mouse events mapping
-    RawKeyboardMap mKeyboardMapping; //!< Keyboard events mapping
+    RawMouseMap mMouseMapping; //!< Raw mouse events mapping
+    RawKeyboardMap mKeyboardMapping; //!< Raw keyboard events mapping
     Logitech::GKeySDK* mLogitechGKeys; //!< External module for Logitech G-Keys
     Logitech::LedSDK* mLogitechLEDs; //!< External module for Logitech LEDs
+    SystemListener* mListener; //!< Our single event listener
     void initializeDevices();
     void refreshDevices();
     void identifyXInputDevices();
     DeviceID getNextID();
+    void deviceConnect( Device* device );
+    void deviceDisconnect( Device* device );
+    void mouseEnabled( Device* device, Mouse* instance );
+    void keyboardEnabled( Device* device, Keyboard* instance );
+    void controllerEnabled( Device* device, Controller* instance );
+    void mouseDisabled( Device* device, Mouse* instance );
+    void keyboardDisabled( Device* device, Keyboard* instance );
+    void controllerDisabled( Device* device, Controller* instance );
     void mapMouse( HANDLE handle, RawInputMouse* mouse );
     void unmapMouse( HANDLE handle );
     void mapKeyboard( HANDLE handle, RawInputKeyboard* keyboard );
@@ -425,8 +471,9 @@ namespace nil {
     static BOOL CALLBACK diDeviceEnumCallback(
       LPCDIDEVICEINSTANCEW instance, LPVOID referer );
   public:
-    System( HINSTANCE instance, HWND window );
+    System( HINSTANCE instance, HWND window, SystemListener* listener );
     void update();
+    DeviceList& getDevices();
     Logitech::GKeySDK* getLogitechGKeys();
     Logitech::LedSDK* getLogitechLEDs();
     const bool isInitializing();

@@ -7,7 +7,7 @@ namespace nil {
   {
   }
 
-  Axis::Axis(): absolute( 0 )
+  Axis::Axis(): absolute( 0.0f )
   {
   }
 

@@ -3,28 +3,20 @@
 
 namespace nil {
 
-  class DummyKeyboardListener: public KeyboardListener {
-  public:
-    virtual void onKeyPressed( Keyboard* keyboard, const VirtualKeyCode keycode )
-    {
-      wprintf_s( L"Key pressed: 0x%X (%s)\r\n", keycode, keyboard->getDevice()->getName().c_str() );
-    }
-    virtual void onKeyRepeat( Keyboard* keyboard, const VirtualKeyCode keycode )
-    {
-      wprintf_s( L"Key repeat: 0x%X (%s)\r\n", keycode, keyboard->getDevice()->getName().c_str() );
-    }
-    virtual void onKeyReleased( Keyboard* keyboard, const VirtualKeyCode keycode )
-    {
-      wprintf_s( L"Key released: 0x%X (%s)\r\n", keycode, keyboard->getDevice()->getName().c_str() );
-    }
-  };
-
-  DummyKeyboardListener gDummyKeyboardListener;
-
   Keyboard::Keyboard( System* system, Device* device ):
   DeviceInstance( system, device )
   {
-    mListeners.push_back( &gDummyKeyboardListener );
+    //
+  }
+
+  void Keyboard::addListener( KeyboardListener* listener )
+  {
+    mListeners.push_back( listener );
+  }
+
+  void Keyboard::removeListener( KeyboardListener* listener )
+  {
+    mListeners.remove( listener );
   }
 
   Keyboard::~Keyboard()

@@ -24,7 +24,9 @@ namespace nil {
 
   namespace Logitech {
 
-    // G-Key SDK (1.02.004)
+    // Logitech G-Key SDK (1.02.004) implementation
+    // Portions of following code copyright (c) Logitech.
+    // See external/LogitechGkeySDK_1.02.004/ for full SDK and libraries.
 
 #pragma pack( push, 1 )
 
@@ -82,12 +84,16 @@ namespace nil {
     public:
       GKeySDK();
       virtual InitReturn initialize();
+      void addListener( GKeyListener* listener );
+      void removeListener( GKeyListener* listener );
       void update();
       virtual void shutdown();
       ~GKeySDK();
     };
 
-    // LED SDK (1.01.005.1)
+    // Logitech LED SDK (1.01.005.1) implementation
+    // Portions of following code copyright (c) Logitech.
+    // See external/LogitechLEDSDK_1.01.005.1/ for full SDK and libraries.
 
     const int LOGITECH_LED_MOUSE = 0x0001;
     const int LOGITECH_LED_KEYBOARD = 0x0002;
