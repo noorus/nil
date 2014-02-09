@@ -37,7 +37,7 @@ namespace nil {
   //! Two-dimensional analog controller component.
   struct Slider {
   public:
-    Vector2i absolute; //!< Absolute value in [{-1..1},{-1..1}]
+    Vector2f absolute; //!< Absolute value in [{-1..1},{-1..1}]
     Slider();
   };
 

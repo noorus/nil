@@ -24,7 +24,7 @@ namespace nil {
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, L"Could not set DirectInput8 device data format" );
 
-    hr = mDIDevice->SetCooperativeLevel( device->getSystem()->mWindow, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE );
+    hr = mDIDevice->SetCooperativeLevel( device->getSystem()->mWindow, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE );
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, L"Could not set DirectInput8 device cooperation level" );
 
@@ -73,7 +73,14 @@ namespace nil {
     mDIDevice->EnumObjects( diComponentsEnumCallback, this, DIDFT_AXIS );
 
     mState.mAxes.resize( mAxisEnum );
-    mState.mSliders.resize( mSliderEnum );
+
+    // TODO This is totally untested. I haven't found a single controller
+    // that actually reports sliders, so this code _could_ crash and burn.
+    if ( mSliderEnum > 0 )
+    {
+      mSliderEnum /= 2;
+      mState.mSliders.resize( mSliderEnum );
+    }
   }
 
   BOOL CALLBACK DirectInputController::diComponentsEnumCallback(
@@ -143,17 +150,22 @@ namespace nil {
 
     while ( !done )
     {
-      HRESULT hr = mDIDevice->Acquire();
-      while ( hr == DIERR_INPUTLOST )
+      HRESULT hr = mDIDevice->Poll();
+      if ( hr == DI_OK )
+        hr = mDIDevice->GetDeviceData( sizeof( DIDEVICEOBJECTDATA ), buffers, &entries, 0 );
+
+      if ( hr != DI_OK )
+      {
         hr = mDIDevice->Acquire();
-
-      hr = mDIDevice->Poll();
-      if ( FAILED( hr ) )
-        return; // NIL_EXCEPT_DINPUT( hr, L"Could not poll DirectInput8 device" );
-
-      hr = mDIDevice->GetDeviceData( sizeof( DIDEVICEOBJECTDATA ), buffers, &entries, 0 );
-      if ( FAILED( hr ) )
-        return; // NIL_EXCEPT_DINPUT( hr, L"Could not get DirectInput8 device data" );
+        while ( hr == DIERR_INPUTLOST )
+          hr = mDIDevice->Acquire();
+        hr = mDIDevice->Poll();
+        if ( FAILED( hr ) )
+          return;
+        hr = mDIDevice->GetDeviceData( sizeof( DIDEVICEOBJECTDATA ), buffers, &entries, 0 );
+        if ( FAILED( hr ) )
+          return;
+      }
 
       if ( entries < cJoystickEvents )
         done = true;
@@ -191,6 +203,36 @@ namespace nil {
         {
           int axis = (int)( 0x0000FFFF & buffers[i].uAppData );
           mState.mAxes[axis].absolute = filterAxis( buffers[i].dwData );
+        }
+        else
+        {
+          switch ( buffers[i].dwOfs )
+          {
+            case DIJ2OFS_SLIDER0( 0 ):
+              mState.mSliders[0].absolute.x = filterAxis( buffers[i].dwData );
+            break;
+            case DIJ2OFS_SLIDER0( 1 ):
+              mState.mSliders[0].absolute.y = filterAxis( buffers[i].dwData );
+            break;
+            case DIJ2OFS_SLIDER1( 0 ):
+              mState.mSliders[1].absolute.x = filterAxis( buffers[i].dwData );
+            break;
+            case DIJ2OFS_SLIDER1( 1 ):
+              mState.mSliders[1].absolute.y = filterAxis( buffers[i].dwData );
+            break;
+            case DIJ2OFS_SLIDER2( 0 ):
+              mState.mSliders[2].absolute.x = filterAxis( buffers[i].dwData );
+            break;
+            case DIJ2OFS_SLIDER2( 1 ):
+              mState.mSliders[2].absolute.y = filterAxis( buffers[i].dwData );
+            break;
+            case DIJ2OFS_SLIDER3( 0 ):
+              mState.mSliders[3].absolute.x = filterAxis( buffers[i].dwData );
+            break;
+            case DIJ2OFS_SLIDER3( 1 ):
+              mState.mSliders[3].absolute.y = filterAxis( buffers[i].dwData );
+            break;
+          }
         }
       }
     }

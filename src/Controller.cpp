@@ -19,7 +19,7 @@ namespace nil {
       axis.absolute = 0.0f;
 
     for ( auto slider : mSliders )
-      slider.absolute = Vector2i::ZERO;
+      slider.absolute = Vector2f::ZERO;
 
     for ( auto pov : mPOVs )
       pov.direction = POV::Centered;

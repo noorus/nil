@@ -11,7 +11,7 @@ namespace nil {
   {
   }
 
-  Slider::Slider(): absolute( 0, 0 )
+  Slider::Slider(): absolute( 0.0f, 0.0f )
   {
   }
 
