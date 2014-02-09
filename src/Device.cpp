@@ -12,7 +12,7 @@ namespace nil {
 
   void Device::enable()
   {
-    if ( mInstance )
+    if ( mInstance || mStatus != Status_Connected )
       return;
 
     if ( getHandler() == Handler_XInput )
@@ -78,6 +78,7 @@ namespace nil {
   {
     if ( !mInstance )
       return;
+
     switch ( getType() )
     {
       case Device_Controller:
@@ -93,6 +94,7 @@ namespace nil {
         NIL_EXCEPT( L"Unimplemented device type" );
       break;
     }
+
     SAFE_DELETE( mInstance );
   }
 

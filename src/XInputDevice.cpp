@@ -65,6 +65,7 @@ namespace nil {
   {
     if ( status == Status_Connected && !mIdentified )
       identify();
+
     Device::setStatus( status );
   }
 
