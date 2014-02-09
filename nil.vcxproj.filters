@@ -36,6 +36,9 @@
     <ClInclude Include="include\nilLogitech.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\nilComponents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\System.cpp">

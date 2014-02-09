@@ -128,15 +128,15 @@ namespace nil {
     if ( val < 0 )
     {
       Real ret = (Real)val / (Real)( 32767 );
-      return ( ret < -1.0f ? -1.0f : ret );
+      return ( ret < NIL_REAL_MINUSONE ? NIL_REAL_MINUSONE : ret );
     }
     else if ( val > 0 )
     {
       Real ret = (Real)val / (Real)( 32767 );
-      return ( ret > 1.0f ? 1.0f : ret );
+      return ( ret > NIL_REAL_ONE ? NIL_REAL_ONE : ret );
     }
     else
-      return 0.0f;
+      return NIL_REAL_ZERO;
   }
 
   void DirectInputController::update()

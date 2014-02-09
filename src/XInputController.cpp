@@ -42,26 +42,26 @@ namespace nil {
     if ( val < 0 )
     {
       if ( val > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
-        return 0.0f;
+        return NIL_REAL_ZERO;
       val += XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
       Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
-      return ( ret < -1.0f ? -1.0f : ret );
+      return ( ret < NIL_REAL_MINUSONE ? NIL_REAL_MINUSONE : ret );
     }
     else if ( val > 0 )
     {
       if ( val < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
-        return 0.0f;
+        return NIL_REAL_ZERO;
       val -= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
       Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
-      return ( ret > 1.0f ? 1.0f : ret );
+      return ( ret > NIL_REAL_ONE ? NIL_REAL_ONE : ret );
     }
     else
-      return 0.0f;
+      return NIL_REAL_ZERO;
   }
 
   Real XInputController::filterRightThumbAxis( int val )
   {
-    // There's a problem with the right thumbstick's axes oten not reaching
+    // There's a problem with the right thumbstick's axes often not reaching
     // their maximum. So we adjust the range upward slightly to make up for it.
     // It's OK to lose a tiny bit of low-range precision in order to do that.
     // However, we'll try to stay as neutral as possible, and leave further
@@ -71,30 +71,30 @@ namespace nil {
     if ( val < 0 )
     {
       if ( val > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
-        return 0.0f;
+        return NIL_REAL_ZERO;
       val += adjustedDeadzone;
       Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
-      return ( ret < -1.0f ? -1.0f : ret );
+      return ( ret < NIL_REAL_MINUSONE ? NIL_REAL_MINUSONE : ret );
     }
     else if ( val > 0 )
     {
       if ( val < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
-        return 0.0f;
+        return NIL_REAL_ZERO;
       val -= adjustedDeadzone;
       Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
-      return ( ret > 1.0f ? 1.0f : ret );
+      return ( ret > NIL_REAL_ONE ? NIL_REAL_ONE : ret );
     }
     else
-      return 0.0f;
+      return NIL_REAL_ZERO;
   }
 
   Real XInputController::filterTrigger( int val )
   {
     if ( val < XINPUT_GAMEPAD_TRIGGER_THRESHOLD )
-      return 0.0f;
+      return NIL_REAL_ZERO;
     val -= XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
     Real ret = (Real)val / (Real)( 255 - XINPUT_GAMEPAD_TRIGGER_THRESHOLD );
-    return ( ret > 1.0f ? 1.0f : ret );
+    return ( ret > NIL_REAL_ONE ? NIL_REAL_ONE : ret );
   }
 
   void XInputController::update()

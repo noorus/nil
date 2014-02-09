@@ -16,7 +16,7 @@ namespace nil {
       button.pushed = false;
 
     for ( auto axis : mAxes )
-      axis.absolute = 0.0f;
+      axis.absolute = NIL_REAL_ZERO;
 
     for ( auto slider : mSliders )
       slider.absolute = Vector2f::ZERO;

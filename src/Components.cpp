@@ -7,11 +7,11 @@ namespace nil {
   {
   }
 
-  Axis::Axis(): absolute( 0.0f )
+  Axis::Axis(): absolute( NIL_REAL_ZERO )
   {
   }
 
-  Slider::Slider(): absolute( 0.0f, 0.0f )
+  Slider::Slider(): absolute( NIL_REAL_ZERO, NIL_REAL_ZERO )
   {
   }
 

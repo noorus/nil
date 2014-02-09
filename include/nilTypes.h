@@ -38,6 +38,10 @@ namespace nil {
   typedef float Real;
   typedef unsigned int VirtualKeyCode;
 
+# define NIL_REAL_ZERO 0.0f
+# define NIL_REAL_ONE 1.0f
+# define NIL_REAL_MINUSONE -1.0f
+
   typedef int DeviceID;
 
   using std::map;
@@ -106,7 +110,7 @@ namespace nil {
   public:
     Real x;
     Real y;
-    inline Vector2f(): x( 0.0f ), y( 0.0f ) {}
+    inline Vector2f(): x( NIL_REAL_ZERO ), y( NIL_REAL_ZERO ) {}
     inline explicit Vector2f( Real x_, Real y_ ): x( x_ ), y( y_ ) {}
     inline bool operator == ( const Vector2f& other ) const
     {
@@ -126,7 +130,7 @@ namespace nil {
     Real x;
     Real y;
     Real z;
-    inline Vector3f(): x( 0.0f ), y( 0.0f ), z( 0.0f ) {}
+    inline Vector3f(): x( NIL_REAL_ZERO ), y( NIL_REAL_ZERO ), z( NIL_REAL_ZERO ) {}
     inline explicit Vector3f( Real x_, Real y_, Real z_ ):
     x( x_ ), y( y_ ), z( z_ ) {}
     inline bool operator == ( const Vector3f& other ) const
