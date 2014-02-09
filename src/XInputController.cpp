@@ -37,7 +37,7 @@ namespace nil {
     mState.mAxes.resize( 6 );
   }
 
-  Real XInputController::filterThumbAxis( int val )
+  Real XInputController::filterLeftThumbAxis( int val )
   {
     if ( val < 0 )
     {
@@ -53,6 +53,35 @@ namespace nil {
         return 0.0f;
       val -= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
       Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
+      return ( ret > 1.0f ? 1.0f : ret );
+    }
+    else
+      return 0.0f;
+  }
+
+  Real XInputController::filterRightThumbAxis( int val )
+  {
+    // There's a problem with the right thumbstick's axes oten not reaching
+    // their maximum. So we adjust the range upward slightly to make up for it.
+    // It's OK to lose a tiny bit of low-range precision in order to do that.
+    // However, we'll try to stay as neutral as possible, and leave further
+    // filtering to the end-user application.
+    static int adjustedDeadzone = (int)( (double)XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE * 0.8 );
+
+    if ( val < 0 )
+    {
+      if ( val > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
+        return 0.0f;
+      val += adjustedDeadzone;
+      Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
+      return ( ret < -1.0f ? -1.0f : ret );
+    }
+    else if ( val > 0 )
+    {
+      if ( val < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
+        return 0.0f;
+      val -= adjustedDeadzone;
+      Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
       return ( ret > 1.0f ? 1.0f : ret );
     }
     else
@@ -93,10 +122,10 @@ namespace nil {
       mState.mButtons[i].pushed = ( ( mXInputState.Gamepad.wButtons & ( 1 << ( i + 4 ) ) ) != 0 );
 
     // Axes
-    mState.mAxes[0].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbLX );
-    mState.mAxes[1].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbLY );
-    mState.mAxes[2].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbRX );
-    mState.mAxes[3].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbRY );
+    mState.mAxes[0].absolute = filterLeftThumbAxis( mXInputState.Gamepad.sThumbLX );
+    mState.mAxes[1].absolute = filterLeftThumbAxis( mXInputState.Gamepad.sThumbLY );
+    mState.mAxes[2].absolute = filterRightThumbAxis( mXInputState.Gamepad.sThumbRX );
+    mState.mAxes[3].absolute = filterRightThumbAxis( mXInputState.Gamepad.sThumbRY );
     mState.mAxes[4].absolute = filterTrigger( mXInputState.Gamepad.bLeftTrigger );
     mState.mAxes[5].absolute = filterTrigger( mXInputState.Gamepad.bRightTrigger );
 

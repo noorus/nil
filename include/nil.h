@@ -395,7 +395,8 @@ namespace nil {
   protected:
     DWORD mLastPacket;
     XINPUT_STATE mXInputState;
-    inline Real filterThumbAxis( int val );
+    inline Real filterLeftThumbAxis( int val );
+    inline Real filterRightThumbAxis( int val );
     inline Real filterTrigger( int val );
   public:
     XInputController( XInputDevice* device );
