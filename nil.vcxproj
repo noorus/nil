@@ -167,6 +167,7 @@
     <ClCompile Include="src\DeviceInstance.cpp" />
     <ClCompile Include="src\DirectInputController.cpp" />
     <ClCompile Include="src\DirectInputDevice.cpp" />
+    <ClCompile Include="src\EventMonitor.cpp" />
     <ClCompile Include="src\Exception.cpp" />
     <ClCompile Include="src\ExternalModule.cpp" />
     <ClCompile Include="src\HIDManager.cpp" />
@@ -175,7 +176,6 @@
     <ClCompile Include="src\LogitechGkeySDK.cpp" />
     <ClCompile Include="src\LogitechLedSDK.cpp" />
     <ClCompile Include="src\Mouse.cpp" />
-    <ClCompile Include="src\PnPMonitor.cpp" />
     <ClCompile Include="src\RawInputDevice.cpp" />
     <ClCompile Include="src\RawInputKeyboard.cpp" />
     <ClCompile Include="src\RawInputMouse.cpp" />

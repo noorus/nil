@@ -36,9 +36,9 @@ namespace nil {
 
   typedef list<RawListener*> RawListenerList;
 
-  //! \class PnPMonitor
-  //! Monitors for Plug-n-Play (USB) device events.
-  class PnPMonitor {
+  //! \class EventMonitor
+  //! Monitors for Plug-n-Play (USB) and Raw device events.
+  class EventMonitor {
   protected:
     HINSTANCE mInstance; //!< Host application instance handle
     ATOM mClass; //!< Class registration handle
@@ -61,13 +61,13 @@ namespace nil {
     static LRESULT CALLBACK wndProc( HWND window, UINT message,
       WPARAM wParam, LPARAM lParam );
   public:
-    PnPMonitor( HINSTANCE instance, PnPListener* listener );
+    EventMonitor( HINSTANCE instance );
     void registerPnPListener( PnPListener* listener );
     void unregisterPnPListener( PnPListener* listener );
     void registerRawListener( RawListener* listener );
     void unregisterRawListener( RawListener* listener );
     void update();
-    ~PnPMonitor();
+    ~EventMonitor();
   };
 
 }

@@ -384,7 +384,7 @@ namespace nil {
     IDirectInput8W* mDirectInput; //!< Our DirectInput instance
     HINSTANCE mInstance; //!< Host application instance handle
     HWND mWindow; //!< Host application window handle
-    PnPMonitor* mMonitor; //!< Our Plug-n-Play event monitor
+    EventMonitor* mMonitor; //!< Our Plug-n-Play & raw input event monitor
     DeviceList mDevices; //!< List of known devices
     HIDManager* mHIDManager; //!< Our HID manager
     bool mInitializing; //!< Are we initializing?

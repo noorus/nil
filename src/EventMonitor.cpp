@@ -3,9 +3,9 @@
 
 namespace nil {
 
-  const wchar_t* cPnPMonitorClass = L"NIL_MONITOR";
+  const wchar_t* cEventMonitorClass = L"NIL_MONITOR";
 
-  PnPMonitor::PnPMonitor( HINSTANCE instance, PnPListener* listener ):
+  EventMonitor::EventMonitor( HINSTANCE instance ):
   mInstance( instance ), mClass( 0 ), mWindow( 0 ), mNotifications( 0 ),
   mInputBuffer( nullptr ),
   mInputBufferSize( 10240 ) // 10KB default
@@ -14,7 +14,7 @@ namespace nil {
     wx.cbSize        = sizeof( WNDCLASSEXW );
     wx.lpfnWndProc   = wndProc;
     wx.hInstance     = mInstance;
-    wx.lpszClassName = cPnPMonitorClass;
+    wx.lpszClassName = cEventMonitorClass;
 
     mClass = RegisterClassExW( &wx );
     if ( !mClass )
@@ -32,47 +32,47 @@ namespace nil {
     registerNotifications();
   }
 
-  void PnPMonitor::registerPnPListener( PnPListener* listener )
+  void EventMonitor::registerPnPListener( PnPListener* listener )
   {
     mPnPListeners.push_back( listener );
   }
 
-  void PnPMonitor::unregisterPnPListener( PnPListener* listener )
+  void EventMonitor::unregisterPnPListener( PnPListener* listener )
   {
     mPnPListeners.remove( listener );
   }
 
-  void PnPMonitor::registerRawListener( RawListener* listener )
+  void EventMonitor::registerRawListener( RawListener* listener )
   {
     mRawListeners.push_back( listener );
   }
 
-  void PnPMonitor::unregisterRawListener( RawListener* listener )
+  void EventMonitor::unregisterRawListener( RawListener* listener )
   {
     mRawListeners.remove( listener );
   }
 
-  void PnPMonitor::handleInterfaceArrival( const GUID& deviceClass,
+  void EventMonitor::handleInterfaceArrival( const GUID& deviceClass,
   const String& devicePath )
   {
     for ( auto listener : mPnPListeners )
       listener->onPnPPlug( deviceClass, devicePath );
   }
 
-  void PnPMonitor::handleInterfaceRemoval( const GUID& deviceClass,
+  void EventMonitor::handleInterfaceRemoval( const GUID& deviceClass,
   const String& devicePath )
   {
     for ( auto listener : mPnPListeners )
       listener->onPnPUnplug( deviceClass, devicePath );
   }
 
-  void PnPMonitor::handleRawArrival( HANDLE handle )
+  void EventMonitor::handleRawArrival( HANDLE handle )
   {
     for ( auto listener : mRawListeners )
       listener->onRawArrival( handle );
   }
 
-  void PnPMonitor::handleRawInput( HRAWINPUT input )
+  void EventMonitor::handleRawInput( HRAWINPUT input )
   {
     unsigned int dataSize;
 
@@ -110,13 +110,13 @@ namespace nil {
     }
   }
 
-  void PnPMonitor::handleRawRemoval( HANDLE handle )
+  void EventMonitor::handleRawRemoval( HANDLE handle )
   {
     for ( auto listener : mRawListeners )
       listener->onRawRemoval( handle );
   }
 
-  void PnPMonitor::registerNotifications()
+  void EventMonitor::registerNotifications()
   {
     DEV_BROADCAST_DEVICEINTERFACE filter;
     ZeroMemory( &filter, sizeof( filter ) );
@@ -146,7 +146,7 @@ namespace nil {
       NIL_EXCEPT_WINAPI( L"Couldn't register for raw input notifications" );
   }
 
-  LRESULT CALLBACK PnPMonitor::wndProc( HWND window, UINT message,
+  LRESULT CALLBACK EventMonitor::wndProc( HWND window, UINT message,
   WPARAM wParam, LPARAM lParam )
   {
     PDEV_BROADCAST_DEVICEINTERFACE_W broadcast;
@@ -154,13 +154,13 @@ namespace nil {
     if ( message == WM_CREATE )
     {
       auto createstruct = (LPCREATESTRUCTW)lParam;
-      auto me = (PnPMonitor*)createstruct->lpCreateParams;
+      auto me = (EventMonitor*)createstruct->lpCreateParams;
       SetWindowLongPtrW( window, GWLP_USERDATA, PtrToUlong( me ) );
       return 1;
     }
 
     auto ptr = static_cast<LONG_PTR>( GetWindowLongPtrW( window, GWLP_USERDATA ) );
-    auto me = reinterpret_cast<PnPMonitor*>( ptr );
+    auto me = reinterpret_cast<EventMonitor*>( ptr );
 
     if ( !me )
       return DefWindowProcW( window, message, wParam, lParam );
@@ -213,7 +213,7 @@ namespace nil {
     }
   }
 
-  void PnPMonitor::unregisterNotifications()
+  void EventMonitor::unregisterNotifications()
   {
     RAWINPUTDEVICE rawDevices[2];
 
@@ -236,17 +236,17 @@ namespace nil {
     }
   }
 
-  void PnPMonitor::update()
+  void EventMonitor::update()
   {
     MSG msg;
+    // Run all queued messages
     while ( PeekMessageW( &msg, mWindow, 0, 0, PM_REMOVE ) > 0 )
     {
-      //TranslateMessage( &msg );
-      DispatchMessage( &msg );
+      DispatchMessageW( &msg );
     }
   }
 
-  PnPMonitor::~PnPMonitor()
+  EventMonitor::~EventMonitor()
   {
     unregisterNotifications();
     if ( mInputBuffer )

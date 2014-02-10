@@ -26,8 +26,8 @@ namespace nil {
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, L"Could not instance DirectInput 8" );
 
-    // Initialize our Plug-n-Play monitor
-    mMonitor = new PnPMonitor( mInstance, this );
+    // Initialize our event monitor
+    mMonitor = new EventMonitor( mInstance );
 
     // Initialize our HID manager
     mHIDManager = new HIDManager();
