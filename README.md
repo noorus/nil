@@ -29,6 +29,10 @@ Additionally, NIL is capable of receiving direct input from the [G-keys](https:/
 
 NIL is single-threaded, buffered and fully listener-based.
 
+### Todo
+
+* Force feedback support.
+
 ### License
 
 NIL is licensed under the **MIT** license.  
