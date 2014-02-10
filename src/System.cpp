@@ -322,17 +322,17 @@ namespace nil {
 
   int System::getNextMouseIndex()
   {
-    return mMouseIndexPool++;
+    return ++mMouseIndexPool;
   }
 
   int System::getNextKeyboardIndex()
   {
-    return mKeyboardIndexPool++;
+    return ++mKeyboardIndexPool;
   }
 
   int System::getNextControllerIndex()
   {
-    return mControllerIndexPool++;
+    return ++mControllerIndexPool;
   }
 
   void System::update()
