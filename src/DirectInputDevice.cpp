@@ -9,8 +9,6 @@ namespace nil {
   mProductID( instance->guidProduct ),
   mInstanceID( instance->guidInstance )
   {
-    mName = util::cleanupName( instance->tszInstanceName );
-
     unsigned long deviceType = GET_DIDEVICE_TYPE( instance->dwDevType );
 
     switch ( deviceType )
@@ -22,6 +20,14 @@ namespace nil {
         mType = Device_Keyboard;
       break;
     }
+
+    // Auto-generate a name an type-specific index
+    initAfterTyped();
+
+    // Only replace auto-generated name if fetched one isn't empty
+    String tmpName = util::cleanupName( instance->tszInstanceName );
+    if ( !tmpName.empty() )
+      mName = tmpName;
   }
 
   const Device::Handler DirectInputDevice::getHandler() const

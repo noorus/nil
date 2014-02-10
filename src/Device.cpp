@@ -6,8 +6,28 @@ namespace nil {
   Device::Device( System* system, DeviceID id, Type type ): mSystem( system ),
   mID( id ), mType( type ), mStatus( Status_Pending ),
   mSavedStatus( Status_Pending ), mInstance( nullptr ),
-  mDisconnectFlagged( false )
+  mDisconnectFlagged( false ), mTypedIndex( -1 )
   {
+  }
+
+  void Device::initAfterTyped()
+  {
+    // Get our type-specific index
+    switch ( mType )
+    {
+      case Device_Mouse:
+        mTypedIndex = mSystem->getNextMouseIndex();
+      break;
+      case Device_Keyboard:
+        mTypedIndex = mSystem->getNextKeyboardIndex();
+      break;
+      case Device_Controller:
+        mTypedIndex = mSystem->getNextControllerIndex();
+      break;
+    }
+
+    // Autogenerate a device name, which can be overridden later
+    mName = util::generateName( mType, mTypedIndex );
   }
 
   void Device::enable()

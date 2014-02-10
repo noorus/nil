@@ -8,7 +8,8 @@ namespace nil {
   mWindow( window ), mInstance( instance ), mDirectInput( nullptr ),
   mMonitor( nullptr ), mIDPool( 0 ), mInitializing( true ),
   mHIDManager( nullptr ), mLogitechGKeys( nullptr ), mLogitechLEDs( nullptr ),
-  mListener( listener )
+  mListener( listener ), mMouseIndexPool( 0 ), mKeyboardIndexPool( 0 ),
+  mControllerIndexPool( 0 )
   {
     assert( mListener );
 
@@ -317,6 +318,21 @@ namespace nil {
   const bool System::isInitializing()
   {
     return mInitializing;
+  }
+
+  int System::getNextMouseIndex()
+  {
+    return mMouseIndexPool++;
+  }
+
+  int System::getNextKeyboardIndex()
+  {
+    return mKeyboardIndexPool++;
+  }
+
+  int System::getNextControllerIndex()
+  {
+    return mControllerIndexPool++;
   }
 
   void System::update()

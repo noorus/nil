@@ -31,6 +31,9 @@ namespace nil {
   Device( system, id, Device_Controller ), mXInputID( xinputID ),
   mIdentified( false )
   {
+    // Auto-generate a name an type-specific index
+    initAfterTyped();
+
     memset( &mCapabilities, NULL, sizeof( XINPUT_CAPABILITIES ) );
     mName = cXInputDefaultName;
   }

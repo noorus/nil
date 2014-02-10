@@ -39,6 +39,7 @@ namespace nil {
     extern inline String cleanupName( String name ) throw();
     extern inline String utf8ToWide( const utf8String& in ) throw();
     extern inline utf8String wideToUtf8( const String& in ) throw();
+    String generateName( Device::Type deviceType, int index ) throw();
   }
 
 }

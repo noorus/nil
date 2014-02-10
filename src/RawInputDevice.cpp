@@ -28,6 +28,9 @@ namespace nil {
       break;
     }
 
+    // Auto-generate a name an type-specific index
+    initAfterTyped();
+
     auto handle = CreateFileW( mRawPath.c_str(), 0,
       FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL );
 
@@ -35,7 +38,12 @@ namespace nil {
     {
       wchar_t buffer[256];
       if ( HidD_GetProductString( handle, &buffer, 256 ) )
-        mName = util::cleanupName( buffer );
+      {
+        // Only replace auto-generated name if fetched one isn't empty
+        String tmpName = util::cleanupName( buffer );
+        if ( !tmpName.empty() )
+          mName = tmpName;
+      }
       CloseHandle( handle );
     }
   }

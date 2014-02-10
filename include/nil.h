@@ -48,8 +48,10 @@ namespace nil {
     System* mSystem; //!< My owner
     DeviceInstance* mInstance; //!< My instance, if created
     bool mDisconnectFlagged; //!< Has there been a problem with me?
+    int mTypedIndex; //!< This is a device-type-specific index for the device
     explicit Device( System* system, DeviceID id, Type type );
     virtual ~Device();
+    void initAfterTyped();
     virtual void update(); //!< Update our instance
     virtual void setStatus( Status status ); //!< Set status
     virtual void saveStatus(); //!< Backup current status
@@ -374,6 +376,9 @@ namespace nil {
   friend class RawInputMouse;
   protected:
     DeviceID mIDPool; //!< Device indexing pool
+    int mMouseIndexPool; //!< Mouse indexing pool
+    int mKeyboardIndexPool; //!< Keyboard indexing pool
+    int mControllerIndexPool; //!< Controller indexing pool
     vector<DeviceID> mXInputIDs; //!< XInput device ID mapping
     vector<uint32_t> mXInputDeviceIDs; //!< Tracked list of XInput VIDs & PIDs
     IDirectInput8W* mDirectInput; //!< Our DirectInput instance
@@ -392,6 +397,9 @@ namespace nil {
     void refreshDevices();
     void identifyXInputDevices();
     DeviceID getNextID();
+    int getNextMouseIndex();
+    int getNextKeyboardIndex();
+    int getNextControllerIndex();
     void deviceConnect( Device* device );
     void deviceDisconnect( Device* device );
     void mouseEnabled( Device* device, Mouse* instance );
