@@ -5,21 +5,22 @@ namespace nil {
 
   //! \class ExternalModule
   //! Base class for an external, optional module supported by the system.
-  class ExternalModule {
-  protected:
-    HMODULE mModule;
-    bool mInitialized;
-  public:
-    enum InitReturn: unsigned int {
-      Initialization_OK = 0,
-      Initialization_ModuleNotFound,
-      Initialization_MissingExports,
-      Initialization_Unavailable
-    };
-    ExternalModule();
-    virtual InitReturn initialize() = 0;
-    virtual void shutdown() = 0;
-    virtual bool isInitialized() const;
+  class ExternalModule
+  {
+    protected:
+      HMODULE mModule;
+      bool mInitialized;
+    public:
+      enum InitReturn: unsigned int {
+        Initialization_OK = 0,
+        Initialization_ModuleNotFound,
+        Initialization_MissingExports,
+        Initialization_Unavailable
+      };
+      ExternalModule();
+      virtual InitReturn initialize() = 0;
+      virtual void shutdown() = 0;
+      virtual bool isInitialized() const;
   };
 
   namespace Logitech {
@@ -52,10 +53,11 @@ namespace nil {
 
     typedef unsigned int GKey;
 
-    class GKeyListener {
-    public:
-      virtual void onGKeyPressed( GKey key ) = 0;
-      virtual void onGKeyReleased( GKey key ) = 0;
+    class GKeyListener
+    {
+      public:
+        virtual void onGKeyPressed( GKey key ) = 0;
+        virtual void onGKeyReleased( GKey key ) = 0;
     };
 
     typedef list<GKeyListener*> GKeyListenerList;
@@ -67,28 +69,29 @@ namespace nil {
 
     typedef queue<GkeyCode> GKeyQueue;
 
-    class GKeySDK: public ExternalModule {
-    protected:
-      struct Functions {
-        fnLogiGkeyInit pfnLogiGkeyInit;
-        fnLogiGkeyGetMouseButtonString pfnLogiGkeyGetMouseButtonString;
-        fnLogiGkeyGetKeyboardGkeyString pfnLogiGkeyGetKeyboardGkeyString;
-        fnLogiGkeyShutdown pfnLogiGkeyShutdown;
-        Functions();
-      } mFunctions;
-      logiGkeyCBContext mContext;
-      SRWLOCK mLock;
-      GKeyQueue mQueue;
-      GKeyListenerList mListeners;
-      static void __cdecl keyCallback( GkeyCode key, const wchar_t* name, void* context );
-    public:
-      GKeySDK();
-      virtual InitReturn initialize();
-      void addListener( GKeyListener* listener );
-      void removeListener( GKeyListener* listener );
-      void update();
-      virtual void shutdown();
-      ~GKeySDK();
+    class GKeySDK: public ExternalModule
+    {
+      protected:
+        struct Functions {
+          fnLogiGkeyInit pfnLogiGkeyInit;
+          fnLogiGkeyGetMouseButtonString pfnLogiGkeyGetMouseButtonString;
+          fnLogiGkeyGetKeyboardGkeyString pfnLogiGkeyGetKeyboardGkeyString;
+          fnLogiGkeyShutdown pfnLogiGkeyShutdown;
+          Functions();
+        } mFunctions;
+        logiGkeyCBContext mContext;
+        SRWLOCK mLock;
+        GKeyQueue mQueue;
+        GKeyListenerList mListeners;
+        static void __cdecl keyCallback( GkeyCode key, const wchar_t* name, void* context );
+      public:
+        GKeySDK();
+        virtual InitReturn initialize();
+        void addListener( GKeyListener* listener );
+        void removeListener( GKeyListener* listener );
+        void update();
+        virtual void shutdown();
+        ~GKeySDK();
     };
 
     // Logitech LED SDK (1.01.005.1) implementation
@@ -105,23 +108,24 @@ namespace nil {
     typedef BOOL (*fnLogiLedRestoreLighting)( int deviceType );
     typedef void (*fnLogiLedShutdown)();
 
-    class LedSDK: public ExternalModule {
-    protected:
-      struct Functions {
-        fnLogiLedInit pfnLogiLedInit;
-        fnLogiLedSaveCurrentLighting pfnLogiLedSaveCurrentLighting;
-        fnLogiLedSetLighting pfnLogiLedSetLighting;
-        fnLogiLedRestoreLighting pfnLogiLedRestoreLighting;
-        fnLogiLedShutdown pfnLogiLedShutdown;
-        Functions();
-      } mFunctions;
-      bool mSavedOriginal;
-    public:
-      LedSDK();
-      virtual InitReturn initialize();
-      void setLighting( const Color& color );
-      virtual void shutdown();
-      ~LedSDK();
+    class LedSDK: public ExternalModule
+    {
+      protected:
+        struct Functions {
+          fnLogiLedInit pfnLogiLedInit;
+          fnLogiLedSaveCurrentLighting pfnLogiLedSaveCurrentLighting;
+          fnLogiLedSetLighting pfnLogiLedSetLighting;
+          fnLogiLedRestoreLighting pfnLogiLedRestoreLighting;
+          fnLogiLedShutdown pfnLogiLedShutdown;
+          Functions();
+        } mFunctions;
+        bool mSavedOriginal;
+      public:
+        LedSDK();
+        virtual InitReturn initialize();
+        void setLighting( const Color& color );
+        virtual void shutdown();
+        ~LedSDK();
     };
 
   }

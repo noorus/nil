@@ -9,7 +9,7 @@ namespace nil {
     assert( mDevice );
   }
 
-  const Device* DeviceInstance::getDevice()
+  const Device* DeviceInstance::getDevice() const
   {
     return mDevice;
   }
