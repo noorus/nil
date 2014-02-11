@@ -77,12 +77,12 @@ namespace nil {
     return Device::Handler_XInput;
   }
 
-  const int XInputDevice::getXInputID()
+  const int XInputDevice::getXInputID() const
   {
     return mXInputID;
   }
 
-  const XINPUT_CAPABILITIES& XInputDevice::getCapabilities()
+  const XINPUT_CAPABILITIES& XInputDevice::getCapabilities() const
   {
     return mCapabilities;
   }

@@ -68,7 +68,7 @@ namespace nil {
     virtual const Type getType() const; //!< Get type
     virtual const Status getStatus() const; //!< Get status
     virtual const String& getName() const; //!< Get name
-    virtual System* getSystem() const; //!< Get owner system
+    virtual System* getSystem(); //!< Get owner system
     virtual const bool isDisconnectFlagged() const; //!< Are we flagged for disconnection?
   };
 
@@ -86,9 +86,9 @@ namespace nil {
   public:
     virtual ~RawInputDevice();
     virtual const Handler getHandler() const;
-    virtual const HANDLE getRawHandle();
-    virtual const String& getRawPath();
-    virtual const RID_DEVICE_INFO* getRawInfo();
+    virtual const HANDLE getRawHandle() const;
+    virtual const String& getRawPath() const;
+    virtual const RID_DEVICE_INFO* getRawInfo() const;
   };
 
   //! \class DirectInputDevice
@@ -102,8 +102,8 @@ namespace nil {
       LPCDIDEVICEINSTANCEW instance );
   public:
     virtual const Handler getHandler() const;
-    virtual const GUID getProductID();
-    virtual const GUID getInstanceID();
+    virtual const GUID getProductID() const;
+    virtual const GUID getInstanceID() const;
   };
 
   //! \class XInputDevice
@@ -121,8 +121,8 @@ namespace nil {
     virtual void onConnect();
   public:
     virtual const Handler getHandler() const;
-    virtual const int getXInputID();
-    virtual const XINPUT_CAPABILITIES& getCapabilities(); //!< Get XInput caps
+    virtual const int getXInputID() const;
+    virtual const XINPUT_CAPABILITIES& getCapabilities() const; //!< Get XInput caps
   };
 
   //! \class DeviceInstance
@@ -426,7 +426,7 @@ namespace nil {
     DeviceList& getDevices();
     Logitech::GKeySDK* getLogitechGKeys();
     Logitech::LedSDK* getLogitechLEDs();
-    const bool isInitializing();
+    const bool isInitializing() const;
     ~System();
   };
 

@@ -10,7 +10,7 @@ extern "C" {
 
 namespace nil {
 
-  //! Known USB vendor IDs that might be important.
+  //! Known USB vendor IDs that might be useful.
   enum USBKnownVendor: uint16_t {
     USBVendor_Microsoft = 0x045E,
     USBVendor_Logitech  = 0x046D

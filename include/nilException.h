@@ -12,7 +12,7 @@ namespace nil {
   };
 
   //! \class Exception
-  //! Main NIL exception class. Descendant of std::exception.
+  //! Main NIL exception class.
   class Exception: public std::exception {
   public:
     enum Type: int {

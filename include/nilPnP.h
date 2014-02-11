@@ -3,13 +3,17 @@
 
 namespace nil {
 
+  //! USB Usage Page IDs.
+  //! See See USB HID Usage Tables version 1.1, page 15
   enum USBUsagePage {
     USBUsagePage_Desktop = 0x01
   };
 
-  enum USBUsage {
-    USBUsage_Mice = 0x02,
-    USBUsage_Keyboards = 0x06
+  //! USB Generic Desktop Page usage IDs.
+  //! See USB HID Usage Tables version 1.1, page 27
+  enum USBDesktopUsage {
+    USBDesktopUsage_Mice = 0x02,
+    USBDesktopUsage_Keyboards = 0x06
   };
 
   //! \class PnPListener
@@ -28,10 +32,14 @@ namespace nil {
   //! Raw input event listener.
   class RawListener {
   public:
-    virtual void onRawArrival( HANDLE handle ) = 0;
-    virtual void onRawMouseInput( HANDLE handle, const RAWMOUSE& input ) = 0;
-    virtual void onRawKeyboardInput( HANDLE handle, const RAWKEYBOARD& input ) = 0;
-    virtual void onRawRemoval( HANDLE handle ) = 0;
+    virtual void onRawArrival(
+      HANDLE handle ) = 0;
+    virtual void onRawMouseInput(
+      HANDLE handle, const RAWMOUSE& input ) = 0;
+    virtual void onRawKeyboardInput(
+      HANDLE handle, const RAWKEYBOARD& input ) = 0;
+    virtual void onRawRemoval(
+      HANDLE handle ) = 0;
   };
 
   typedef list<RawListener*> RawListenerList;

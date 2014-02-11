@@ -35,12 +35,12 @@ namespace nil {
     return Device::Handler_DirectInput;
   }
 
-  const GUID DirectInputDevice::getProductID()
+  const GUID DirectInputDevice::getProductID() const
   {
     return mProductID;
   }
 
-  const GUID DirectInputDevice::getInstanceID()
+  const GUID DirectInputDevice::getInstanceID() const
   {
     return mInstanceID;
   }

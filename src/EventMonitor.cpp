@@ -135,12 +135,12 @@ namespace nil {
     rawDevices[0].dwFlags = RIDEV_DEVNOTIFY | RIDEV_INPUTSINK | RIDEV_NOLEGACY;
     rawDevices[0].hwndTarget = mWindow;
     rawDevices[0].usUsagePage = USBUsagePage_Desktop;
-    rawDevices[0].usUsage = USBUsage_Mice;
+    rawDevices[0].usUsage = USBDesktopUsage_Mice;
 
     rawDevices[1].dwFlags = RIDEV_DEVNOTIFY | RIDEV_INPUTSINK | RIDEV_NOLEGACY;
     rawDevices[1].hwndTarget = mWindow;
     rawDevices[1].usUsagePage = USBUsagePage_Desktop;
-    rawDevices[1].usUsage = USBUsage_Keyboards;
+    rawDevices[1].usUsage = USBDesktopUsage_Keyboards;
 
     if ( !RegisterRawInputDevices( rawDevices, 2, sizeof( RAWINPUTDEVICE ) ) )
       NIL_EXCEPT_WINAPI( L"Couldn't register for raw input notifications" );
@@ -220,12 +220,12 @@ namespace nil {
     rawDevices[0].dwFlags = RIDEV_REMOVE;
     rawDevices[0].hwndTarget = 0;
     rawDevices[0].usUsagePage = USBUsagePage_Desktop;
-    rawDevices[0].usUsage = USBUsage_Mice;
+    rawDevices[0].usUsage = USBDesktopUsage_Mice;
 
     rawDevices[0].dwFlags = RIDEV_REMOVE;
     rawDevices[0].hwndTarget = 0;
     rawDevices[0].usUsagePage = USBUsagePage_Desktop;
-    rawDevices[0].usUsage = USBUsage_Keyboards;
+    rawDevices[0].usUsage = USBDesktopUsage_Keyboards;
 
     RegisterRawInputDevices( rawDevices, 2, sizeof( RAWINPUTDEVICE ) );
 

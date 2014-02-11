@@ -140,7 +140,7 @@ namespace nil {
     mDisconnectFlagged = false;
   }
 
-  System* Device::getSystem() const
+  System* Device::getSystem()
   {
     return mSystem;
   }

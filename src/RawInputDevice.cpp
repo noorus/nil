@@ -59,17 +59,17 @@ namespace nil {
     return Device::Handler_RawInput;
   }
 
-  const HANDLE RawInputDevice::getRawHandle()
+  const HANDLE RawInputDevice::getRawHandle() const
   {
     return mRawHandle;
   }
 
-  const String& RawInputDevice::getRawPath()
+  const String& RawInputDevice::getRawPath() const
   {
     return mRawPath;
   }
 
-  const RID_DEVICE_INFO* RawInputDevice::getRawInfo()
+  const RID_DEVICE_INFO* RawInputDevice::getRawInfo() const
   {
     return mRawInfo;
   }

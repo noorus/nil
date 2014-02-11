@@ -315,7 +315,7 @@ namespace nil {
     return mDevices;
   }
 
-  const bool System::isInitializing()
+  const bool System::isInitializing() const
   {
     return mInitializing;
   }
