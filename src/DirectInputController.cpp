@@ -76,6 +76,7 @@ namespace nil {
 
     // TODO This is totally untested. I haven't found a single controller
     // that actually reports sliders, so this code _could_ crash and burn.
+    // Let me know if it does. :)
     if ( mSliderEnum > 0 )
     {
       mSliderEnum /= 2;

@@ -66,6 +66,7 @@ namespace nil {
     // It's OK to lose a tiny bit of low-range precision in order to do that.
     // However, we'll try to stay as neutral as possible, and leave further
     // filtering to the end-user application.
+ 
     static int adjustedDeadzone = (int)( (double)XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE * 0.8 );
 
     if ( val < 0 )

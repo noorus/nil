@@ -19,6 +19,7 @@
 #include <dinput.h>
 #include <xinput.h>
 
+#include <memory>
 #include <stdint.h>
 #include <exception>
 #include <string>

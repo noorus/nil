@@ -1,5 +1,6 @@
 #pragma once
 #include "nil.h"
+#include <boost/noncopyable.hpp>
 
 namespace nil {
 
@@ -24,6 +25,56 @@ namespace nil {
 # endif
 
   static GUID g_HIDInterfaceGUID = { 0x4D1E55B2, 0xF16F, 0x11CF, { 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } };
+
+  //! \class SafeHandle
+  //! Unique_ptr wrapper for WinAPI handles.
+  class SafeHandle: public std::unique_ptr<std::remove_pointer<HANDLE>::type,void(*)( HANDLE )>
+  {
+    public:
+      SafeHandle( HANDLE handle ): unique_ptr( handle, &SafeHandle::close )
+      {
+      }
+      operator HANDLE()
+      {
+        return get();
+      }
+      const bool valid() const
+      {
+        return ( get() != INVALID_HANDLE_VALUE );
+      }
+    private:
+      static void close( HANDLE handle )
+      {
+        if ( handle != INVALID_HANDLE_VALUE )
+          CloseHandle( handle );
+      }
+  };
+
+  //! \class ScopedSRWLock
+  //! Automation for scoped acquisition and release of an SRWLOCK.
+  //! \warning Lock must be initialized in advance!
+  class ScopedSRWLock: boost::noncopyable
+  {
+    protected:
+      PSRWLOCK mLock;
+      bool mExclusive;
+    public:
+      ScopedSRWLock( PSRWLOCK lock, bool exclusive = true ):
+      mLock( lock ), mExclusive( exclusive )
+      {
+        mExclusive ? AcquireSRWLockExclusive( mLock ) : AcquireSRWLockShared( mLock );
+      }
+      void unlock()
+      {
+        if ( mLock )
+          mExclusive ? ReleaseSRWLockExclusive( mLock ) : ReleaseSRWLockShared( mLock );
+        mLock = nullptr;
+      }
+      ~ScopedSRWLock()
+      {
+        unlock();
+      }
+  };
 
   static String guidToStr( GUID guid )
   {

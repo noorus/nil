@@ -8,9 +8,9 @@ namespace nil {
 
     inline String cleanupName( String name ) throw()
     {
+      boost::algorithm::trim_all( name );
       if ( boost::iequals( name, L"?" ) )
         return String();
-      boost::algorithm::trim_all( name );
       return name;
     }
 

@@ -64,14 +64,16 @@ namespace nil {
     void GKeySDK::keyCallback( GkeyCode key, const wchar_t* name, void* context )
     {
       auto sdk = reinterpret_cast<GKeySDK*>( context );
-      AcquireSRWLockExclusive( &sdk->mLock );
+
+      ScopedSRWLock lock( &sdk->mLock );
+
       sdk->mQueue.push( key );
-      ReleaseSRWLockExclusive( &sdk->mLock );
     }
 
     void GKeySDK::update()
     {
-      AcquireSRWLockExclusive( &mLock );
+      ScopedSRWLock lock( &mLock );
+
       while ( !mQueue.empty() )
       {
         for ( auto listener : mListeners )
@@ -83,12 +85,12 @@ namespace nil {
         }
         mQueue.pop();
       }
-      ReleaseSRWLockExclusive( &mLock );
     }
 
     void GKeySDK::shutdown()
     {
-      AcquireSRWLockExclusive( &mLock );
+      ScopedSRWLock lock( &mLock );
+
       if ( mModule )
       {
         if ( mInitialized )
@@ -96,8 +98,8 @@ namespace nil {
         FreeLibrary( mModule );
         mModule = NULL;
       }
+
       mInitialized = false;
-      ReleaseSRWLockExclusive( &mLock );
     }
 
     GKeySDK::~GKeySDK()

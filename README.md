@@ -17,7 +17,7 @@ NIL uses certain APIs from the Windows Driver Kit, so the WDK is required for co
 NIL utilises three different input APIs to achieve best possible input from different types of devices:
 * [Raw Input API](http://msdn.microsoft.com/en-us/library/windows/desktop/ms645543%28v=vs.85%29.aspx) for all mice & keyboard input, with zero lag and no special key weirdness
 * [XInput API](http://msdn.microsoft.com/en-us/library/windows/desktop/hh405053%28v=vs.85%29.aspx) for XBOX 360 controller input
-* [DirectInput API](http://msdn.microsoft.com/en-us/library/windows/desktop/ee416842%28v=vs.85%29.aspx) for all other (legacy) joysticks & gamepads
+* [DirectInput API](http://msdn.microsoft.com/en-us/library/windows/desktop/ee416842%28v=vs.85%29.aspx) for all other joysticks & gamepads
 
 NIL can tell apart every input device connected to the computer, including keyboards and mice.  
 Multi-keyboard and multi-mice input support is, for once, a breeze.
