@@ -10,6 +10,7 @@ namespace nil {
   for ( auto listener : mListeners ) \
     listener->onMouseButtonPressed( this, mState, x ); \
 }
+
 # define NIL_RAW_TEST_MOUSE_BUTTON_UP(flag,x) if ( input.usButtonFlags & flag ) \
   { \
   mState.mButtons[x].pushed = false; \
@@ -39,6 +40,7 @@ namespace nil {
   {
     // Reset everything but the buttons
     mState.reset();
+
     if ( input.usFlags & MOUSE_MOVE_ABSOLUTE )
     {
       // Calculate the relative change ourselves, if something actually
@@ -55,40 +57,48 @@ namespace nil {
       mState.mMovement.relative.x = input.lLastX;
       mState.mMovement.relative.y = input.lLastY;
     }
+
     if ( mState.mMovement.relative.x != 0
       || mState.mMovement.relative.y != 0 )
     {
       for ( auto listener : mListeners )
         listener->onMouseMoved( this, mState );
     }
+
     // This is butt-ugly, but at least it's semantically correct.
     // Also, the raw input API does not support more than 5 buttons.
+
     if ( mState.mButtons.size() > 0 )
     {
       NIL_RAW_TEST_MOUSE_BUTTON_DOWN( RI_MOUSE_BUTTON_1_DOWN, 0 );
       NIL_RAW_TEST_MOUSE_BUTTON_UP( RI_MOUSE_BUTTON_1_UP, 0 );
     }
+
     if ( mState.mButtons.size() > 1 )
     {
       NIL_RAW_TEST_MOUSE_BUTTON_DOWN( RI_MOUSE_BUTTON_2_DOWN, 1 );
       NIL_RAW_TEST_MOUSE_BUTTON_UP( RI_MOUSE_BUTTON_2_UP, 1 );
     }
+
     if ( mState.mButtons.size() > 2 )
     {
       NIL_RAW_TEST_MOUSE_BUTTON_DOWN( RI_MOUSE_BUTTON_3_DOWN, 2 );
       NIL_RAW_TEST_MOUSE_BUTTON_UP( RI_MOUSE_BUTTON_3_UP, 2 );
     }
+
     if ( mState.mButtons.size() > 3 )
     {
       NIL_RAW_TEST_MOUSE_BUTTON_DOWN( RI_MOUSE_BUTTON_4_DOWN, 3 );
       NIL_RAW_TEST_MOUSE_BUTTON_UP( RI_MOUSE_BUTTON_4_UP, 3 );
     }
+
     if ( mState.mButtons.size() > 4 )
     {
       NIL_RAW_TEST_MOUSE_BUTTON_DOWN( RI_MOUSE_BUTTON_5_DOWN, 4 );
       NIL_RAW_TEST_MOUSE_BUTTON_UP( RI_MOUSE_BUTTON_5_UP, 4 );
     }
-    // At least the wheel delta is simple and reliable!
+
+    // At least the wheel delta is simple and reliable
     if ( input.usButtonFlags & RI_MOUSE_WHEEL )
     {
       mState.mWheel.relative = (short)input.usButtonData;
@@ -105,6 +115,7 @@ namespace nil {
   RawInputMouse::~RawInputMouse()
   {
     auto rawDevice = static_cast<RawInputDevice*>( mDevice );
+
     rawDevice->getSystem()->unmapMouse( rawDevice->getRawHandle() );
   }
 

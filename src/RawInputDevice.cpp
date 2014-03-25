@@ -3,55 +3,72 @@
 
 namespace nil {
 
-  RawInputDevice::RawInputDevice( System* system, DeviceID id,
-  HANDLE rawHandle, String& rawPath ):
-  Device( system, id, Device_Mouse ),
-  mRawHandle( rawHandle ), mRawPath( rawPath ), mRawInfo( nullptr )
+  // RawInputDeviceInfo class
+
+  RawInputDeviceInfo::RawInputDeviceInfo( HANDLE handle ): mRawInfo( nullptr )
   {
     UINT size = 0;
-    if ( GetRawInputDeviceInfoW( mRawHandle, RIDI_DEVICEINFO, NULL, &size ) != 0 )
+    if ( GetRawInputDeviceInfoW( handle, RIDI_DEVICEINFO, NULL, &size ) != 0 )
       NIL_EXCEPT_WINAPI( L"GetRawInputDeviceInfoW failed" );
 
     mRawInfo = (RID_DEVICE_INFO*)malloc( size );
     if ( !mRawInfo )
       NIL_EXCEPT( L"Memory allocation failed" );
 
-    GetRawInputDeviceInfoW( mRawHandle, RIDI_DEVICEINFO, mRawInfo, &size );
+    if ( !GetRawInputDeviceInfoW( handle, RIDI_DEVICEINFO, mRawInfo, &size ) )
+      NIL_EXCEPT_WINAPI( L"GetRawInputDeviceInfoW failed" );
+  }
 
+  const Device::Type RawInputDeviceInfo::rawInfoResolveType() const
+  {
     switch ( mRawInfo->dwType )
     {
       case RIM_TYPEMOUSE:
-        mType = Device_Mouse;
+        return Device::Device_Mouse;
       break;
       case RIM_TYPEKEYBOARD:
-        mType = Device_Keyboard;
+        return Device::Device_Keyboard;
+      break;
+      default:
+        return Device::Device_Controller;
       break;
     }
+  }
 
-    // Auto-generate a name an type-specific index
-    initAfterTyped();
+  RawInputDeviceInfo::~RawInputDeviceInfo()
+  {
+    if ( mRawInfo )
+      free( mRawInfo );
+  }
 
-    auto handle = CreateFileW( mRawPath.c_str(), 0,
-      FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL );
+  // RawInputDevice class
 
-    if ( handle != INVALID_HANDLE_VALUE )
+  RawInputDevice::RawInputDevice( System* system, DeviceID id,
+  HANDLE rawHandle, String& rawPath ):
+  RawInputDeviceInfo( rawHandle ),
+  Device( system, id, rawInfoResolveType() ),
+  mRawHandle( rawHandle ), mRawPath( rawPath )
+  {
+    SafeHandle deviceHandle( CreateFileW( mRawPath.c_str(), 0,
+      FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL ) );
+
+    if ( deviceHandle.valid() )
     {
+      // The HidD API documentation states the max. length is 256 characters
       wchar_t buffer[256];
-      if ( HidD_GetProductString( handle, &buffer, 256 ) )
+
+      if ( HidD_GetProductString( deviceHandle, &buffer, 256 ) )
       {
         // Only replace auto-generated name if fetched one isn't empty
         String tmpName = util::cleanupName( buffer );
         if ( !tmpName.empty() )
           mName = tmpName;
       }
-      CloseHandle( handle );
     }
   }
 
   RawInputDevice::~RawInputDevice()
   {
-    if ( mRawInfo )
-      free( mRawInfo );
   }
 
   const Device::Handler RawInputDevice::getHandler() const

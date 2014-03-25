@@ -6,11 +6,7 @@ namespace nil {
   Device::Device( System* system, DeviceID id, Type type ): mSystem( system ),
   mID( id ), mType( type ), mStatus( Status_Pending ),
   mSavedStatus( Status_Pending ), mInstance( nullptr ),
-  mDisconnectFlagged( false ), mTypedIndex( 0 )
-  {
-  }
-
-  void Device::initAfterTyped()
+  mDisconnectFlagged( false )
   {
     // Get our type-specific index
     switch ( mType )

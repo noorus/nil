@@ -3,27 +3,30 @@
 
 namespace nil {
 
+  Device::Type resolveDIDeviceType( unsigned long type )
+  {
+    type = GET_DIDEVICE_TYPE( type );
+
+    switch ( type )
+    {
+      case DI8DEVTYPE_MOUSE:
+        return Device::Device_Mouse;
+      break;
+      case DI8DEVTYPE_KEYBOARD:
+        return Device::Device_Keyboard;
+      break;
+      default:
+        return Device::Device_Controller;
+      break;
+    }
+  }
+
   DirectInputDevice::DirectInputDevice( System* system, DeviceID id,
   LPCDIDEVICEINSTANCEW instance ):
-  Device( system, id, Device_Controller ),
+  Device( system, id, resolveDIDeviceType( instance->dwDevType ) ),
   mProductID( instance->guidProduct ),
   mInstanceID( instance->guidInstance )
   {
-    unsigned long deviceType = GET_DIDEVICE_TYPE( instance->dwDevType );
-
-    switch ( deviceType )
-    {
-      case DI8DEVTYPE_MOUSE:
-        mType = Device_Mouse;
-      break;
-      case DI8DEVTYPE_KEYBOARD:
-        mType = Device_Keyboard;
-      break;
-    }
-
-    // Auto-generate a name an type-specific index
-    initAfterTyped();
-
     // Only replace auto-generated name if fetched one isn't empty
     String tmpName = util::cleanupName( instance->tszInstanceName );
     if ( !tmpName.empty() )

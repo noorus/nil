@@ -55,7 +55,6 @@ namespace nil {
       int mTypedIndex; //!< This is a device-type-specific index for the device
       explicit Device( System* system, DeviceID id, Type type );
       virtual ~Device();
-      void initAfterTyped();
       virtual void update(); //!< Update our instance
       virtual void setStatus( Status status ); //!< Set status
       virtual void saveStatus(); //!< Backup current status
@@ -78,15 +77,24 @@ namespace nil {
 
   typedef list<Device*> DeviceList;
 
+  class RawInputDeviceInfo
+  {
+    protected:
+      RID_DEVICE_INFO* mRawInfo;
+      const Device::Type rawInfoResolveType() const;
+    public:
+      RawInputDeviceInfo( HANDLE handle );
+      ~RawInputDeviceInfo();
+  };
+
   //! \class RawInputDevice
   //! Device abstraction base class for Raw Input API devices.
-  class RawInputDevice: public Device
+  class RawInputDevice: public RawInputDeviceInfo, public Device
   {
     friend class System;
     protected:
       HANDLE mRawHandle;
       String mRawPath;
-      RID_DEVICE_INFO* mRawInfo;
       RawInputDevice( System* system, DeviceID id, HANDLE rawHandle, String& rawPath );
     public:
       virtual ~RawInputDevice();
