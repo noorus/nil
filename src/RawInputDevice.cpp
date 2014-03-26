@@ -76,6 +76,16 @@ namespace nil {
     return Device::Handler_RawInput;
   }
 
+  const DeviceID RawInputDevice::getStaticID() const
+  {
+    DeviceID id = util::fnv_32a_buf(
+      (void*)mRawPath.c_str(),
+      mRawPath.length() * sizeof( wchar_t ),
+      FNV1_32A_INIT );
+
+    return ( ( id >> 4 ) | ( ( Handler_RawInput + 1 ) << 28 ) );
+  }
+
   const HANDLE RawInputDevice::getRawHandle() const
   {
     return mRawHandle;

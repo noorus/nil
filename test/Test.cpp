@@ -126,36 +126,42 @@ public:
   virtual void onMouseEnabled( nil::Device* device, nil::Mouse* instance )
   {
     wprintf_s( L"Mouse enabled: %s\r\n", device->getName().c_str() );
+    wprintf_s( L"Static ID: 0x%08X\r\n", device->getStaticID() );
     // Add our listener for every mouse that is enabled
     instance->addListener( &gDummyMouseListener );
   }
   virtual void onKeyboardEnabled( nil::Device* device, nil::Keyboard* instance )
   {
     wprintf_s( L"Keyboard enabled: %s\r\n", device->getName().c_str() );
+    wprintf_s( L"Static ID: 0x%08X\r\n", device->getStaticID() );
     // Add our listener for every keyboard that is enabled
     instance->addListener( &gDummyKeyboardListener );
   }
   virtual void onControllerEnabled( nil::Device* device, nil::Controller* instance )
   {
     wprintf_s( L"Controller enabled: %s\r\n", device->getName().c_str() );
+    wprintf_s( L"Static ID: 0x%08X\r\n", device->getStaticID() );
     // Add our listener for every controller that is enabled
     instance->addListener( &gDummyControllerListener );
   }
   virtual void onMouseDisabled( nil::Device* device, nil::Mouse* instance )
   {
     wprintf_s( L"Mouse disabled: %s\r\n", device->getName().c_str() );
+    wprintf_s( L"Static ID: 0x%08X\r\n", device->getStaticID() );
     // Removing listeners at this point is unnecessary,
     // as the device instance is destroyed anyway
   }
   virtual void onKeyboardDisabled( nil::Device* device, nil::Keyboard* instance )
   {
     wprintf_s( L"Keyboard disabled: %s\r\n", device->getName().c_str() );
+    wprintf_s( L"Static ID: 0x%08X\r\n", device->getStaticID() );
     // Removing listeners at this point is unnecessary,
     // as the device instance is destroyed anyway
   }
   virtual void onControllerDisabled( nil::Device* device, nil::Controller* instance )
   {
     wprintf_s( L"Controller disabled: %s\r\n", device->getName().c_str() );
+    wprintf_s( L"Static ID: 0x%08X\r\n", device->getStaticID() );
     // Removing listeners at this point is unnecessary,
     // as the device instance is destroyed anyway
   }

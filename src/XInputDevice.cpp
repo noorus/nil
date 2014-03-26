@@ -48,6 +48,12 @@ namespace nil {
     mIdentified = true;
   }
 
+  const DeviceID XInputDevice::getStaticID() const
+  {
+    DeviceID id = ( mXInputID | ( ( Handler_XInput + 1 ) << 28 ) );
+    return id;
+  }
+
   void XInputDevice::onConnect()
   {
     if ( !mIdentified )

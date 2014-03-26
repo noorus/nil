@@ -6,6 +6,19 @@ namespace nil {
 
   namespace util {
 
+    //! 32-bit Fowler/Noll/Vo-1a-hash function
+    uint32_t fnv_32a_buf( void* buf, size_t len, uint32_t hashval )
+    {
+      unsigned char* bp = (unsigned char*)buf;
+      unsigned char* be = bp + len;
+      while ( bp < be )
+      {
+        hashval ^= (uint32_t)*bp++;
+        hashval *= 0x01000193;
+      }
+      return hashval;
+    }
+
     inline String cleanupName( String name ) throw()
     {
       boost::algorithm::trim_all( name );

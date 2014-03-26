@@ -76,8 +76,12 @@ namespace nil {
       }
   };
 
+# define FNV1_32_INIT ((uint32_t)0x811c9dc5)
+# define FNV1_32A_INIT FNV1_32_INIT
+
   namespace util
   {
+    extern uint32_t fnv_32a_buf( void* buf, size_t len, uint32_t hashval );
     extern inline String cleanupName( String name ) throw();
     extern inline String utf8ToWide( const utf8String& in ) throw();
     extern inline utf8String wideToUtf8( const String& in ) throw();

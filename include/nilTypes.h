@@ -33,7 +33,7 @@
 
 namespace nil {
   
-  typedef int DeviceID;
+  typedef uint32_t DeviceID;
   typedef uint32_t POVDirection;
   typedef unsigned int VirtualKeyCode;
   

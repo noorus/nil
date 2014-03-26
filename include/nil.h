@@ -66,7 +66,8 @@ namespace nil {
       virtual void enable(); //!< Create our instance
       virtual void disable(); //!< Destroy our instance
       virtual DeviceInstance* getInstance(); //!< Get our instance, if available
-      virtual const DeviceID getID() const; //!< Get unique identifier
+      virtual const DeviceID getID() const; //!< Get session-specific identifier
+      virtual const DeviceID getStaticID() const = 0; //!< Get static identifier
       virtual const Handler getHandler() const = 0; //!< Get handler
       virtual const Type getType() const; //!< Get type
       virtual const Status getStatus() const; //!< Get status
@@ -99,6 +100,7 @@ namespace nil {
     public:
       virtual ~RawInputDevice();
       virtual const Handler getHandler() const;
+      virtual const DeviceID getStaticID() const;
       virtual const HANDLE getRawHandle() const;
       virtual const String& getRawPath() const;
       virtual const RID_DEVICE_INFO* getRawInfo() const;
@@ -116,6 +118,7 @@ namespace nil {
         LPCDIDEVICEINSTANCEW instance );
     public:
       virtual const Handler getHandler() const;
+      virtual const DeviceID getStaticID() const;
       virtual const GUID getProductID() const;
       virtual const GUID getInstanceID() const;
   };
@@ -136,6 +139,7 @@ namespace nil {
       virtual void onConnect();
     public:
       virtual const Handler getHandler() const;
+      virtual const DeviceID getStaticID() const;
       virtual const int getXInputID() const;
       virtual const XINPUT_CAPABILITIES& getCapabilities() const; //!< Get XInput caps
   };

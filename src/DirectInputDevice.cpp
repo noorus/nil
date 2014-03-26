@@ -38,6 +38,14 @@ namespace nil {
     return Device::Handler_DirectInput;
   }
 
+  const DeviceID DirectInputDevice::getStaticID() const
+  {
+    DeviceID id = util::fnv_32a_buf(
+      (void*)&mInstanceID, sizeof( GUID ), FNV1_32A_INIT );
+
+    return ( ( id >> 4 ) | ( ( Handler_DirectInput + 1 ) << 28 ) );
+  }
+
   const GUID DirectInputDevice::getProductID() const
   {
     return mProductID;
