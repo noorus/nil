@@ -76,15 +76,6 @@ namespace nil {
       }
   };
 
-  static String guidToStr( GUID guid )
-  {
-    OLECHAR* bstrGuid;
-    StringFromCLSID( guid, &bstrGuid );
-    String str = bstrGuid;
-    ::CoTaskMemFree( bstrGuid );
-    return str;
-  }
-
   namespace util
   {
     extern inline String cleanupName( String name ) throw();
