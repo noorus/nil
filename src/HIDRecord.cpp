@@ -4,7 +4,7 @@
 namespace nil {
 
   HIDRecord::HIDRecord( const String& path, HANDLE handle ):
-  mPath( path ), mIsXInput( false )
+  mPath( path ), mIsXInput( false ), mIsRDP( false )
   {
     HIDD_ATTRIBUTES attributes = { sizeof( HIDD_ATTRIBUTES ) };
 
@@ -40,11 +40,20 @@ namespace nil {
     {
       mIsXInput = true;
     }
+    if ( wcsstr( mPath.c_str(), L"RDP_MOU" ) || wcsstr( mPath.c_str(), L"RDP_KBD" ) )
+    {
+      mIsRDP = true;
+    }
   }
 
   bool HIDRecord::isXInput() const
   {
     return mIsXInput;
+  }
+
+  bool HIDRecord::isRDP() const
+  {
+    return mIsRDP;
   }
 
   bool HIDRecord::isMicrosoft() const
