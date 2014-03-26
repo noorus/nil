@@ -40,6 +40,9 @@ namespace nil {
 
   const DeviceID DirectInputDevice::getStaticID() const
   {
+    // Static ID for DirectInput devices:
+    // 4 bits of handler ID, 28 bits of unique id (hashed instance GUID)
+
     DeviceID id = util::fnv_32a_buf(
       (void*)&mInstanceID, sizeof( GUID ), FNV1_32A_INIT );
 

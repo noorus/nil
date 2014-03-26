@@ -50,6 +50,9 @@ namespace nil {
 
   const DeviceID XInputDevice::getStaticID() const
   {
+    // Static ID for XInput devices:
+    // 4 bits of handler ID, 28 bits of XInput controller ID (1-4)
+
     DeviceID id = ( mXInputID | ( ( Handler_XInput + 1 ) << 28 ) );
     return id;
   }

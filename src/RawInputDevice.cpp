@@ -78,6 +78,9 @@ namespace nil {
 
   const DeviceID RawInputDevice::getStaticID() const
   {
+    // Static ID for RawInput devices:
+    // 4 bits of handler ID, 28 bits of unique id (hashed raw path)
+ 
     DeviceID id = util::fnv_32a_buf(
       (void*)mRawPath.c_str(),
       mRawPath.length() * sizeof( wchar_t ),
