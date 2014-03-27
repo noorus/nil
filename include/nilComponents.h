@@ -2,7 +2,7 @@
 
 #include "nilTypes.h"
 
-namespace nil {
+namespace Nil {
 
   // Components
 

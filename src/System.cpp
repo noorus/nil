@@ -2,7 +2,7 @@
 #include "nilUtil.h"
 #include "nilLogitech.h"
 
-namespace nil {
+namespace Nil {
 
   System::System( HINSTANCE instance, HWND window, SystemListener* listener ):
   mWindow( window ), mInstance( instance ), mDirectInput( nullptr ),

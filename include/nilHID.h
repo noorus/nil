@@ -8,7 +8,7 @@ extern "C" {
 # include <hidsdi.h>
 };
 
-namespace nil {
+namespace Nil {
 
   //! Known USB vendor IDs that might be useful.
   enum USBKnownVendor: uint16_t

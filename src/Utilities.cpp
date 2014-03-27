@@ -2,7 +2,7 @@
 #include "nilUtil.h"
 #include <boost/algorithm/string/trim_all.hpp>
 
-namespace nil {
+namespace Nil {
 
   namespace util {
 

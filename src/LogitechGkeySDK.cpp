@@ -4,7 +4,7 @@
 
 # define NIL_LOAD_SDK_FUNC(x) mFunctions.pfn##x##=(fn##x##)GetProcAddress(mModule,#x)
 
-namespace nil {
+namespace Nil {
 
   namespace Logitech {
 

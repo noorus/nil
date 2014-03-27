@@ -31,7 +31,7 @@
 #include <boost/variant.hpp>
 #include <boost/algorithm/string.hpp>
 
-namespace nil {
+namespace Nil {
   
   typedef uint32_t DeviceID;
   typedef uint32_t POVDirection;

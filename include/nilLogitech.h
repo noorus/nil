@@ -1,7 +1,7 @@
 #pragma once
 #include "nil.h"
 
-namespace nil {
+namespace Nil {
 
   //! \class ExternalModule
   //! Base class for an external, optional module supported by the system.

@@ -8,7 +8,7 @@
 #define DIJ2OFS_SLIDER2(n) (FIELD_OFFSET(DIJOYSTATE2, rglASlider)+(n)*sizeof(LONG))
 #define DIJ2OFS_SLIDER3(n) (FIELD_OFFSET(DIJOYSTATE2, rglFSlider)+(n)*sizeof(LONG))
 
-namespace nil {
+namespace Nil {
 
   const unsigned long cJoystickEvents = 64;
 

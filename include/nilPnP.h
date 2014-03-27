@@ -1,7 +1,7 @@
 #pragma once
 #include "nilTypes.h"
 
-namespace nil {
+namespace Nil {
 
   //! USB Usage Page IDs.
   //! See See USB HID Usage Tables version 1.1, page 15

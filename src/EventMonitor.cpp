@@ -1,7 +1,7 @@
 #include "nilPnP.h"
 #include "nilUtil.h"
 
-namespace nil {
+namespace Nil {
 
   const wchar_t* cEventMonitorClass = L"NIL_MONITOR";
 

@@ -1,7 +1,7 @@
 #include "nil.h"
 #include "nilUtil.h"
 
-namespace nil {
+namespace Nil {
 
 #if(_WIN32_WINNT >= _WIN32_WINNT_WIN8)
   const long cMaxXInputTypes = 11;

@@ -1,7 +1,7 @@
 #include "nilHID.h"
 #include "nilUtil.h"
 
-namespace nil {
+namespace Nil {
 
   HIDManager::HIDManager()
   {

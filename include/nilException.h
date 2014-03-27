@@ -1,7 +1,7 @@
 #pragma once
 #include "nilTypes.h"
 
-namespace nil {
+namespace Nil {
 
   //! \class WinAPIError
   //! Container for a Windows API error description.

@@ -1,7 +1,7 @@
 #include "nil.h"
 #include "nilUtil.h"
 
-namespace nil {
+namespace Nil {
 
   DeviceInstance::DeviceInstance( System* system, Device* device ):
   mSystem( system ), mDevice( device )

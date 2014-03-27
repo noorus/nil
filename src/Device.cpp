@@ -1,7 +1,7 @@
 #include "nil.h"
 #include "nilUtil.h"
 
-namespace nil {
+namespace Nil {
 
   Device::Device( System* system, DeviceID id, Type type ): mSystem( system ),
   mID( id ), mType( type ), mStatus( Status_Pending ),

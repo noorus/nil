@@ -1,7 +1,7 @@
 #include "nil.h"
 #include "nilUtil.h"
 
-namespace nil {
+namespace Nil {
 
   Keyboard::Keyboard( System* system, Device* device ):
   DeviceInstance( system, device )

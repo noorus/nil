@@ -1,7 +1,7 @@
 #include "nilHID.h"
 #include "nilUtil.h"
 
-namespace nil {
+namespace Nil {
 
   HIDRecord::HIDRecord( const String& path, HANDLE handle ):
   mPath( path ), mIsXInput( false ), mIsRDP( false )

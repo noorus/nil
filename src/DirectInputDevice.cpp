@@ -1,7 +1,7 @@
 #include "nil.h"
 #include "nilUtil.h"
 
-namespace nil {
+namespace Nil {
 
   Device::Type resolveDIDeviceType( unsigned long type )
   {

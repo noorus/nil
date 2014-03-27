@@ -1,6 +1,6 @@
 #include "nil.h"
 
-namespace nil {
+namespace Nil {
 
   // Yeah, uh, don't ask.
 

@@ -7,7 +7,7 @@
 #include "nilHID.h"
 #include "nilLogitech.h"
 
-namespace nil {
+namespace Nil {
 
   class System;
   class DeviceInstance;

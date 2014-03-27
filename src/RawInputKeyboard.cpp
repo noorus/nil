@@ -1,6 +1,6 @@
 #include "nil.h"
 
-namespace nil {
+namespace Nil {
 
   RawInputKeyboard::RawInputKeyboard( RawInputDevice* device ):
   Keyboard( device->getSystem(), device )
