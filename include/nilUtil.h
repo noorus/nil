@@ -17,7 +17,7 @@ namespace Nil {
 # endif
 
 # if defined(NIL_EXCEPT) || defined(NIL_EXCEPT_WINAPI) || defined(NIL_EXCEPT_DINPUT)
-#   error EXCEPT* maro already defined!
+#   error NIL_EXCEPT* macro already defined!
 # else
 #   define NIL_EXCEPT(description) {throw Nil::Exception(description,__FUNCTIONW__,Nil::Exception::Generic);}
 #   define NIL_EXCEPT_WINAPI(description) {throw Nil::Exception(description,__FUNCTIONW__,Nil::Exception::WinAPI);}
