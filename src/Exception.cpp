@@ -137,7 +137,7 @@ namespace Nil {
 
   const char* Exception::what() const
   {
-    mUTF8Description = util::wideToUtf8( getFullDescription() );
+    mUTF8Description = Util::wideToUtf8( getFullDescription() );
     return mUTF8Description.c_str();
   }
 

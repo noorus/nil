@@ -79,7 +79,7 @@ namespace Nil {
 # define FNV1_32_INIT ((uint32_t)0x811c9dc5)
 # define FNV1_32A_INIT FNV1_32_INIT
 
-  namespace util
+  namespace Util
   {
     extern uint32_t fnv_32a_buf( void* buf, size_t len, uint32_t hashval );
     extern inline String cleanupName( String name ) throw();

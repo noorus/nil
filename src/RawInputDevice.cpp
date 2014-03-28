@@ -60,7 +60,7 @@ namespace Nil {
       if ( HidD_GetProductString( deviceHandle, &buffer, 256 ) )
       {
         // Only replace auto-generated name if fetched one isn't empty
-        String tmpName = util::cleanupName( buffer );
+        String tmpName = Util::cleanupName( buffer );
         if ( !tmpName.empty() )
           mName = tmpName;
       }
@@ -81,7 +81,7 @@ namespace Nil {
     // Static ID for RawInput devices:
     // 4 bits of handler ID, 28 bits of unique id (hashed raw path)
  
-    DeviceID id = util::fnv_32a_buf(
+    DeviceID id = Util::fnv_32a_buf(
       (void*)mRawPath.c_str(),
       mRawPath.length() * sizeof( wchar_t ),
       FNV1_32A_INIT );

@@ -25,9 +25,9 @@ namespace Nil {
 
     wchar_t buffer[256];
     if ( HidD_GetProductString( handle, &buffer, 256 ) )
-      mName = util::cleanupName( buffer );
+      mName = Util::cleanupName( buffer );
     if ( HidD_GetManufacturerString( handle, &buffer, 256 ) )
-      mManufacturer = util::cleanupName( buffer );
+      mManufacturer = Util::cleanupName( buffer );
     if ( HidD_GetSerialNumberString( handle, &buffer, 256 ) )
       mSerialNumber = buffer;
 

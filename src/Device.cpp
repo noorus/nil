@@ -23,7 +23,7 @@ namespace Nil {
     }
 
     // Autogenerate a device name, which can be overridden later
-    mName = util::generateName( mType, mTypedIndex );
+    mName = Util::generateName( mType, mTypedIndex );
   }
 
   void Device::enable()

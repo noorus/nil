@@ -28,7 +28,7 @@ namespace Nil {
   mInstanceID( instance->guidInstance )
   {
     // Only replace auto-generated name if fetched one isn't empty
-    String tmpName = util::cleanupName( instance->tszInstanceName );
+    String tmpName = Util::cleanupName( instance->tszInstanceName );
     if ( !tmpName.empty() )
       mName = tmpName;
   }
@@ -43,7 +43,7 @@ namespace Nil {
     // Static ID for DirectInput devices:
     // 4 bits of handler ID, 28 bits of unique id (hashed instance GUID)
 
-    DeviceID id = util::fnv_32a_buf(
+    DeviceID id = Util::fnv_32a_buf(
       (void*)&mInstanceID, sizeof( GUID ), FNV1_32A_INIT );
 
     return ( ( id >> 4 ) | ( ( Handler_DirectInput + 1 ) << 28 ) );
