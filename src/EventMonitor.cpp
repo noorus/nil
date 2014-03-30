@@ -132,12 +132,12 @@ namespace Nil {
 
     RAWINPUTDEVICE rawDevices[2];
 
-    rawDevices[0].dwFlags = RIDEV_DEVNOTIFY | RIDEV_INPUTSINK | RIDEV_NOLEGACY;
+    rawDevices[0].dwFlags = RIDEV_DEVNOTIFY | RIDEV_INPUTSINK;
     rawDevices[0].hwndTarget = mWindow;
     rawDevices[0].usUsagePage = USBUsagePage_Desktop;
     rawDevices[0].usUsage = USBDesktopUsage_Mice;
 
-    rawDevices[1].dwFlags = RIDEV_DEVNOTIFY | RIDEV_INPUTSINK | RIDEV_NOLEGACY;
+    rawDevices[1].dwFlags = RIDEV_DEVNOTIFY | RIDEV_INPUTSINK;
     rawDevices[1].hwndTarget = mWindow;
     rawDevices[1].usUsagePage = USBUsagePage_Desktop;
     rawDevices[1].usUsage = USBDesktopUsage_Keyboards;
