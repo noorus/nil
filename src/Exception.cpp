@@ -9,7 +9,7 @@ namespace Nil {
     wchar_t* description;
   };
 
-  const int cErrorDescriptionCount = 32;
+  const int cErrorDescriptionCount = 32; //-V112
 
   const DirectInputErrorEntry cErrorDescriptions[cErrorDescriptionCount] =
   {

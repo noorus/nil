@@ -120,7 +120,7 @@ namespace Nil {
 
     // Buttons
     for ( size_t i = 0; i < mState.mButtons.size(); i++ )
-      mState.mButtons[i].pushed = ( ( mXInputState.Gamepad.wButtons & ( 1 << ( i + 4 ) ) ) != 0 );
+      mState.mButtons[i].pushed = ( ( mXInputState.Gamepad.wButtons & ( 1 << ( i + 4 ) ) ) != 0 ); //-V112
 
     // Axes
     mState.mAxes[0].absolute = filterLeftThumbAxis( mXInputState.Gamepad.sThumbLX );

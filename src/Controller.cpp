@@ -46,7 +46,7 @@ namespace Nil {
 
       // Axes
       for ( size_t i = 0; i < mState.mAxes.size(); i++ )
-        if ( lastState.mAxes[i].absolute != mState.mAxes[i].absolute )
+        if ( lastState.mAxes[i].absolute != mState.mAxes[i].absolute ) //-V550
           listener->onControllerAxisMoved( this, mState, i );
 
       // Sliders

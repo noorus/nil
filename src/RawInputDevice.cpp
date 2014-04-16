@@ -11,7 +11,7 @@ namespace Nil {
     if ( GetRawInputDeviceInfoW( handle, RIDI_DEVICEINFO, NULL, &size ) != 0 )
       NIL_EXCEPT_WINAPI( L"GetRawInputDeviceInfoW failed" );
 
-    mRawInfo = (RID_DEVICE_INFO*)malloc( size );
+    mRawInfo = (RID_DEVICE_INFO*)malloc( (size_t)size );
     if ( !mRawInfo )
       NIL_EXCEPT( L"Memory allocation failed" );
 
@@ -37,8 +37,7 @@ namespace Nil {
 
   RawInputDeviceInfo::~RawInputDeviceInfo()
   {
-    if ( mRawInfo )
-      free( mRawInfo );
+    free( mRawInfo );
   }
 
   // RawInputDevice class

@@ -1,12 +1,14 @@
 #include "nil.h"
 #include "nilUtil.h"
 
-#define DIJ2OFS_BUTTON(n)  (FIELD_OFFSET(DIJOYSTATE2, rgbButtons)+(n))
-#define DIJ2OFS_POV(n)     (FIELD_OFFSET(DIJOYSTATE2, rgdwPOV)+(n)*sizeof(DWORD))
-#define DIJ2OFS_SLIDER0(n) (FIELD_OFFSET(DIJOYSTATE2, rglSlider)+(n)*sizeof(LONG))
-#define DIJ2OFS_SLIDER1(n) (FIELD_OFFSET(DIJOYSTATE2, rglVSlider)+(n)*sizeof(LONG))
-#define DIJ2OFS_SLIDER2(n) (FIELD_OFFSET(DIJOYSTATE2, rglASlider)+(n)*sizeof(LONG))
-#define DIJ2OFS_SLIDER3(n) (FIELD_OFFSET(DIJOYSTATE2, rglFSlider)+(n)*sizeof(LONG))
+#define NIL_FIELD_OFFSET(type, field) ((LONG_PTR)&(((type*)0)->field))
+
+#define NIL_DIJ2OFS_BUTTON(n)  (NIL_FIELD_OFFSET(DIJOYSTATE2, rgbButtons)+(n))
+#define NIL_DIJ2OFS_POV(n)     (NIL_FIELD_OFFSET(DIJOYSTATE2, rgdwPOV)+(n)*sizeof(DWORD))
+#define NIL_DIJ2OFS_SLIDER0(n) (NIL_FIELD_OFFSET(DIJOYSTATE2, rglSlider)+(n)*sizeof(LONG))
+#define NIL_DIJ2OFS_SLIDER1(n) (NIL_FIELD_OFFSET(DIJOYSTATE2, rglVSlider)+(n)*sizeof(LONG))
+#define NIL_DIJ2OFS_SLIDER2(n) (NIL_FIELD_OFFSET(DIJOYSTATE2, rglASlider)+(n)*sizeof(LONG))
+#define NIL_DIJ2OFS_SLIDER3(n) (NIL_FIELD_OFFSET(DIJOYSTATE2, rglFSlider)+(n)*sizeof(LONG))
 
 namespace Nil {
 
@@ -64,8 +66,8 @@ namespace Nil {
       break;
     }
 
-    mState.mPOVs.resize( mDICapabilities.dwPOVs );
-    mState.mButtons.resize( mDICapabilities.dwButtons );
+    mState.mPOVs.resize( (size_t)mDICapabilities.dwPOVs );
+    mState.mButtons.resize( (size_t)mDICapabilities.dwButtons );
 
     mAxisEnum = 0;
     mSliderEnum = 0;
@@ -173,10 +175,10 @@ namespace Nil {
 
       for ( unsigned long i = 0; i < entries; i++ )
       {
-        if ( buffers[i].dwOfs >= DIJ2OFS_POV( 0 )
-        && buffers[i].dwOfs < DIJ2OFS_POV( mState.mPOVs.size() ) )
+        if ( (size_t)buffers[i].dwOfs >= NIL_DIJ2OFS_POV( 0 )
+        && (size_t)buffers[i].dwOfs < NIL_DIJ2OFS_POV( mState.mPOVs.size() ) )
         {
-          int pov = buffers[i].dwOfs - DIJ2OFS_POV( 0 );
+          size_t pov = (size_t)buffers[i].dwOfs - NIL_DIJ2OFS_POV( 0 );
           if ( LOWORD( buffers[i].dwData ) == 0xFFFF )
             mState.mPOVs[pov].direction = POV::Centered;
           else
@@ -194,43 +196,43 @@ namespace Nil {
             }
           }
         }
-        else if ( buffers[i].dwOfs >= DIJ2OFS_BUTTON( 0 )
-        && buffers[i].dwOfs < DIJ2OFS_BUTTON( mState.mButtons.size() ) )
+        else if ( (size_t)buffers[i].dwOfs >= NIL_DIJ2OFS_BUTTON( 0 )
+        && (size_t)buffers[i].dwOfs < NIL_DIJ2OFS_BUTTON( mState.mButtons.size() ) )
         {
-          int button = buffers[i].dwOfs - DIJ2OFS_BUTTON( 0 );
+          size_t button = (size_t)buffers[i].dwOfs - NIL_DIJ2OFS_BUTTON( 0 );
           mState.mButtons[button].pushed = ( buffers[i].dwData & 0x80 ? true : false );
         }
         else if ( (uint16_t)( buffers[i].uAppData >> 16 ) == 0x6E69 )
         {
-          int axis = (int)( 0x0000FFFF & buffers[i].uAppData );
+          size_t axis = (size_t)( 0x0000FFFF & buffers[i].uAppData );
           mState.mAxes[axis].absolute = filterAxis( buffers[i].dwData );
         }
         else
         {
           switch ( buffers[i].dwOfs )
           {
-            case DIJ2OFS_SLIDER0( 0 ):
+            case NIL_DIJ2OFS_SLIDER0( 0 ):
               mState.mSliders[0].absolute.x = filterAxis( buffers[i].dwData );
             break;
-            case DIJ2OFS_SLIDER0( 1 ):
+            case NIL_DIJ2OFS_SLIDER0( 1 ):
               mState.mSliders[0].absolute.y = filterAxis( buffers[i].dwData );
             break;
-            case DIJ2OFS_SLIDER1( 0 ):
+            case NIL_DIJ2OFS_SLIDER1( 0 ):
               mState.mSliders[1].absolute.x = filterAxis( buffers[i].dwData );
             break;
-            case DIJ2OFS_SLIDER1( 1 ):
+            case NIL_DIJ2OFS_SLIDER1( 1 ):
               mState.mSliders[1].absolute.y = filterAxis( buffers[i].dwData );
             break;
-            case DIJ2OFS_SLIDER2( 0 ):
+            case NIL_DIJ2OFS_SLIDER2( 0 ):
               mState.mSliders[2].absolute.x = filterAxis( buffers[i].dwData );
             break;
-            case DIJ2OFS_SLIDER2( 1 ):
+            case NIL_DIJ2OFS_SLIDER2( 1 ):
               mState.mSliders[2].absolute.y = filterAxis( buffers[i].dwData );
             break;
-            case DIJ2OFS_SLIDER3( 0 ):
+            case NIL_DIJ2OFS_SLIDER3( 0 ):
               mState.mSliders[3].absolute.x = filterAxis( buffers[i].dwData );
             break;
-            case DIJ2OFS_SLIDER3( 1 ):
+            case NIL_DIJ2OFS_SLIDER3( 1 ):
               mState.mSliders[3].absolute.y = filterAxis( buffers[i].dwData );
             break;
           }

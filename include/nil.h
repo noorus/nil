@@ -353,8 +353,8 @@ namespace Nil {
     protected:
       IDirectInputDevice8W* mDIDevice;
       DIDEVCAPS mDICapabilities;
-      int mAxisEnum;
-      int mSliderEnum;
+      size_t mAxisEnum;
+      size_t mSliderEnum;
       inline Real filterAxis( int val );
       static BOOL CALLBACK diComponentsEnumCallback(
         LPCDIDEVICEOBJECTINSTANCEW component, LPVOID referer );

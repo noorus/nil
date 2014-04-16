@@ -87,7 +87,7 @@ namespace Nil {
       if ( GetLastError() != ERROR_INSUFFICIENT_BUFFER )
         NIL_EXCEPT_WINAPI( L"SetupDiGetDeviceInterfaceDetailW failed" );
 
-      auto detailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA_W)malloc( length );
+      auto detailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA_W)malloc( (size_t)length );
       detailData->cbSize = sizeof( SP_INTERFACE_DEVICE_DETAIL_DATA_W );
 
       SP_DEVINFO_DATA deviceData = { sizeof( SP_DEVINFO_DATA ) };

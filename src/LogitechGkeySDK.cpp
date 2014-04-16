@@ -61,7 +61,7 @@ namespace Nil {
       return Initialization_OK;
     }
 
-    void GKeySDK::keyCallback( GkeyCode key, const wchar_t* name, void* context )
+    void GKeySDK::keyCallback( GkeyCode key, const wchar_t* name, void* context ) //-V813
     {
       auto sdk = reinterpret_cast<GKeySDK*>( context );
 

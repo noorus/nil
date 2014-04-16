@@ -120,11 +120,11 @@ namespace Nil {
       inline explicit Vector2f( Real x_, Real y_ ): x( x_ ), y( y_ ) {}
       inline bool operator == ( const Vector2f& other ) const
       {
-        return ( x == other.x && y == other.y );
+        return ( x == other.x && y == other.y ); //-V550
       }
       inline bool operator != ( const Vector2f& other ) const
       {
-        return ( x != other.x || y != other.y  );
+        return ( x != other.x || y != other.y  ); //-V550
       }
       const static Vector2f ZERO;
   };
@@ -142,11 +142,11 @@ namespace Nil {
       x( x_ ), y( y_ ), z( z_ ) {}
       inline bool operator == ( const Vector3f& other ) const
       {
-        return ( x == other.x && y == other.y && z == other.z );
+        return ( x == other.x && y == other.y && z == other.z ); //-V550
       }
       inline bool operator != ( const Vector3f& other ) const
       {
-        return ( x != other.x || y != other.y || z != other.z  );
+        return ( x != other.x || y != other.y || z != other.z  ); //-V550
       }
       const static Vector3f ZERO;
   };

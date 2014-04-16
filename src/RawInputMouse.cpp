@@ -30,10 +30,12 @@ namespace Nil {
     // So don't actually trust this information for anything.
     // (We will use it for sizing the button vector, however)
 
-    mState.mButtons.resize( rawDevice->getRawInfo()->mouse.dwNumberOfButtons );
+    const RID_DEVICE_INFO* rawInfo = rawDevice->getRawInfo();
 
-    mSampleRate = rawDevice->getRawInfo()->mouse.dwSampleRate;
-    mHorizontalWheel = rawDevice->getRawInfo()->mouse.fHasHorizontalWheel ? true : false;
+    mState.mButtons.resize( (size_t)rawInfo->mouse.dwNumberOfButtons );
+
+    mSampleRate = rawInfo->mouse.dwSampleRate;
+    mHorizontalWheel = rawInfo->mouse.fHasHorizontalWheel ? true : false;
   }
 
   void RawInputMouse::onRawInput( const RAWMOUSE& input )
@@ -92,10 +94,10 @@ namespace Nil {
       NIL_RAW_TEST_MOUSE_BUTTON_UP( RI_MOUSE_BUTTON_4_UP, 3 );
     }
 
-    if ( mState.mButtons.size() > 4 )
+    if ( mState.mButtons.size() > 4 ) //-V112
     {
-      NIL_RAW_TEST_MOUSE_BUTTON_DOWN( RI_MOUSE_BUTTON_5_DOWN, 4 );
-      NIL_RAW_TEST_MOUSE_BUTTON_UP( RI_MOUSE_BUTTON_5_UP, 4 );
+      NIL_RAW_TEST_MOUSE_BUTTON_DOWN( RI_MOUSE_BUTTON_5_DOWN, 4 ); //-V112
+      NIL_RAW_TEST_MOUSE_BUTTON_UP( RI_MOUSE_BUTTON_5_UP, 4 ); //-V112
     }
 
     // At least the wheel delta is simple and reliable

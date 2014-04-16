@@ -21,11 +21,11 @@ namespace Nil {
       NIL_EXCEPT_WINAPI( L"Window class registration failed" );
 
     mWindow = CreateWindowExW(
-      0, (LPCWSTR)mClass, nullptr, 0, 0, 0, 0, 0, 0, 0, mInstance, this );
+      0, (LPCWSTR)mClass, nullptr, 0, 0, 0, 0, 0, 0, 0, mInstance, this ); //-V542
     if ( !mWindow )
       NIL_EXCEPT_WINAPI( L"Window creation failed" );
 
-    mInputBuffer = malloc( mInputBufferSize );
+    mInputBuffer = malloc( (size_t)mInputBufferSize );
     if ( !mInputBuffer )
       NIL_EXCEPT( L"Couldn't allocate input read buffer" );
 
@@ -87,7 +87,7 @@ namespace Nil {
     if ( dataSize > mInputBufferSize )
     {
       mInputBufferSize = dataSize;
-      mInputBuffer = realloc( mInputBuffer, dataSize );
+      mInputBuffer = realloc( mInputBuffer, (size_t)dataSize );
       if ( !mInputBuffer )
         NIL_EXCEPT( L"Couldn't reallocate input read buffer" );
     }
@@ -249,12 +249,11 @@ namespace Nil {
   EventMonitor::~EventMonitor()
   {
     unregisterNotifications();
-    if ( mInputBuffer )
-      free( mInputBuffer );
+    free( mInputBuffer );
     if ( mWindow )
       DestroyWindow( mWindow );
     if ( mClass )
-      UnregisterClassW( (LPCWSTR)mClass, mInstance );
+      UnregisterClassW( (LPCWSTR)mClass, mInstance ); //-V542
   }
 
 }
