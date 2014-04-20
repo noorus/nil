@@ -22,7 +22,7 @@ namespace Nil {
   };
 
   //! \class PnPListener
-  //! Plug-n-Play event listener.
+  //! Plug-n-Play event listener base class.
   class PnPListener
   {
     public:
@@ -39,7 +39,7 @@ namespace Nil {
   typedef list<PnPListener*> PnPListenerList;
 
   //! \class RawListener
-  //! Raw input event listener.
+  //! Raw input event listener base class.
   class RawListener
   {
     public:
