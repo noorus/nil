@@ -3,11 +3,10 @@
 
 namespace Nil {
 
-  //! \brief A DirectInput error entry
   struct DirectInputErrorEntry {
   public:
-    long code; //!< Error code
-    wchar_t* description; //!< Error description
+    long code;
+    wchar_t* description;
   };
 
   const int cErrorDescriptionCount = 32; //-V112
