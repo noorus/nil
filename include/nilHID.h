@@ -16,15 +16,16 @@ namespace Nil {
   //! Known USB vendor IDs that might be useful.
   enum USBKnownVendor: uint16_t
   {
-    USBVendor_Microsoft = 0x045E,
-    USBVendor_Logitech  = 0x046D
+    USBVendor_Microsoft = 0x045E, //!< Microsoft
+    USBVendor_Logitech  = 0x046D //!< Logitech
   };
 
   //! \class HIDRecord
-  //! \brief A Human Interface Device instance currently present in the system.
+  //! A Human Interface Device instance currently present in the system.
+  //! \sa HIDManager
   class HIDRecord
   {
-    protected:
+    private:
       String mPath; //!< Raw device path
       uint16_t mVendorID; //!< USB Vendor ID for this device
       uint16_t mProductID; //!< USB Product ID for this device
@@ -33,26 +34,52 @@ namespace Nil {
       String mName; //!< Device name
       String mManufacturer; //!< Device manufacturer
       String mSerialNumber; //!< Device serial number
-      bool mIsXInput; //!< Is this an XInput device?
-      bool mIsRDP; //!< Is this a Remote Desktop device?
+      bool mIsXInput; //!< Am I an XInput device?
+      bool mIsRDP; //!< Am I a Remote Desktop device?
+
       void identify(); //!< \b Internal Figure out what I am
     public:
-      //! \brief Constructor.
-      //! \param  path   Full device path.
+      //! Constructor.
+      //! \param  path   Full system path to the device.
       //! \param  handle Device handle.
       HIDRecord( const String& path, HANDLE handle );
-      bool isRDP() const; //!< Is this a Remote Desktop device?
-      bool isXInput() const; //!< Is this an XInput device?
-      bool isMicrosoft() const; //!< Is this a Microsoft device?
-      bool isLogitech() const; //!< Is this a Logitech device?
-      const String& getPath() const; //!< Get device path
-      const String& getName() const; //!< Get device name
-      const String& getManufacturer() const; //!< Get manufacturer name
-      const String& getSerialNumber() const; //!< Get serial number
-      uint16_t getUsagePage() const; //!< Get USB usage page ID
-      uint16_t getUsage() const; //!< Get USB usage ID
-      uint32_t getIdentifier() const; //!< Get combined VID/PID identifier
-      //! \brief Destructor.
+
+      //! Am I a Remote Desktop device?
+      bool isRDP() const;
+
+      //! Am I an XInput device?
+      bool isXInput() const;
+
+      //! Am I a Microsoft device?
+      bool isMicrosoft() const;
+
+      //! Am I a Logitech device?
+      bool isLogitech() const;
+
+      //! Get full device path.
+      const String& getPath() const;
+
+      //! Get device name.
+      const String& getName() const;
+
+      //! Get manufacturer name.
+      //! Can be empty.
+      const String& getManufacturer() const;
+
+      //! Get serial number.
+      //! Can be empty.
+      const String& getSerialNumber() const;
+
+      //! Get USB usage page ID.
+      uint16_t getUsagePage() const;
+
+      //! Get USB usage ID.
+      uint16_t getUsage() const;
+
+      //! Get combined VID/PID identifier.
+      uint32_t getIdentifier() const;
+
+      //! Destructor.
       ~HIDRecord();
   };
 
@@ -60,41 +87,35 @@ namespace Nil {
   typedef list<HIDRecord*> HIDRecordList;
 
   //! \class HIDManager
-  //! \brief Manages a list of connected Human Interface Devices.
+  //! Manages a list of connected Human Interface Devices.
+  //! \note The HIDManager has to be registered as PnPListener on an EventMonitor.
   //! \sa PnPListener
+  //! \sa EventMonitor
   class HIDManager: public PnPListener
   {
-    protected:
+    private:
       HIDRecordList mRecords; //!< Records container
 
-      //! \brief \b Internal My PnP plug callback.
-      //! \param  deviceClass The device class.
-      //! \param  devicePath  Full path to the device.
+      //! \b Internal My PnP plug callback.
       virtual void onPnPPlug( const GUID& deviceClass, const String& devicePath );
 
-      //! \brief \b Internal My PnP unplug callback.
-      //! \param  deviceClass The device class.
-      //! \param  devicePath  Full path to the device.
+      //! \b Internal My PnP unplug callback.
       virtual void onPnPUnplug( const GUID& deviceClass, const String& devicePath );
 
-      //! \brief Process an existing device.
-      //! \param interfaceData Information describing the interface.
-      //! \param deviceData    Information describing the device.
-      //! \param devicePath    Full pathname of the device file.
+      //! \b Internal Process an existing device.
       void processDevice( SP_DEVICE_INTERFACE_DATA& interfaceData,
         SP_DEVINFO_DATA& deviceData, const String& devicePath );
 
-      //! \brief Initialize this HIDManager.
+      //! \b Internal Initialization stuff
       void initialize();
     public:
-      //! \brief Default constructor.
+      //! Default constructor.
       HIDManager();
 
-      //! \brief Get the list of active HID records.
-      //! \return The records.
+      //! Get the list of active HID records.
       const HIDRecordList& getRecords() const;
 
-      //! \brief Destructor.
+      //! Destructor.
       ~HIDManager();
   };
 

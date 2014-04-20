@@ -43,11 +43,11 @@ namespace Nil {
   typedef uint32_t POVDirection; //!< A POV (D-pad) direction type.
   typedef unsigned int VirtualKeyCode; //!< A virtual key code type.
   
-  typedef float Real; //!< Nil Real type.
+  typedef float Real; //!< Real number type.
 
-# define NIL_REAL_ZERO 0.0f //!< Nil Real zero constant.
-# define NIL_REAL_ONE 1.0f //!< Nil Real one constant.
-# define NIL_REAL_MINUSONE -1.0f //!< Nil Real minus one constant.
+# define NIL_REAL_ZERO 0.0f //!< Real number zero constant.
+# define NIL_REAL_ONE 1.0f //!< Real number one constant.
+# define NIL_REAL_MINUSONE -1.0f //!< Real number minus one constant.
 
   typedef std::string utf8String; //!< UTF-8 string type.
   typedef std::wstring String; //!< Wide string type.
