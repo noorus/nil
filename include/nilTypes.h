@@ -59,6 +59,16 @@ namespace Nil {
   using std::wstringstream;
   using boost::variant;
 
+  //! \struct Color
+  //! A color value.
+  struct Color
+  {
+  public:
+    Real r; //!< Red color component in {0..1}
+    Real g; //!< Green color component in {0..1}
+    Real b; //!< Blue color component in {0..1}
+  };
+
   //! \struct Vector2i
   //! Two-dimensional integer vector.
   struct Vector2i
@@ -98,42 +108,22 @@ namespace Nil {
       int32_t y;  //!< Y-axis value
       int32_t z;  //!< Z-axis value
 
-      //! \brief Default zero constructor.
       inline Vector3i(): x( 0 ), y( 0 ), z( 0 ) {}
 
-      //! \brief Constructor.
-      //! \param  x_ The x coordinate.
-      //! \param  y_ The y coordinate.
-      //! \param  z_ The z coordinate.
       inline explicit Vector3i( int32_t x_, int32_t y_, int32_t z_ ):
       x( x_ ), y( y_ ), z( z_ ) {}
 
-      //! \brief Equality operator.
-      //! \param  other The other vector.
-      //! \return true if the vectors are considered equivalent.
       inline bool operator == ( const Vector3i& other ) const
       {
         return ( x == other.x && y == other.y && z == other.z );
       }
 
-      //! \brief Inequality operator.
-      //! \param  other The other vector.
-      //! \return true if the vectors are not considered equivalent.
       inline bool operator != ( const Vector3i& other ) const
       {
         return ( x != other.x || y != other.y || z != other.z  );
       }
-      const static Vector3i ZERO; //!< Static default zero vector
-  };
 
-  //! \struct Color
-  //! A color value.
-  struct Color
-  {
-    public:
-      Real r; //!< Red color component in {0..1}
-      Real g; //!< Green color component in {0..1}
-      Real b; //!< Blue color component in {0..1}
+      const static Vector3i ZERO; //!< Static default zero vector
   };
 
   //! \struct Vector2f
