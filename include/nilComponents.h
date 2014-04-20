@@ -7,8 +7,11 @@ namespace Nil {
   //! \addtogroup Nil
   //! @{
 
+  //! \addtogroup Components
+  //! @{
+
   //! \struct Button
-  //! \brief Digital push button component.
+  //! Digital push button component.
   struct Button
   {
     public:
@@ -17,7 +20,7 @@ namespace Nil {
   };
 
   //! \struct Axis
-  //! \brief Analog axis controller component.
+  //! Analog axis controller component.
   struct Axis
   {
     public:
@@ -26,7 +29,7 @@ namespace Nil {
   };
 
   //! \struct Slider
-  //! \brief Two-dimensional analog controller component.
+  //! Two-dimensional analog controller component.
   struct Slider
   {
     public:
@@ -35,8 +38,8 @@ namespace Nil {
   };
 
   //! \struct POV
-  //! \brief Digital directional Point-of-View controller component.
-  //!  Also known as the D-pad.
+  //! Digital directional Point-of-View controller component.
+  //! Also known as the D-pad.
   struct POV
   {
     public:
@@ -54,7 +57,7 @@ namespace Nil {
   };
 
   //! \struct Wheel
-  //! \brief Mouse wheel component.
+  //! Mouse wheel component.
   struct Wheel
   {
     public:
@@ -63,13 +66,15 @@ namespace Nil {
   };
 
   //! \struct Movement
-  //! \brief Mouse movement component.
+  //! Mouse movement component.
   struct Movement
   {
     public:
       Vector2i relative; //!< Relative value delta in points
       Movement();
   };
+
+  //! @}
 
   //! @}
 
