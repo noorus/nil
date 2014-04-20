@@ -32,19 +32,22 @@
 #include <boost/algorithm/string.hpp>
 
 namespace Nil {
-  
-  typedef uint32_t DeviceID;
-  typedef uint32_t POVDirection;
-  typedef unsigned int VirtualKeyCode;
-  
-  typedef float Real;
 
-# define NIL_REAL_ZERO 0.0f
-# define NIL_REAL_ONE 1.0f
-# define NIL_REAL_MINUSONE -1.0f
+  //! \addtogroup Nil
+  //! @{
+  
+  typedef uint32_t DeviceID; //!< A device ID type.
+  typedef uint32_t POVDirection; //!< A D-pad direction type.
+  typedef unsigned int VirtualKeyCode; //!< A virtual key code type.
+  
+  typedef float Real; //!< Nil Real type.
 
-  typedef std::string utf8String;
-  typedef std::wstring String;
+# define NIL_REAL_ZERO 0.0f //!< A Nil Real zero constant.
+# define NIL_REAL_ONE 1.0f //!< A Nil Real one constant.
+# define NIL_REAL_MINUSONE -1.0f //!< A Nil Real minus one constant.
+
+  typedef std::string utf8String; //!< UTF-8 string type.
+  typedef std::wstring String; //!< Wide string type.
 
   using std::map;
   using std::list;
@@ -54,53 +57,87 @@ namespace Nil {
   using boost::variant;
 
   //! \struct Vector2i
-  //! Two-dimensional integer vector.
+  //! \brief Two-dimensional integer vector.
   struct Vector2i
   {
     public:
-      int32_t x; //!< X-axis value
-      int32_t y; //!< Y-axis value
+      int32_t x;  //!< X-axis value
+      int32_t y;  //!< Y-axis value
+
+      //! \brief Default constructor.
       inline Vector2i(): x( 0 ), y( 0 ) {}
+
+      //! \brief Constructor.
+      //! \param  x_ The x coordinate.
+      //! \param  y_ The y coordinate.
       inline explicit Vector2i( int32_t x_, int32_t y_ ): x( x_ ), y( y_ ) {}
+
+      //! \brief Equality operator.
+      //! \param  other The other vector.
+      //! \return true if the vectors are considered equivalent.
       inline bool operator == ( const Vector2i& other ) const
       {
         return ( x == other.x && y == other.y );
       }
+
+      //! \brief Inequality operator.
+      //! \param  other The other vector.
+      //! \return true if the vectors are not considered equivalent.
       inline bool operator != ( const Vector2i& other ) const
       {
         return ( x != other.x || y != other.y  );
       }
+
+      //! \brief Negation operator.
+      //! \param  other The other vector.
+      //! \return The result of the operation.
       inline Vector2i operator - ( const Vector2i& other ) const
       {
         return Vector2i( x - other.x, y - other.y );
       }
-      const static Vector2i ZERO;
+
+      const static Vector2i ZERO; //!< Static default zero vector
   };
 
   //! \struct Vector3i
-  //! Three-dimensional integer vector.
+  //! \brief Three-dimensional integer vector.
   struct Vector3i
   {
     public:
-      int32_t x; //!< X-axis value
-      int32_t y; //!< Y-axis value
-      int32_t z; //!< Z-axis value
+      int32_t x;  //!< X-axis value
+      int32_t y;  //!< Y-axis value
+      int32_t z;  //!< Z-axis value
+
+      //! \brief Default zero constructor.
       inline Vector3i(): x( 0 ), y( 0 ), z( 0 ) {}
+
+      //! \brief Constructor.
+      //! \param  x_ The x coordinate.
+      //! \param  y_ The y coordinate.
+      //! \param  z_ The z coordinate.
       inline explicit Vector3i( int32_t x_, int32_t y_, int32_t z_ ):
       x( x_ ), y( y_ ), z( z_ ) {}
+
+      //! \brief Equality operator.
+      //! \param  other The other vector.
+      //! \return true if the vectors are considered equivalent.
       inline bool operator == ( const Vector3i& other ) const
       {
         return ( x == other.x && y == other.y && z == other.z );
       }
+
+      //! \brief Inequality operator.
+      //! \param  other The other vector.
+      //! \return true if the vectors are not considered equivalent.
       inline bool operator != ( const Vector3i& other ) const
       {
         return ( x != other.x || y != other.y || z != other.z  );
       }
-      const static Vector3i ZERO;
+      const static Vector3i ZERO; //!< Static default zero vector
   };
 
   //! \struct Color
-  //! A color value.
+  //! \brief A color value.
   struct Color
   {
     public:
@@ -110,45 +147,78 @@ namespace Nil {
   };
 
   //! \struct Vector2f
-  //! Two-dimensional floating point vector.
+  //! \brief Two-dimensional floating point vector.
   struct Vector2f
   {
     public:
       Real x; //!< X-axis value
       Real y; //!< Y-axis value
+
+      //! \brief Default zero constructor.
       inline Vector2f(): x( NIL_REAL_ZERO ), y( NIL_REAL_ZERO ) {}
+
+      //! \brief Constructor.
+      //! \param  x_ The x coordinate.
+      //! \param  y_ The y coordinate.
       inline explicit Vector2f( Real x_, Real y_ ): x( x_ ), y( y_ ) {}
+
+      //! \brief Equality operator.
+      //! \param  other The other vector.
+      //! \return true if the vectors are considered equivalent.
       inline bool operator == ( const Vector2f& other ) const
       {
         return ( x == other.x && y == other.y ); //-V550
       }
+
+      //! \brief Inequality operator.
+      //! \param  other The other vector.
+      //! \return true if the vectors are not considered equivalent.
       inline bool operator != ( const Vector2f& other ) const
       {
         return ( x != other.x || y != other.y  ); //-V550
       }
-      const static Vector2f ZERO;
+
+      const static Vector2f ZERO; //!< Static default zero vector
   };
 
   //! \struct Vector3f
-  //! Three-dimensional floating point vector.
+  //! \brief Three-dimensional floating point vector.
   struct Vector3f
   {
     public:
       Real x; //!< X-axis value
       Real y; //!< Y-axis value
       Real z; //!< Z-axis value
+
+      //! \brief Default zero constructor.
       inline Vector3f(): x( NIL_REAL_ZERO ), y( NIL_REAL_ZERO ), z( NIL_REAL_ZERO ) {}
+
+      //! \brief Constructor.
+      //! \param  x_ The x coordinate.
+      //! \param  y_ The y coordinate.
+      //! \param  z_ The z coordinate.
       inline explicit Vector3f( Real x_, Real y_, Real z_ ):
       x( x_ ), y( y_ ), z( z_ ) {}
+
+      //! \brief Equality operator.
+      //! \param  other The other vector.
+      //! \return true if the vectors are considered equivalent.
       inline bool operator == ( const Vector3f& other ) const
       {
         return ( x == other.x && y == other.y && z == other.z ); //-V550
       }
+
+      //! \brief Inequality operator.
+      //! \param  other The other vector.
+      //! \return true if the vectors are not considered equivalent.
       inline bool operator != ( const Vector3f& other ) const
       {
         return ( x != other.x || y != other.y || z != other.z  ); //-V550
       }
-      const static Vector3f ZERO;
+
+      const static Vector3f ZERO; //!< Static default zero vector
   };
+
+  //! @}
 
 }

@@ -6,7 +6,6 @@ namespace Nil {
 
   namespace Util {
 
-    //! 32-bit Fowler/Noll/Vo-1a-hash function
     uint32_t fnv_32a_buf( void* buf, size_t len, uint32_t hashval )
     {
       unsigned char* bp = (unsigned char*)buf;
