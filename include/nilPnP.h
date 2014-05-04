@@ -49,11 +49,11 @@ namespace Nil {
 
       //! Raw mouse input event.
       virtual void onRawMouseInput(
-        HANDLE handle, const RAWMOUSE& input ) = 0;
+        HANDLE handle, const RAWMOUSE& input, const bool sinked ) = 0;
 
       //! Raw keyboard input event.
       virtual void onRawKeyboardInput(
-        HANDLE handle, const RAWKEYBOARD& input ) = 0;
+        HANDLE handle, const RAWKEYBOARD& input, const bool sinked ) = 0;
 
       //! Raw input device removal event.
       virtual void onRawRemoval(
@@ -95,7 +95,7 @@ namespace Nil {
       void handleRawArrival( HANDLE handle );
 
       //! \b Internal Handle raw input.
-      void handleRawInput( HRAWINPUT input );
+      void handleRawInput( HRAWINPUT input, const bool sinked );
 
       //! \b Internal Handle raw device removal.
       void handleRawRemoval( HANDLE handle );

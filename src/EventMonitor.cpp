@@ -72,7 +72,7 @@ namespace Nil {
       listener->onRawArrival( handle );
   }
 
-  void EventMonitor::handleRawInput( HRAWINPUT input )
+  void EventMonitor::handleRawInput( HRAWINPUT input, const bool sinked )
   {
     unsigned int dataSize;
 
@@ -101,12 +101,12 @@ namespace Nil {
     if ( raw->header.dwType == RIM_TYPEMOUSE )
     {
       for ( auto listener : mRawListeners )
-        listener->onRawMouseInput( raw->header.hDevice, raw->data.mouse );
+        listener->onRawMouseInput( raw->header.hDevice, raw->data.mouse, sinked );
     }
     else if ( raw->header.dwType == RIM_TYPEKEYBOARD )
     {
       for ( auto listener : mRawListeners )
-        listener->onRawKeyboardInput( raw->header.hDevice, raw->data.keyboard );
+        listener->onRawKeyboardInput( raw->header.hDevice, raw->data.keyboard, sinked );
     }
   }
 
@@ -194,9 +194,13 @@ namespace Nil {
         return 0;
       break;
       case WM_INPUT:
-        if ( GET_RAWINPUT_CODE_WPARAM( wParam ) == RIM_INPUTSINK )
+        if ( GET_RAWINPUT_CODE_WPARAM( wParam ) == RIM_INPUT )
         {
-          me->handleRawInput( (HRAWINPUT)lParam );
+          me->handleRawInput( (HRAWINPUT)lParam, false );
+        }
+        else if ( GET_RAWINPUT_CODE_WPARAM( wParam ) == RIM_INPUTSINK )
+        {
+          me->handleRawInput( (HRAWINPUT)lParam, true );
         }
         return DefWindowProcW( window, message, wParam, lParam );
       break;

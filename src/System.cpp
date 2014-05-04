@@ -104,7 +104,8 @@ namespace Nil {
     mDevices.push_back( device );
   }
 
-  void System::onRawMouseInput( HANDLE handle, const RAWMOUSE& input )
+  void System::onRawMouseInput( HANDLE handle,
+  const RAWMOUSE& input, const bool sinked )
   {
     if ( mInitializing || !handle )
       return;
@@ -114,7 +115,8 @@ namespace Nil {
       it->second->onRawInput( input );
   }
 
-  void System::onRawKeyboardInput( HANDLE handle, const RAWKEYBOARD& input )
+  void System::onRawKeyboardInput( HANDLE handle,
+  const RAWKEYBOARD& input, const bool sinked )
   {
     if ( mInitializing || !handle )
       return;

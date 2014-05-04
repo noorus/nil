@@ -626,9 +626,9 @@ namespace Nil {
       //! \b Internal My Raw arrival callback.
       virtual void onRawArrival( HANDLE handle );
       //! \b Internal My Raw mouse input callback.
-      virtual void onRawMouseInput( HANDLE handle, const RAWMOUSE& input );
+      virtual void onRawMouseInput( HANDLE handle, const RAWMOUSE& input, const bool sinked );
       //! \b Internal My Raw keyboard input callback.
-      virtual void onRawKeyboardInput( HANDLE handle, const RAWKEYBOARD& input );
+      virtual void onRawKeyboardInput( HANDLE handle, const RAWKEYBOARD& input, const bool sinked );
       //! \b Internal My Raw removal callback.
       virtual void onRawRemoval( HANDLE handle );
       //! \b Internal My DirectInput device enumeration callback.
