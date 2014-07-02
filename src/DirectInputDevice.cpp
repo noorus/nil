@@ -3,7 +3,7 @@
 
 namespace Nil {
 
-  Device::Type resolveDIDeviceType( unsigned long type )
+  inline Device::Type resolveDIDeviceType( unsigned long type )
   {
     type = GET_DIDEVICE_TYPE( type );
 

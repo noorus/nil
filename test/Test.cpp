@@ -191,7 +191,14 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
 
     // Init system
     Nil::System* system = new Nil::System(
-      GetModuleHandleW( nullptr ), GetConsoleWindow(), &gMyListener );
+      GetModuleHandleW( nullptr ),
+      GetConsoleWindow(),
+      // Using background cooperation mode, because the default console window
+      // is actually not owned by our process (it is owned by cmd.exe) and thus
+      // we would not receive any mouse & keyboard events in foreground mode.
+      // For applications that own their own window foreground mode works fine.
+      Nil::Cooperation_Background,
+      &gMyListener );
 
     // Init Logitech G-keys subsystem, if available
     Nil::ExternalModule::InitReturn ret = system->getLogitechGKeys()->initialize();

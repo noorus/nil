@@ -52,6 +52,11 @@ namespace Nil {
   typedef std::string utf8String; //!< UTF-8 string type.
   typedef std::wstring String; //!< Wide string type.
 
+  enum Cooperation: int {
+    Cooperation_Foreground,
+    Cooperation_Background
+  };
+
   using std::map;
   using std::list;
   using std::queue;

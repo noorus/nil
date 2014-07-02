@@ -76,6 +76,7 @@ namespace Nil {
       RawListenerList mRawListeners;  //!< Our raw listeners
       void* mInputBuffer; //!< Buffer for input reads
       unsigned int mInputBufferSize;  //!< Size of input buffer
+      const Cooperation mCooperation; //!< Cooperation mode
     protected:
       //! \b Internal Register myself for event notifications.
       void registerNotifications();
@@ -104,7 +105,7 @@ namespace Nil {
       static LRESULT CALLBACK wndProc( HWND window, UINT message,
         WPARAM wParam, LPARAM lParam );
     public:
-      EventMonitor( HINSTANCE instance );
+      EventMonitor( HINSTANCE instance, const Cooperation coop );
 
       //! Register a listener for Plug-n-Play events.
       void registerPnPListener( PnPListener* listener );

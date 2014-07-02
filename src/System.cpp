@@ -4,7 +4,8 @@
 
 namespace Nil {
 
-  System::System( HINSTANCE instance, HWND window, SystemListener* listener ):
+  System::System( HINSTANCE instance, HWND window, const Cooperation coop,
+  SystemListener* listener ): mCooperation( coop ),
   mWindow( window ), mInstance( instance ), mDirectInput( nullptr ),
   mMonitor( nullptr ), mIDPool( 0 ), mInitializing( true ),
   mHIDManager( nullptr ), mLogitechGKeys( nullptr ), mLogitechLEDs( nullptr ),
@@ -27,7 +28,7 @@ namespace Nil {
       NIL_EXCEPT_DINPUT( hr, L"Could not instance DirectInput 8" );
 
     // Initialize our event monitor
-    mMonitor = new EventMonitor( mInstance );
+    mMonitor = new EventMonitor( mInstance, mCooperation );
 
     // Initialize our HID manager
     mHIDManager = new HIDManager();

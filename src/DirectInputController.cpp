@@ -14,8 +14,10 @@ namespace Nil {
 
   const unsigned long cJoystickEvents = 64;
 
-  DirectInputController::DirectInputController( DirectInputDevice* device ):
-  Controller( device->getSystem(), device ), mDIDevice( nullptr ), mAxisEnum( 0 )
+  DirectInputController::DirectInputController( DirectInputDevice* device,
+  const Cooperation coop ):
+  Controller( device->getSystem(), device ), mDIDevice( nullptr ),
+  mAxisEnum( 0 ), mCooperation( coop )
   {
     HRESULT hr = device->getSystem()->mDirectInput->CreateDevice(
       device->getInstanceID(), &mDIDevice, NULL );
@@ -26,7 +28,11 @@ namespace Nil {
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, L"Could not set DirectInput8 device data format" );
 
-    hr = mDIDevice->SetCooperativeLevel( device->getSystem()->mWindow, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE );
+    // Force feedback, to be implemented later, requires exclusive access.
+    hr = mDIDevice->SetCooperativeLevel( device->getSystem()->mWindow,
+      ( mCooperation == Cooperation_Background )
+      ? DISCL_BACKGROUND | DISCL_EXCLUSIVE
+      : DISCL_FOREGROUND | DISCL_EXCLUSIVE );
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, L"Could not set DirectInput8 device cooperation level" );
 

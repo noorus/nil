@@ -485,6 +485,7 @@ namespace Nil {
       DIDEVCAPS mDICapabilities; //!< DirectInput capabilities
       size_t mAxisEnum; //!< Internal axis enumeration
       size_t mSliderEnum; //!< Internal slider enumeration
+      const Cooperation mCooperation; //!< Cooperation mode
 
       //! Axis value filter.
       inline Real filterAxis( int val );
@@ -495,7 +496,7 @@ namespace Nil {
     public:
       //! Constructor.
       //! \param device The device.
-      DirectInputController( DirectInputDevice* device );
+      DirectInputController( DirectInputDevice* device, const Cooperation coop );
 
       virtual void update();
 
@@ -600,6 +601,7 @@ namespace Nil {
       Logitech::GKeySDK* mLogitechGKeys;  //!< External module for Logitech G-Keys
       Logitech::LedSDK* mLogitechLEDs;  //!< External module for Logitech LEDs
       SystemListener* mListener;  //!< Our single event listener
+      const Cooperation mCooperation; //!< Cooperation mode
       void initializeDevices();
       void refreshDevices();
       void identifyXInputDevices();
@@ -638,8 +640,10 @@ namespace Nil {
       //! Constructor.
       //! \param  instance  Handle of the host instance.
       //! \param  window    Handle of the host window.
+      //! \param  coop      Cooperation mode.
       //! \param  listener  Listener for system events.
-      System( HINSTANCE instance, HWND window, SystemListener* listener );
+      System( HINSTANCE instance, HWND window, const Cooperation coop,
+        SystemListener* listener );
 
       //! Updates this System.
       //! All listened events get triggered from inside this call.

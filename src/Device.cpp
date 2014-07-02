@@ -51,7 +51,7 @@ namespace Nil {
         NIL_EXCEPT( L"Dynamic cast failed for DirectInputDevice" );
       if ( getType() == Device_Controller )
       {
-        mInstance = new DirectInputController( diDevice );
+        mInstance = new DirectInputController( diDevice, mSystem->mCooperation );
         mSystem->controllerEnabled( this, (Controller*)mInstance );
       }
       else
