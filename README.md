@@ -1,7 +1,7 @@
 Nice Input Library
 ==================
-
-NIL is a gaming input library for Windows, inspired by the Open Input System.
+NIL is a gaming input library, currently for Windows only, inspired by the Open Input System.  
+[![Project Stats](https://www.ohloh.net/p/nil-input/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/nil-input)
 
 ### Platform
 
