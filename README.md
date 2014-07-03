@@ -10,7 +10,7 @@ Supported platforms are Windows Vista and newer. XP is not supported.
 ### Building
 
 NIL is written in C++11, and by default builds as a statically linked x64 library under Visual Studio 2012.  
-NIL uses certain APIs from the Windows Driver Kit, so the WDK is required for compiling.
+NIL uses certain APIs from the Windows Driver Kit, so the WDK is required for building NIL.
 
 ### Technology
 
@@ -32,6 +32,10 @@ NIL is single-threaded, buffered and fully listener-based.
 ### Todo
 
 * Force feedback support.
+
+### Pitfalls
+
+See the [PITFALLS.md](PITFALLS.md) file for information on some potential implementation pitfalls.
 
 ### License
 
