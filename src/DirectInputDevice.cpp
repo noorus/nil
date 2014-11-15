@@ -28,7 +28,7 @@ namespace Nil {
   mInstanceID( instance->guidInstance )
   {
     // Only replace auto-generated name if fetched one isn't empty
-    String tmpName = Util::cleanupName( instance->tszInstanceName );
+    utf8String tmpName = Util::cleanupName( Util::wideToUtf8( instance->tszInstanceName ) );
     if ( !tmpName.empty() )
       mName = tmpName;
   }

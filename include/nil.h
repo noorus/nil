@@ -51,7 +51,7 @@ namespace Nil {
       DeviceID mID; //!< Unique identifier, only valid per session
       Status mStatus; //!< Current status
       Status mSavedStatus; //!< Status backup when updating
-      String mName; //!< Device name
+      utf8String mName; //!< Device name
       Type mType; //!< Device type
       System* mSystem; //!< My owner
       DeviceInstance* mInstance; //!< My instance, if created
@@ -76,7 +76,7 @@ namespace Nil {
       virtual const Handler getHandler() const = 0; //!< Get my handler
       virtual const Type getType() const; //!< Get my type
       virtual const Status getStatus() const; //!< Get my status
-      virtual const String& getName() const; //!< Get my name
+      virtual const utf8String& getName() const; //!< Get my name
       virtual System* getSystem(); //!< Get my owning system
       virtual const bool isDisconnectFlagged() const; //!< Am I flagged for disconnection?
   };
@@ -103,9 +103,9 @@ namespace Nil {
     friend class System;
     private:
       HANDLE mRawHandle; //!< The internal raw input device handle
-      String mRawPath; //!< The full input device raw path
+      wideString mRawPath; //!< The full input device raw path
 
-      RawInputDevice( System* system, DeviceID id, HANDLE rawHandle, String& rawPath );
+      RawInputDevice( System* system, DeviceID id, HANDLE rawHandle, wideString& rawPath );
     public:
       virtual ~RawInputDevice();
       virtual const Handler getHandler() const;
@@ -115,7 +115,7 @@ namespace Nil {
       virtual const HANDLE getRawHandle() const;
 
       //! Get the RawInput device path.
-      virtual const String& getRawPath() const;
+      virtual const wideString& getRawPath() const;
 
       //! Get the RawInput device information structure.
       virtual const RID_DEVICE_INFO* getRawInfo() const;
@@ -622,9 +622,9 @@ namespace Nil {
       void mapKeyboard( HANDLE handle, RawInputKeyboard* keyboard );
       void unmapKeyboard( HANDLE handle );
       //! \b Internal My PnP plug callback.
-      virtual void onPnPPlug( const GUID& deviceClass, const String& devicePath );
+      virtual void onPnPPlug( const GUID& deviceClass, const wideString& devicePath );
       //! \b Internal My PnP unplug callback.
-      virtual void onPnPUnplug( const GUID& deviceClass, const String& devicePath );
+      virtual void onPnPUnplug( const GUID& deviceClass, const wideString& devicePath );
       //! \b Internal My Raw arrival callback.
       virtual void onRawArrival( HANDLE handle );
       //! \b Internal My Raw mouse input callback.

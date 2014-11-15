@@ -3,27 +3,27 @@
 
 namespace Nil {
 
-  const String cXInputDefaultName = L"XInput Controller";
+  const utf8String cXInputDefaultName = "XInput Controller";
 
 #if(_WIN32_WINNT >= _WIN32_WINNT_WIN8)
   const long cMaxXInputModels = 11;
-  static std::pair<int,String> cXInputModels[cMaxXInputModels] = {
+  static std::pair<int,utf8String> cXInputModels[cMaxXInputModels] = {
     std::make_pair( XINPUT_DEVSUBTYPE_UNKNOWN, cXInputDefaultName ),
-    std::make_pair( XINPUT_DEVSUBTYPE_GAMEPAD, L"XBOX 360 Gamepad" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_WHEEL, L"XBOX 360 Racing Wheel" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_ARCADE_STICK, L"XBOX 360 Arcade Stick" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_FLIGHT_STICK, L"XBOX 360 Flight Stick" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_DANCE_PAD, L"XBOX 360 Dance Pad" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_GUITAR, L"XBOX 360 Guitar" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_GUITAR_ALTERNATE, L"XBOX 360 Alternate Guitar" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_GUITAR_BASS, L"XBOX 360 Bass Guitar" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_DRUM_KIT, L"XBOX 360 Drum Kit" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_ARCADE_PAD, L"XBOX 360 Arcade Pad" )
+    std::make_pair( XINPUT_DEVSUBTYPE_GAMEPAD, "XBOX 360 Gamepad" ),
+    std::make_pair( XINPUT_DEVSUBTYPE_WHEEL, "XBOX 360 Racing Wheel" ),
+    std::make_pair( XINPUT_DEVSUBTYPE_ARCADE_STICK, "XBOX 360 Arcade Stick" ),
+    std::make_pair( XINPUT_DEVSUBTYPE_FLIGHT_STICK, "XBOX 360 Flight Stick" ),
+    std::make_pair( XINPUT_DEVSUBTYPE_DANCE_PAD, "XBOX 360 Dance Pad" ),
+    std::make_pair( XINPUT_DEVSUBTYPE_GUITAR, "XBOX 360 Guitar" ),
+    std::make_pair( XINPUT_DEVSUBTYPE_GUITAR_ALTERNATE, "XBOX 360 Alternate Guitar" ),
+    std::make_pair( XINPUT_DEVSUBTYPE_GUITAR_BASS, "XBOX 360 Bass Guitar" ),
+    std::make_pair( XINPUT_DEVSUBTYPE_DRUM_KIT, "XBOX 360 Drum Kit" ),
+    std::make_pair( XINPUT_DEVSUBTYPE_ARCADE_PAD, "XBOX 360 Arcade Pad" )
   };
 #else
   const long cMaxXInputModels = 1;
-  static std::pair<int,String> cXInputModels[cMaxXInputModels] = {
-    std::make_pair( XINPUT_DEVSUBTYPE_GAMEPAD, L"XBOX 360 Gamepad" )
+  static std::pair<int,utf8String> cXInputModels[cMaxXInputModels] = {
+    std::make_pair( XINPUT_DEVSUBTYPE_GAMEPAD, "XBOX 360 Gamepad" )
   };
 #endif
 

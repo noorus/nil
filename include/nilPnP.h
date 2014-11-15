@@ -28,11 +28,11 @@ namespace Nil {
     public:
       //! Plug-n-Play device plug event.
       virtual void onPnPPlug( const GUID& deviceClass,
-        const String& devicePath ) = 0;
+        const wideString& devicePath ) = 0;
 
       //! Plug-n-Play device unplug event.
       virtual void onPnPUnplug( const GUID& deviceClass,
-        const String& devicePath ) = 0;
+        const wideString& devicePath ) = 0;
   };
 
   //! A list of Plug-and-Play event listeners.
@@ -86,11 +86,11 @@ namespace Nil {
 
       //! \b Internal Handle interface arrival.
       void handleInterfaceArrival( const GUID& deviceClass,
-        const String& devicePath );
+        const wideString& devicePath );
 
       //! \b Internal Handle interface removal.
       void handleInterfaceRemoval( const GUID& deviceClass,
-        const String& devicePath );
+        const wideString& devicePath );
 
       //! \b Internal Handle raw device arrival.
       void handleRawArrival( HANDLE handle );

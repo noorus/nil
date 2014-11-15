@@ -50,7 +50,7 @@ namespace Nil {
 # define NIL_REAL_MINUSONE -1.0f //!< Real number minus one constant.
 
   typedef std::string utf8String; //!< UTF-8 string type.
-  typedef std::wstring String; //!< Wide string type.
+  typedef std::wstring wideString; //!< Wide string type.
 
   enum Cooperation: int {
     Cooperation_Foreground,

@@ -52,19 +52,19 @@ namespace Nil {
     // Stub
   }
 
-  Exception::Exception( const String& description, Type type ):
+  Exception::Exception( const wideString& description, Type type ):
   mDescription( description ), mType( type )
   {
     handleAdditional();
   }
 
-  Exception::Exception( const String& description, const String& source, Type type ):
+  Exception::Exception( const wideString& description, const wideString& source, Type type ):
   mDescription( description ), mSource( source ), mType( type )
   {
     handleAdditional();
   }
 
-  Exception::Exception( const String& description, const String& source, HRESULT hr, Type type ):
+  Exception::Exception( const wideString& description, const wideString& source, HRESULT hr, Type type ):
   mDescription( description ), mSource( source ), mType( type )
   {
     handleAdditional( hr );
@@ -108,7 +108,7 @@ namespace Nil {
     }
   }
 
-  const String& Exception::getFullDescription() const
+  const wideString& Exception::getFullDescription() const
   {
     if ( mFullDescription.empty() )
     {

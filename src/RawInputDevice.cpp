@@ -43,7 +43,7 @@ namespace Nil {
   // RawInputDevice class
 
   RawInputDevice::RawInputDevice( System* system, DeviceID id,
-  HANDLE rawHandle, String& rawPath ):
+  HANDLE rawHandle, wideString& rawPath ):
   RawInputDeviceInfo( rawHandle ),
   Device( system, id, rawInfoResolveType() ),
   mRawHandle( rawHandle ), mRawPath( rawPath )
@@ -59,7 +59,7 @@ namespace Nil {
       if ( HidD_GetProductString( deviceHandle, &buffer, 256 ) )
       {
         // Only replace auto-generated name if fetched one isn't empty
-        String tmpName = Util::cleanupName( buffer );
+        utf8String tmpName = Util::cleanupName( Util::wideToUtf8( buffer ) );
         if ( !tmpName.empty() )
           mName = tmpName;
       }
@@ -93,7 +93,7 @@ namespace Nil {
     return mRawHandle;
   }
 
-  const String& RawInputDevice::getRawPath() const
+  const wideString& RawInputDevice::getRawPath() const
   {
     return mRawPath;
   }

@@ -111,13 +111,13 @@ namespace Nil {
     //! 32-bit Fowler/Noll/Vo-1a hash function.
     extern uint32_t fnv_32a_buf( void* buf, size_t len, uint32_t hashval );
     //! Cleanup a device name.
-    extern inline String cleanupName( String name ) throw();
+    extern inline utf8String cleanupName( utf8String name ) throw();
     //! UTF-8 to wide string conversion.
-    extern inline String utf8ToWide( const utf8String& in ) throw();
+    extern inline wideString utf8ToWide( const utf8String& in ) throw();
     //! Wide string to UTF-8 conversion.
-    extern inline utf8String wideToUtf8( const String& in ) throw();
+    extern inline utf8String wideToUtf8( const wideString& in ) throw();
     //! Auto-generate a name for a nameless device.
-    String generateName( Device::Type deviceType, int index ) throw();
+    utf8String generateName( Device::Type deviceType, int index ) throw();
   }
 
   //! @}

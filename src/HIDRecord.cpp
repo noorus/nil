@@ -3,7 +3,7 @@
 
 namespace Nil {
 
-  HIDRecord::HIDRecord( const String& path, HANDLE handle ):
+  HIDRecord::HIDRecord( const wideString& path, HANDLE handle ):
   mPath( path ), mIsXInput( false ), mIsRDP( false )
   {
     HIDD_ATTRIBUTES attributes = { sizeof( HIDD_ATTRIBUTES ) };
@@ -25,11 +25,11 @@ namespace Nil {
 
     wchar_t buffer[256];
     if ( HidD_GetProductString( handle, &buffer, 256 ) )
-      mName = Util::cleanupName( buffer );
+      mName = Util::cleanupName( Util::wideToUtf8( buffer ) );
     if ( HidD_GetManufacturerString( handle, &buffer, 256 ) )
-      mManufacturer = Util::cleanupName( buffer );
+      mManufacturer = Util::cleanupName( Util::wideToUtf8( buffer ) );
     if ( HidD_GetSerialNumberString( handle, &buffer, 256 ) )
-      mSerialNumber = buffer;
+      mSerialNumber = Util::wideToUtf8( buffer );
 
     identify();
   }
@@ -81,22 +81,22 @@ namespace Nil {
     return mCapabilities.Usage;
   }
 
-  const String& HIDRecord::getPath() const
+  const wideString& HIDRecord::getPath() const
   {
     return mPath;
   }
 
-  const String& HIDRecord::getManufacturer() const
+  const utf8String& HIDRecord::getManufacturer() const
   {
     return mManufacturer;
   }
 
-  const String& HIDRecord::getName() const
+  const utf8String& HIDRecord::getName() const
   {
     return mName;
   }
 
-  const String& HIDRecord::getSerialNumber() const
+  const utf8String& HIDRecord::getSerialNumber() const
   {
     return mSerialNumber;
   }

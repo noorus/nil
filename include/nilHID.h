@@ -26,14 +26,14 @@ namespace Nil {
   class HIDRecord
   {
     private:
-      String mPath; //!< Raw device path
+      wideString mPath; //!< Raw device path
       uint16_t mVendorID; //!< USB Vendor ID for this device
       uint16_t mProductID; //!< USB Product ID for this device
       uint32_t mIdentifier; //!< Combined HID identifier
       HIDP_CAPS mCapabilities; //!< HID API capabilities
-      String mName; //!< Device name
-      String mManufacturer; //!< Device manufacturer
-      String mSerialNumber; //!< Device serial number
+      utf8String mName; //!< Device name
+      utf8String mManufacturer; //!< Device manufacturer
+      utf8String mSerialNumber; //!< Device serial number
       bool mIsXInput; //!< Am I an XInput device?
       bool mIsRDP; //!< Am I a Remote Desktop device?
 
@@ -42,7 +42,7 @@ namespace Nil {
       //! Constructor.
       //! \param  path   Full system path to the device.
       //! \param  handle Device handle.
-      HIDRecord( const String& path, HANDLE handle );
+      HIDRecord( const wideString& path, HANDLE handle );
 
       //! Am I a Remote Desktop device?
       bool isRDP() const;
@@ -57,18 +57,18 @@ namespace Nil {
       bool isLogitech() const;
 
       //! Get full device path.
-      const String& getPath() const;
+      const wideString& getPath() const;
 
       //! Get device name.
-      const String& getName() const;
+      const utf8String& getName() const;
 
       //! Get manufacturer name.
       //! Can be empty.
-      const String& getManufacturer() const;
+      const utf8String& getManufacturer() const;
 
       //! Get serial number.
       //! Can be empty.
-      const String& getSerialNumber() const;
+      const utf8String& getSerialNumber() const;
 
       //! Get USB usage page ID.
       uint16_t getUsagePage() const;
@@ -97,14 +97,14 @@ namespace Nil {
       HIDRecordList mRecords; //!< Records container
 
       //! \b Internal My PnP plug callback.
-      virtual void onPnPPlug( const GUID& deviceClass, const String& devicePath );
+      virtual void onPnPPlug( const GUID& deviceClass, const wideString& devicePath );
 
       //! \b Internal My PnP unplug callback.
-      virtual void onPnPUnplug( const GUID& deviceClass, const String& devicePath );
+      virtual void onPnPUnplug( const GUID& deviceClass, const wideString& devicePath );
 
       //! \b Internal Process an existing device.
       void processDevice( SP_DEVICE_INTERFACE_DATA& interfaceData,
-        SP_DEVINFO_DATA& deviceData, const String& devicePath );
+        SP_DEVINFO_DATA& deviceData, const wideString& devicePath );
 
       //! \b Internal Initialization stuff
       void initialize();

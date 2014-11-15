@@ -55,14 +55,14 @@ namespace Nil {
     return mIDPool++;
   }
 
-  void System::onPnPPlug( const GUID& deviceClass, const String& devicePath )
+  void System::onPnPPlug( const GUID& deviceClass, const wideString& devicePath )
   {
     // Refresh all currently connected devices,
     // since IDirectInput8::FindDevice doesn't do jack shit
     refreshDevices();
   }
 
-  void System::onPnPUnplug( const GUID& deviceClass, const String& devicePath )
+  void System::onPnPUnplug( const GUID& deviceClass, const wideString& devicePath )
   {
     // Refresh all currently connected devices,
     // since IDirectInput8::FindDevice doesn't do jack shit
@@ -76,7 +76,7 @@ namespace Nil {
     if ( GetRawInputDeviceInfoW( handle, RIDI_DEVICENAME, NULL, &pathLength ) )
       NIL_EXCEPT_WINAPI( L"GetRawInputDeviceInfoW failed" );
 
-    String rawPath( pathLength, '\0' );
+    wideString rawPath( pathLength, '\0' );
 
     GetRawInputDeviceInfoW( handle, RIDI_DEVICENAME, &rawPath[0], &pathLength );
     rawPath.resize( rawPath.length() - 1 );

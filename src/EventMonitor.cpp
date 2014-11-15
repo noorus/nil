@@ -53,14 +53,14 @@ namespace Nil {
   }
 
   void EventMonitor::handleInterfaceArrival( const GUID& deviceClass,
-  const String& devicePath )
+  const wideString& devicePath )
   {
     for ( auto listener : mPnPListeners )
       listener->onPnPPlug( deviceClass, devicePath );
   }
 
   void EventMonitor::handleInterfaceRemoval( const GUID& deviceClass,
-  const String& devicePath )
+  const wideString& devicePath )
   {
     for ( auto listener : mPnPListeners )
       listener->onPnPUnplug( deviceClass, devicePath );

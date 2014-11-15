@@ -13,7 +13,7 @@ namespace Nil {
     return mRecords;
   }
 
-  void HIDManager::onPnPPlug( const GUID& deviceClass, const String& devicePath )
+  void HIDManager::onPnPPlug( const GUID& deviceClass, const wideString& devicePath )
   {
     if ( deviceClass != g_HIDInterfaceGUID )
       return;
@@ -32,7 +32,7 @@ namespace Nil {
     }
   }
 
-  void HIDManager::onPnPUnplug( const GUID& deviceClass, const String& devicePath )
+  void HIDManager::onPnPUnplug( const GUID& deviceClass, const wideString& devicePath )
   {
     if ( deviceClass != g_HIDInterfaceGUID )
       return;
@@ -47,7 +47,7 @@ namespace Nil {
   }
 
   void HIDManager::processDevice( SP_DEVICE_INTERFACE_DATA& interfaceData,
-  SP_DEVINFO_DATA& deviceData, const String& devicePath )
+  SP_DEVINFO_DATA& deviceData, const wideString& devicePath )
   {
     if ( interfaceData.InterfaceClassGuid != g_HIDInterfaceGUID )
       return;

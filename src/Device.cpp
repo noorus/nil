@@ -156,7 +156,7 @@ namespace Nil {
     return mSavedStatus;
   }
 
-  const String& Device::getName() const
+  const utf8String& Device::getName() const
   {
     return mName;
   }
