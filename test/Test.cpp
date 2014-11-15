@@ -33,15 +33,15 @@ public:
   }
   virtual void onMouseButtonPressed( Nil::Mouse* mouse, const Nil::MouseState& state, size_t button )
   {
-    printf_s( "Mouse button pressed: %d (%s)\r\n", button, mouse->getDevice()->getName().c_str() );
+    printf_s( "Mouse button pressed: %d (%s)\n", button, mouse->getDevice()->getName().c_str() );
   }
   virtual void onMouseButtonReleased( Nil::Mouse* mouse, const Nil::MouseState& state, size_t button )
   {
-    printf_s( "Mouse button released: %d (%s)\r\n", button, mouse->getDevice()->getName().c_str() );
+    printf_s( "Mouse button released: %d (%s)\n", button, mouse->getDevice()->getName().c_str() );
   }
   virtual void onMouseWheelMoved( Nil::Mouse* mouse, const Nil::MouseState& state )
   {
-    printf_s( "Mouse wheel moved: %d (%s)\r\n", state.mWheel.relative, mouse->getDevice()->getName().c_str() );
+    printf_s( "Mouse wheel moved: %d (%s)\n", state.mWheel.relative, mouse->getDevice()->getName().c_str() );
   }
 };
 
@@ -52,15 +52,15 @@ class DummyKeyboardListener: public Nil::KeyboardListener {
 public:
   virtual void onKeyPressed( Nil::Keyboard* keyboard, const Nil::VirtualKeyCode keycode )
   {
-    printf_s( "Key pressed: 0x%X (%s)\r\n", keycode, keyboard->getDevice()->getName().c_str() );
+    printf_s( "Key pressed: 0x%X (%s)\n", keycode, keyboard->getDevice()->getName().c_str() );
   }
   virtual void onKeyRepeat( Nil::Keyboard* keyboard, const Nil::VirtualKeyCode keycode )
   {
-    printf_s( "Key repeat: 0x%X (%s)\r\n", keycode, keyboard->getDevice()->getName().c_str() );
+    printf_s( "Key repeat: 0x%X (%s)\n", keycode, keyboard->getDevice()->getName().c_str() );
   }
   virtual void onKeyReleased( Nil::Keyboard* keyboard, const Nil::VirtualKeyCode keycode )
   {
-    printf_s( "Key released: 0x%X (%s)\r\n", keycode, keyboard->getDevice()->getName().c_str() );
+    printf_s( "Key released: 0x%X (%s)\n", keycode, keyboard->getDevice()->getName().c_str() );
   }
 };
 
@@ -72,23 +72,23 @@ class DummyControllerListener: public Nil::ControllerListener {
 public:
   virtual void onControllerButtonPressed( Nil::Controller* controller, const Nil::ControllerState& state, size_t button )
   {
-    printf_s( "Controller button %d pressed (%s)\r\n", button, controller->getDevice()->getName().c_str() );
+    printf_s( "Controller button %d pressed (%s)\n", button, controller->getDevice()->getName().c_str() );
   }
   virtual void onControllerButtonReleased( Nil::Controller* controller, const Nil::ControllerState& state, size_t button )
   {
-    printf_s( "Controller button %d released (%s)\r\n", button, controller->getDevice()->getName().c_str() );
+    printf_s( "Controller button %d released (%s)\n", button, controller->getDevice()->getName().c_str() );
   }
   virtual void onControllerAxisMoved( Nil::Controller* controller, const Nil::ControllerState& state, size_t axis )
   {
-    printf_s( "Controller axis %d moved: %f (%s)\r\n", axis, state.mAxes[axis].absolute, controller->getDevice()->getName().c_str() );
+    printf_s( "Controller axis %d moved: %f (%s)\n", axis, state.mAxes[axis].absolute, controller->getDevice()->getName().c_str() );
   }
   virtual void onControllerSliderMoved( Nil::Controller* controller, const Nil::ControllerState& state, size_t slider )
   {
-    printf_s( "Controller slider %d moved (%s)\r\n", slider, controller->getDevice()->getName().c_str() );
+    printf_s( "Controller slider %d moved (%s)\n", slider, controller->getDevice()->getName().c_str() );
   }
   virtual void onControllerPOVMoved( Nil::Controller* controller, const Nil::ControllerState& state, size_t pov )
   {
-    printf_s( "Controller POV %d moved: 0x%08X (%s)\r\n", pov, state.mPOVs[pov].direction, controller->getDevice()->getName().c_str() );
+    printf_s( "Controller POV %d moved: 0x%08X (%s)\n", pov, state.mPOVs[pov].direction, controller->getDevice()->getName().c_str() );
   }
 };
 
@@ -100,11 +100,11 @@ class DummyGKeyListener: public Nil::Logitech::GKeyListener {
 public:
   virtual void onGKeyPressed( Nil::Logitech::GKey key )
   {
-    printf_s( "G-Key pressed: %d\r\n", key );
+    printf_s( "G-Key pressed: %d\n", key );
   }
   virtual void onGKeyReleased( Nil::Logitech::GKey key )
   {
-    printf_s( "G-Key released: %d\r\n", key );
+    printf_s( "G-Key released: %d\n", key );
   }
 };
 
@@ -121,19 +121,19 @@ public:
   }
   virtual void onDeviceDisconnected( Nil::Device* device )
   {
-    printf_s( "Disconnected: %s\r\n", device->getName().c_str() );
+    printf_s( "Disconnected: %s\n", device->getName().c_str() );
   }
   virtual void onMouseEnabled( Nil::Device* device, Nil::Mouse* instance )
   {
-    printf_s( "Mouse enabled: %s\r\n", device->getName().c_str() );
-    printf_s( "Static ID: 0x%08X\r\n", device->getStaticID() );
+    printf_s( "Mouse enabled: %s\n", device->getName().c_str() );
+    printf_s( "Static ID: 0x%08X\n", device->getStaticID() );
     // Add our listener for every mouse that is enabled
     instance->addListener( &gDummyMouseListener );
   }
   virtual void onKeyboardEnabled( Nil::Device* device, Nil::Keyboard* instance )
   {
-    printf_s( "Keyboard enabled: %s\r\n", device->getName().c_str() );
-    printf_s( "Static ID: 0x%08X\r\n", device->getStaticID() );
+    printf_s( "Keyboard enabled: %s\n", device->getName().c_str() );
+    printf_s( "Static ID: 0x%08X\n", device->getStaticID() );
     // Add our listener for every keyboard that is enabled
     instance->addListener( &gDummyKeyboardListener );
   }
@@ -146,22 +146,22 @@ public:
   }
   virtual void onMouseDisabled( Nil::Device* device, Nil::Mouse* instance )
   {
-    printf_s( "Mouse disabled: %s\r\n", device->getName().c_str() );
-    printf_s( "Static ID: 0x%08X\r\n", device->getStaticID() );
+    printf_s( "Mouse disabled: %s\n", device->getName().c_str() );
+    printf_s( "Static ID: 0x%08X\n", device->getStaticID() );
     // Removing listeners at this point is unnecessary,
     // as the device instance is destroyed anyway
   }
   virtual void onKeyboardDisabled( Nil::Device* device, Nil::Keyboard* instance )
   {
-    printf_s( "Keyboard disabled: %s\r\n", device->getName().c_str() );
-    printf_s( "Static ID: 0x%08X\r\n", device->getStaticID() );
+    printf_s( "Keyboard disabled: %s\n", device->getName().c_str() );
+    printf_s( "Static ID: 0x%08X\n", device->getStaticID() );
     // Removing listeners at this point is unnecessary,
     // as the device instance is destroyed anyway
   }
   virtual void onControllerDisabled( Nil::Device* device, Nil::Controller* instance )
   {
-    printf_s( "Controller disabled: %s\r\n", device->getName().c_str() );
-    printf_s( "Static ID: 0x%08X\r\n", device->getStaticID() );
+    printf_s( "Controller disabled: %s\n", device->getName().c_str() );
+    printf_s( "Static ID: 0x%08X\n", device->getStaticID() );
     // Removing listeners at this point is unnecessary,
     // as the device instance is destroyed anyway
   }
@@ -204,17 +204,17 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
     Nil::ExternalModule::InitReturn ret = system->getLogitechGKeys()->initialize();
     if ( ret == Nil::ExternalModule::Initialization_OK )
     {
-      printf_s( "G-keys initialized\r\n" );
+      printf_s( "G-keys initialized\n" );
       system->getLogitechGKeys()->addListener( &gDummyGKeyListener );
     } else
-      printf_s( "G-keys initialization failed with 0x%X\r\n", ret );
+      printf_s( "G-keys initialization failed with 0x%X\n", ret );
 
     // Init Logitech LED subsytem, if available
     ret = system->getLogitechLEDs()->initialize();
     if ( ret == Nil::ExternalModule::Initialization_OK )
       printf_s( "LEDs initialized\r\n" );
     else
-      printf_s( "LEDs initialization failed with 0x%X\r\n", ret );
+      printf_s( "LEDs initialization failed with 0x%X\n", ret );
 
     // Enable all initially connected devices
     for ( auto device : system->getDevices() )
@@ -257,17 +257,17 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
   }
   catch ( Nil::Exception& e )
   {
-    wprintf_s( L"Exception: %s\r\n", e.getFullDescription() );
+    printf_s( "Exception: %s\n", e.getFullDescription().c_str() );
     return EXIT_FAILURE;
   }
   catch ( std::exception& e )
   {
-    wprintf_s( L"Exception: %S\r\n", e.what() );
+    printf_s( "Exception: %s\n", e.what() );
     return EXIT_FAILURE;
   }
   catch ( ... )
   {
-    wprintf_s( L"Unknown exception\r\n" );
+    printf_s( "Unknown exception\n" );
     return EXIT_FAILURE;
   }
 #endif
