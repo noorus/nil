@@ -13,6 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Windows">
+      <UniqueIdentifier>{ecfd2fe6-9b6c-423a-b24c-f44b256cccef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Windows\DirectInput">
+      <UniqueIdentifier>{d2da3447-93c5-4a9c-b426-d9e645bdc5ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Windows\RawInput">
+      <UniqueIdentifier>{5049182a-6a83-4555-832d-410404347522}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Windows\XInput">
+      <UniqueIdentifier>{f3c7ac48-8052-4e9a-b485-b868f0bfaf8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Windows\Logitech">
+      <UniqueIdentifier>{16818199-86f5-4caf-8e26-a59c38038a49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\nil.h">
@@ -53,18 +68,6 @@
     <ClCompile Include="src\Device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\DirectInputDevice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\XInputDevice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DirectInputController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\XInputController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Controller.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -89,26 +92,38 @@
     <ClCompile Include="src\HIDRecord.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\RawInputDevice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RawInputKeyboard.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RawInputMouse.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LogitechGkeySDK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LogitechLedSDK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ExternalModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\EventMonitor.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DirectInputController.cpp">
+      <Filter>Source Files\Windows\DirectInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DirectInputDevice.cpp">
+      <Filter>Source Files\Windows\DirectInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RawInputDevice.cpp">
+      <Filter>Source Files\Windows\RawInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RawInputKeyboard.cpp">
+      <Filter>Source Files\Windows\RawInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RawInputMouse.cpp">
+      <Filter>Source Files\Windows\RawInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\XInputDevice.cpp">
+      <Filter>Source Files\Windows\XInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\XInputController.cpp">
+      <Filter>Source Files\Windows\XInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LogitechLedSDK.cpp">
+      <Filter>Source Files\Windows\Logitech</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LogitechGkeySDK.cpp">
+      <Filter>Source Files\Windows\Logitech</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
