@@ -54,6 +54,12 @@
     <ClInclude Include="include\nilComponents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\nilWindows.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\nilCommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\System.cpp">

@@ -1,5 +1,6 @@
 #include "nil.h"
 #include "nilUtil.h"
+#include "nilWindows.h"
 
 namespace Nil {
 

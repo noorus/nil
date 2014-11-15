@@ -155,6 +155,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\nil.h" />
+    <ClInclude Include="include\nilCommon.h" />
     <ClInclude Include="include\nilComponents.h" />
     <ClInclude Include="include\nilException.h" />
     <ClInclude Include="include\nilHID.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="include\nilPnP.h" />
     <ClInclude Include="include\nilTypes.h" />
     <ClInclude Include="include\nilUtil.h" />
+    <ClInclude Include="include\nilWindows.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Components.cpp" />

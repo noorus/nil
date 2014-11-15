@@ -1,5 +1,6 @@
 #include "nil.h"
 #include "nilUtil.h"
+#include "nilWindows.h"
 
 #define NIL_FIELD_OFFSET(type, field) ((LONG_PTR)&(((type*)0)->field))
 
