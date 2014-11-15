@@ -62,19 +62,11 @@ namespace Nil {
 
   Real XInputController::filterRightThumbAxis( int val )
   {
-    // There's a problem with the right thumbstick's axes often not reaching
-    // their maximum. So we adjust the range upward slightly to make up for it.
-    // It's OK to lose a tiny bit of low-range precision in order to do that.
-    // However, we'll try to stay as neutral as possible, and leave further
-    // filtering to the end-user application.
- 
-    static int adjustedDeadzone = (int)( (double)XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE * 0.8 );
-
     if ( val < 0 )
     {
       if ( val > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
         return NIL_REAL_ZERO;
-      val += adjustedDeadzone;
+      val += XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE;
       Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
       return ( ret < NIL_REAL_MINUSONE ? NIL_REAL_MINUSONE : ret );
     }
@@ -82,7 +74,7 @@ namespace Nil {
     {
       if ( val < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
         return NIL_REAL_ZERO;
-      val -= adjustedDeadzone;
+      val -= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE;
       Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
       return ( ret > NIL_REAL_ONE ? NIL_REAL_ONE : ret );
     }
