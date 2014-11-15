@@ -76,7 +76,7 @@ namespace Nil {
       NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
 
     if ( info == INVALID_HANDLE_VALUE )
-      NIL_EXCEPT_WINAPI( L"SetupDiGetClassDevsW failed" );
+      NIL_EXCEPT_WINAPI( "SetupDiGetClassDevsW failed" );
 
     for ( unsigned long i = 0; SetupDiEnumDeviceInterfaces(
     info, 0, &g_HIDInterfaceGUID, i, &interfaceData ); i++ )
@@ -85,7 +85,7 @@ namespace Nil {
       SetupDiGetDeviceInterfaceDetailW( info, &interfaceData, NULL, 0, &length, NULL );
 
       if ( GetLastError() != ERROR_INSUFFICIENT_BUFFER )
-        NIL_EXCEPT_WINAPI( L"SetupDiGetDeviceInterfaceDetailW failed" );
+        NIL_EXCEPT_WINAPI( "SetupDiGetDeviceInterfaceDetailW failed" );
 
       auto detailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA_W)malloc( (size_t)length );
       detailData->cbSize = sizeof( SP_INTERFACE_DEVICE_DETAIL_DATA_W );

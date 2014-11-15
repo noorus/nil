@@ -61,6 +61,7 @@ namespace Nil {
   using std::list;
   using std::queue;
   using std::vector;
+  using std::stringstream;
   using std::wstringstream;
   using boost::variant;
 

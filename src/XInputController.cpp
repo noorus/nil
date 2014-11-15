@@ -109,7 +109,7 @@ namespace Nil {
       return;
     }
     else if ( ret != ERROR_SUCCESS )
-      NIL_EXCEPT( L"XInputGetState failed!" );
+      NIL_EXCEPT( "XInputGetState failed" );
 
     if ( mXInputState.dwPacketNumber == mLastPacket )
       return;

@@ -9,14 +9,14 @@ namespace Nil {
   {
     UINT size = 0;
     if ( GetRawInputDeviceInfoW( handle, RIDI_DEVICEINFO, NULL, &size ) != 0 )
-      NIL_EXCEPT_WINAPI( L"GetRawInputDeviceInfoW failed" );
+      NIL_EXCEPT_WINAPI( "GetRawInputDeviceInfoW failed" );
 
     mRawInfo = (RID_DEVICE_INFO*)malloc( (size_t)size );
     if ( !mRawInfo )
-      NIL_EXCEPT( L"Memory allocation failed" );
+      NIL_EXCEPT( "Memory allocation failed" );
 
     if ( !GetRawInputDeviceInfoW( handle, RIDI_DEVICEINFO, mRawInfo, &size ) )
-      NIL_EXCEPT_WINAPI( L"GetRawInputDeviceInfoW failed" );
+      NIL_EXCEPT_WINAPI( "GetRawInputDeviceInfoW failed" );
   }
 
   const Device::Type RawInputDeviceInfo::rawInfoResolveType() const

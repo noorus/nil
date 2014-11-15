@@ -18,16 +18,16 @@ namespace Nil {
 
     mClass = RegisterClassExW( &wx );
     if ( !mClass )
-      NIL_EXCEPT_WINAPI( L"Window class registration failed" );
+      NIL_EXCEPT_WINAPI( "Window class registration failed" );
 
     mWindow = CreateWindowExW(
       0, (LPCWSTR)mClass, nullptr, 0, 0, 0, 0, 0, 0, 0, mInstance, this ); //-V542
     if ( !mWindow )
-      NIL_EXCEPT_WINAPI( L"Window creation failed" );
+      NIL_EXCEPT_WINAPI( "Window creation failed" );
 
     mInputBuffer = malloc( (size_t)mInputBufferSize );
     if ( !mInputBuffer )
-      NIL_EXCEPT( L"Couldn't allocate input read buffer" );
+      NIL_EXCEPT( "Couldn't allocate input read buffer" );
 
     registerNotifications();
   }
@@ -89,7 +89,7 @@ namespace Nil {
       mInputBufferSize = dataSize;
       mInputBuffer = realloc( mInputBuffer, (size_t)dataSize );
       if ( !mInputBuffer )
-        NIL_EXCEPT( L"Couldn't reallocate input read buffer" );
+        NIL_EXCEPT( "Couldn't reallocate input read buffer" );
     }
 
     if ( GetRawInputData( input, RID_INPUT, mInputBuffer, &dataSize, sizeof( RAWINPUTHEADER ) ) == (UINT)-1 )
@@ -128,7 +128,7 @@ namespace Nil {
     mNotifications = RegisterDeviceNotificationW( mWindow, &filter,
       DEVICE_NOTIFY_WINDOW_HANDLE );
     if ( !mNotifications )
-      NIL_EXCEPT_WINAPI( L"Couldn't register for device interface notifications" );
+      NIL_EXCEPT_WINAPI( "Couldn't register for device interface notifications" );
 
     RAWINPUTDEVICE rawDevices[2];
 
@@ -149,7 +149,7 @@ namespace Nil {
     rawDevices[1].usUsage = USBDesktopUsage_Keyboards;
 
     if ( !RegisterRawInputDevices( rawDevices, 2, sizeof( RAWINPUTDEVICE ) ) )
-      NIL_EXCEPT_WINAPI( L"Couldn't register for raw input notifications" );
+      NIL_EXCEPT_WINAPI( "Couldn't register for raw input notifications" );
   }
 
   LRESULT CALLBACK EventMonitor::wndProc( HWND window, UINT message,

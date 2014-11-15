@@ -22,11 +22,11 @@ namespace Nil {
     HRESULT hr = device->getSystem()->mDirectInput->CreateDevice(
       device->getInstanceID(), &mDIDevice, NULL );
     if ( FAILED( hr ) )
-      NIL_EXCEPT_DINPUT( hr, L"Could not create DirectInput8 device" );
+      NIL_EXCEPT_DINPUT( hr, "Could not create DirectInput8 device" );
 
     hr = mDIDevice->SetDataFormat( &c_dfDIJoystick2 );
     if ( FAILED( hr ) )
-      NIL_EXCEPT_DINPUT( hr, L"Could not set DirectInput8 device data format" );
+      NIL_EXCEPT_DINPUT( hr, "Could not set DirectInput8 device data format" );
 
     // Force feedback, to be implemented later, requires exclusive access.
     hr = mDIDevice->SetCooperativeLevel( device->getSystem()->mWindow,
@@ -34,7 +34,7 @@ namespace Nil {
       ? DISCL_BACKGROUND | DISCL_EXCLUSIVE
       : DISCL_FOREGROUND | DISCL_EXCLUSIVE );
     if ( FAILED( hr ) )
-      NIL_EXCEPT_DINPUT( hr, L"Could not set DirectInput8 device cooperation level" );
+      NIL_EXCEPT_DINPUT( hr, "Could not set DirectInput8 device cooperation level" );
 
     DIPROPDWORD bufsize;
     bufsize.diph.dwSize       = sizeof( DIPROPDWORD );
@@ -45,12 +45,12 @@ namespace Nil {
 
     hr = mDIDevice->SetProperty( DIPROP_BUFFERSIZE, &bufsize.diph );
     if ( FAILED( hr ) )
-      NIL_EXCEPT_DINPUT( hr, L"Could not set DirectInput8 device buffer size" );
+      NIL_EXCEPT_DINPUT( hr, "Could not set DirectInput8 device buffer size" );
 
     mDICapabilities.dwSize = sizeof( DIDEVCAPS );
     hr = mDIDevice->GetCapabilities( &mDICapabilities );
     if ( FAILED( hr ) )
-      NIL_EXCEPT_DINPUT( hr, L"Could not get DirectInput8 device capabilities" );
+      NIL_EXCEPT_DINPUT( hr, "Could not get DirectInput8 device capabilities" );
 
     // Identify a more specific controller type, if available
     switch ( mDICapabilities.dwDevType )
@@ -127,7 +127,7 @@ namespace Nil {
 
     HRESULT hr = controller->mDIDevice->SetProperty( DIPROP_RANGE, &range.diph );
     if ( FAILED( hr ) )
-      NIL_EXCEPT_DINPUT( hr, L"Could not set axis range property on DirectInput8 device" );
+      NIL_EXCEPT_DINPUT( hr, "Could not set axis range property on DirectInput8 device" );
 
     return DIENUM_CONTINUE;
   }

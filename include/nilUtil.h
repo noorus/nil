@@ -32,11 +32,11 @@ namespace Nil {
 #   error NIL_EXCEPT* macro already defined!
 # else
   //! Fire a generic exception.
-#   define NIL_EXCEPT(description) {throw Nil::Exception(description,__FUNCTIONW__,Nil::Exception::Generic);}
+#   define NIL_EXCEPT(description) {throw Nil::Exception(description,__FUNCTION__,Nil::Exception::Generic);}
   //! Fire a WinAPI exception.
-#   define NIL_EXCEPT_WINAPI(description) {throw Nil::Exception(description,__FUNCTIONW__,Nil::Exception::WinAPI);}
+#   define NIL_EXCEPT_WINAPI(description) {throw Nil::Exception(description,__FUNCTION__,Nil::Exception::WinAPI);}
   //! Fire a DirectInput exception.
-#   define NIL_EXCEPT_DINPUT(hr,description) {throw Nil::Exception(description,__FUNCTIONW__,hr,Nil::Exception::DirectInput);}
+#   define NIL_EXCEPT_DINPUT(hr,description) {throw Nil::Exception(description,__FUNCTION__,hr,Nil::Exception::DirectInput);}
 # endif
 
   static GUID g_HIDInterfaceGUID = { 0x4D1E55B2, 0xF16F, 0x11CF, { 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } };

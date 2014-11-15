@@ -30,28 +30,27 @@ namespace Nil {
       Exception();
 
       Type mType; //!< Exception type
-      wideString mDescription; //!< Exception description
-      wideString mSource; //!< Exception source
-      mutable wideString mFullDescription; //!< Full, extended description
-      mutable utf8String mUTF8Description; //!< Full, extended description in UTF-8
+      utf8String mDescription; //!< Exception description
+      utf8String mSource; //!< Exception source
+      mutable utf8String mFullDescription; //!< Full, extended description
       variant<WinAPIError> mAdditional; //!< \b Internal Additional exception data
 
       //! \b Internal Handle additional exception data for WinAPI/DI exceptions.
       void handleAdditional( HRESULT hr = 0 );
     public:
       //! Generic constructor.
-      Exception( const wideString& description, Type type = Generic );
+      Exception( const utf8String& description, Type type = Generic );
 
       //! Constructor with source.
-      Exception( const wideString& description, const wideString& source,
+      Exception( const utf8String& description, const utf8String& source,
         Type type = Generic );
 
       //! Constructor with source and a WinAPI/DirectInput error code.
-      Exception( const wideString& description, const wideString& source,
+      Exception( const utf8String& description, const utf8String& source,
         HRESULT hr, Type type = Generic );
 
       //! Get the full, extended description of the exception.
-      virtual const wideString& getFullDescription() const;
+      virtual const utf8String& getFullDescription() const;
 
       //! Get the std::exception compatible exception description.
       virtual const char* what() const throw();

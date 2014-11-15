@@ -16,7 +16,7 @@ namespace Nil {
 
     // Validate the passes window handle
     if ( !IsWindow( mWindow ) )
-      NIL_EXCEPT( L"Window handle is invalid" );
+      NIL_EXCEPT( "Window handle is invalid" );
 
     mLogitechGKeys = new Logitech::GKeySDK();
     mLogitechLEDs = new Logitech::LedSDK();
@@ -25,7 +25,7 @@ namespace Nil {
     auto hr = DirectInput8Create( mInstance, DIRECTINPUT_VERSION,
       IID_IDirectInput8W, (LPVOID*)&mDirectInput, NULL );
     if ( FAILED( hr ) )
-      NIL_EXCEPT_DINPUT( hr, L"Could not instance DirectInput 8" );
+      NIL_EXCEPT_DINPUT( hr, "Could not instantiate DirectInput 8" );
 
     // Initialize our event monitor
     mMonitor = new EventMonitor( mInstance, mCooperation );
@@ -74,7 +74,7 @@ namespace Nil {
     UINT pathLength = 0;
 
     if ( GetRawInputDeviceInfoW( handle, RIDI_DEVICENAME, NULL, &pathLength ) )
-      NIL_EXCEPT_WINAPI( L"GetRawInputDeviceInfoW failed" );
+      NIL_EXCEPT_WINAPI( "GetRawInputDeviceInfoW failed" );
 
     wideString rawPath( pathLength, '\0' );
 
@@ -189,7 +189,7 @@ namespace Nil {
     auto hr = mDirectInput->EnumDevices( DI8DEVCLASS_GAMECTRL,
       diDeviceEnumCallback, this, DIEDFL_ATTACHEDONLY );
     if ( FAILED( hr ) )
-      NIL_EXCEPT_DINPUT( hr, L"Could not enumerate DirectInput devices!" );
+      NIL_EXCEPT_DINPUT( hr, "Could not enumerate DirectInput devices!" );
 
     for ( Device* device : mDevices )
       if ( device->getHandler() == Device::Handler_DirectInput
@@ -219,7 +219,7 @@ namespace Nil {
             xDevice->setStatus( Device::Status_Connected );
         }
         else
-          NIL_EXCEPT( L"XInputGetState failed" );
+          NIL_EXCEPT( "XInputGetState failed" );
       }
     }
   }

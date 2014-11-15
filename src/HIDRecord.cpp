@@ -9,7 +9,7 @@ namespace Nil {
     HIDD_ATTRIBUTES attributes = { sizeof( HIDD_ATTRIBUTES ) };
 
     if ( !HidD_GetAttributes( handle, &attributes ) )
-      NIL_EXCEPT( L"HidD_GetAttributes failed" );
+      NIL_EXCEPT( "HidD_GetAttributes failed" );
 
     mVendorID = attributes.VendorID;
     mProductID = attributes.ProductID;
@@ -18,7 +18,7 @@ namespace Nil {
 
     PHIDP_PREPARSED_DATA preparsedData;
     if ( !HidD_GetPreparsedData( handle, &preparsedData ) )
-      NIL_EXCEPT( L"HIdD_GetPreparsedData failed" );
+      NIL_EXCEPT( "HIdD_GetPreparsedData failed" );
 
     HidP_GetCaps( preparsedData, &mCapabilities );
     HidD_FreePreparsedData( preparsedData );

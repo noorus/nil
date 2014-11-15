@@ -35,33 +35,33 @@ namespace Nil {
     {
       XInputDevice* xDevice = dynamic_cast<XInputDevice*>( this );
       if ( !xDevice )
-        NIL_EXCEPT( L"Dynamic cast failed for XInputDevice" );
+        NIL_EXCEPT( "Dynamic cast failed for XInputDevice" );
       if ( getType() == Device_Controller )
       {
         mInstance = new XInputController( xDevice );
         mSystem->controllerEnabled( this, (Controller*)mInstance );
       }
       else
-        NIL_EXCEPT( L"Unsupport device type for XInput; Cannot instantiate device!" );
+        NIL_EXCEPT( "Unsupport device type for XInput; Cannot instantiate device!" );
     }
     else if ( getHandler() == Handler_DirectInput )
     {
       DirectInputDevice* diDevice = dynamic_cast<DirectInputDevice*>( this );
       if ( !diDevice )
-        NIL_EXCEPT( L"Dynamic cast failed for DirectInputDevice" );
+        NIL_EXCEPT( "Dynamic cast failed for DirectInputDevice" );
       if ( getType() == Device_Controller )
       {
         mInstance = new DirectInputController( diDevice, mSystem->mCooperation );
         mSystem->controllerEnabled( this, (Controller*)mInstance );
       }
       else
-        NIL_EXCEPT( L"Unsupported device type for DirectInput; Cannot instantiate device!" );
+        NIL_EXCEPT( "Unsupported device type for DirectInput; Cannot instantiate device!" );
     }
     else if ( getHandler() == Handler_RawInput )
     {
       RawInputDevice* rawDevice = dynamic_cast<RawInputDevice*>( this );
       if ( !rawDevice )
-        NIL_EXCEPT( L"Dynamic cast failed for RawInputDevice" );
+        NIL_EXCEPT( "Dynamic cast failed for RawInputDevice" );
       if ( getType() == Device_Mouse )
       {
         mInstance = new RawInputMouse( rawDevice );
@@ -73,10 +73,10 @@ namespace Nil {
         mSystem->keyboardEnabled( this, (Keyboard*)mInstance );
       }
       else
-        NIL_EXCEPT( L"Unsupported device type for RawInput; cannot instantiate device!" );
+        NIL_EXCEPT( "Unsupported device type for RawInput; cannot instantiate device!" );
     }
     else
-      NIL_EXCEPT( L"Unsupported device handler; Cannot instantiate device!" );
+      NIL_EXCEPT( "Unsupported device handler; Cannot instantiate device!" );
   }
 
   DeviceInstance* Device::getInstance()
@@ -107,7 +107,7 @@ namespace Nil {
         mSystem->keyboardDisabled( this, (Keyboard*)mInstance );
       break;
       default:
-        NIL_EXCEPT( L"Unimplemented device type" );
+        NIL_EXCEPT( "Unimplemented device type" );
       break;
     }
 

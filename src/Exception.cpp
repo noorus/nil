@@ -52,19 +52,19 @@ namespace Nil {
     // Stub
   }
 
-  Exception::Exception( const wideString& description, Type type ):
+  Exception::Exception( const utf8String& description, Type type ):
   mDescription( description ), mType( type )
   {
     handleAdditional();
   }
 
-  Exception::Exception( const wideString& description, const wideString& source, Type type ):
+  Exception::Exception( const utf8String& description, const utf8String& source, Type type ):
   mDescription( description ), mSource( source ), mType( type )
   {
     handleAdditional();
   }
 
-  Exception::Exception( const wideString& description, const wideString& source, HRESULT hr, Type type ):
+  Exception::Exception( const utf8String& description, const utf8String& source, HRESULT hr, Type type ):
   mDescription( description ), mSource( source ), mType( type )
   {
     handleAdditional( hr );
@@ -77,13 +77,13 @@ namespace Nil {
     {
       error.code = GetLastError();
 
-      LPWSTR message = nullptr;
+      wchar_t* message = nullptr;
       FormatMessageW(
         FORMAT_MESSAGE_ALLOCATE_BUFFER |
         FORMAT_MESSAGE_FROM_SYSTEM |
         FORMAT_MESSAGE_IGNORE_INSERTS,
         NULL, error.code, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
-        (LPWSTR)&message, 0, NULL );
+        (wchar_t*)&message, 0, NULL );
 
       if ( message )
       {
@@ -108,26 +108,26 @@ namespace Nil {
     }
   }
 
-  const wideString& Exception::getFullDescription() const
+  const utf8String& Exception::getFullDescription() const
   {
     if ( mFullDescription.empty() )
     {
-      wstringstream stream;
+      stringstream stream;
 
       stream << mDescription;
 
       if ( !mSource.empty() )
-        stream << L"\r\nIn function " << mSource;
+        stream << "\r\nIn function " << mSource;
 
       if ( mType == WinAPI )
       {
         const WinAPIError& error = boost::get<WinAPIError>( mAdditional );
-        stream << L"\r\nWinAPI error code " << std::hex << error.code << L":\r\n" << error.description;
+        stream << "\r\nWinAPI error code " << std::hex << error.code << ":\r\n" << Util::wideToUtf8( error.description );
       }
       else if ( mType == DirectInput )
       {
         const WinAPIError& error = boost::get<WinAPIError>( mAdditional );
-        stream << L"\r\nDirectInput error code " << std::hex << error.code << L":\r\n" << error.description;
+        stream << "\r\nDirectInput error code " << std::hex << error.code << ":\r\n" << Util::wideToUtf8( error.description );
       }
 
       mFullDescription = stream.str();
@@ -137,8 +137,7 @@ namespace Nil {
 
   const char* Exception::what() const
   {
-    mUTF8Description = Util::wideToUtf8( getFullDescription() );
-    return mUTF8Description.c_str();
+    return mFullDescription.c_str();
   }
 
 }
