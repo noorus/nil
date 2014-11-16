@@ -161,11 +161,11 @@ namespace Nil {
     {
       auto createstruct = (LPCREATESTRUCTW)lParam;
       auto me = (EventMonitor*)createstruct->lpCreateParams;
-      SetWindowLongPtrW( window, GWLP_USERDATA, PtrToUlong( me ) );
+      SetWindowLongPtrW( window, GWLP_USERDATA, (DWORD_PTR)me );
       return 1;
     }
 
-    auto ptr = static_cast<LONG_PTR>( GetWindowLongPtrW( window, GWLP_USERDATA ) );
+    auto ptr = static_cast<DWORD_PTR>( GetWindowLongPtrW( window, GWLP_USERDATA ) );
     auto me = reinterpret_cast<EventMonitor*>( ptr );
 
     if ( !me )
