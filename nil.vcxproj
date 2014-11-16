@@ -187,6 +187,7 @@
     <ClCompile Include="src\System.cpp" />
     <ClCompile Include="src\Types.cpp" />
     <ClCompile Include="src\Utilities.cpp" />
+    <ClCompile Include="src\XInput.cpp" />
     <ClCompile Include="src\XInputController.cpp" />
     <ClCompile Include="src\XInputDevice.cpp" />
   </ItemGroup>

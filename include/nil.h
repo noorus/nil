@@ -78,6 +78,7 @@ namespace Nil {
       Logitech::GKeySDK* mLogitechGKeys;  //!< External module for Logitech G-Keys
       Logitech::LedSDK* mLogitechLEDs;  //!< External module for Logitech LEDs
       SystemListener* mListener;  //!< Our single event listener
+      XInput* mXInput; //!< XInput module handler
       const Cooperation mCooperation; //!< Cooperation mode
       void initializeDevices();
       void refreshDevices();
@@ -137,6 +138,8 @@ namespace Nil {
       //! Get Logitech LED SDK, if available.
       //! \return null if it fails, else the Logitech LED SDK object.
       Logitech::LedSDK* getLogitechLEDs();
+
+      XInput* getXInput();
 
       //! Query if this System is initializing.
       //! \return true if initializing, false if not.

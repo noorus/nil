@@ -10,7 +10,7 @@ namespace Nil {
   mMonitor( nullptr ), mIDPool( 0 ), mInitializing( true ),
   mHIDManager( nullptr ), mLogitechGKeys( nullptr ), mLogitechLEDs( nullptr ),
   mListener( listener ), mMouseIndexPool( 0 ), mKeyboardIndexPool( 0 ),
-  mControllerIndexPool( 0 )
+  mControllerIndexPool( 0 ), mXInput( nullptr )
   {
     assert( mListener );
 
@@ -20,6 +20,10 @@ namespace Nil {
 
     mLogitechGKeys = new Logitech::GKeySDK();
     mLogitechLEDs = new Logitech::LedSDK();
+
+    mXInput = new XInput();
+    if ( mXInput->initialize() != ExternalModule::Initialization_OK )
+      NIL_EXCEPT( "Loading XInput failed" );
 
     // Create DirectInput instance
     auto hr = DirectInput8Create( mInstance, DIRECTINPUT_VERSION,
@@ -203,7 +207,7 @@ namespace Nil {
       if ( device->getHandler() == Device::Handler_XInput )
       {
         auto xDevice = static_cast<XInputDevice*>( device );
-        auto status = XInputGetState( xDevice->getXInputID(), &state );
+        auto status = mXInput->mFunctions.pfnXInputGetState( xDevice->getXInputID(), &state );
         if ( status == ERROR_DEVICE_NOT_CONNECTED )
         {
           if ( xDevice->getStatus() == Device::Status_Connected )
@@ -364,6 +368,11 @@ namespace Nil {
   Logitech::LedSDK* System::getLogitechLEDs()
   {
     return mLogitechLEDs;
+  }
+
+  XInput* System::getXInput()
+  {
+    return mXInput;
   }
 
   System::~System()

@@ -95,7 +95,7 @@ namespace Nil {
   {
     XInputDevice* xDevice = dynamic_cast<XInputDevice*>( mDevice );
 
-    DWORD ret = XInputGetState( xDevice->getXInputID(), &mXInputState );
+    DWORD ret = mSystem->getXInput()->mFunctions.pfnXInputGetState( xDevice->getXInputID(), &mXInputState );
     if ( ret == ERROR_DEVICE_NOT_CONNECTED )
     {
       xDevice->flagDisconnected();

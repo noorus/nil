@@ -5,7 +5,6 @@
 #include "nilException.h"
 #include "nilPnP.h"
 #include "nilHID.h"
-#include "nilLogitech.h"
 
 namespace Nil {
 

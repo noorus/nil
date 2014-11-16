@@ -1,5 +1,5 @@
 #include "nil.h"
-#include "nilLogitech.h"
+#include "nilWindows.h"
 
 namespace Nil {
 

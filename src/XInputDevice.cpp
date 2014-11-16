@@ -38,7 +38,7 @@ namespace Nil {
 
   void XInputDevice::identify()
   {
-    if ( XInputGetCapabilities( mXInputID, 0, &mCapabilities ) != ERROR_SUCCESS )
+    if ( mSystem->getXInput()->mFunctions.pfnXInputGetCapabilities( mXInputID, 0, &mCapabilities ) != ERROR_SUCCESS )
       return;
 
     for ( int i = 0; i < cMaxXInputModels; i++ ) {

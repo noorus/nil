@@ -1,40 +1,7 @@
 #pragma once
-#include "nil.h"
+#include "nilWindows.h"
 
 namespace Nil {
-
-  //! \addtogroup Nil
-  //! @{
-
-  //! \class ExternalModule
-  //! Base class for an external, optional module supported by the system.
-  class ExternalModule
-  {
-    protected:
-      HMODULE mModule; //!< The module handle
-      bool mInitialized; //!< Whether the module is initialized
-    public:
-      ExternalModule();
-
-      //! Possible initialization call return values.
-      enum InitReturn: unsigned int {
-        Initialization_OK = 0,  //!< Module initialized OK
-        Initialization_ModuleNotFound, //!< Module was not found
-        Initialization_MissingExports, //!< Module was missing expected exports
-        Initialization_Unavailable //!< Module was unavailable for use
-      };
-
-      //! Initializes this ExternalModule.
-      virtual InitReturn initialize() = 0;
-
-      //! Shuts down this ExternalModule and frees any resources it is using.
-      virtual void shutdown() = 0;
-
-      //! Query whether the module is initialized or not.
-      virtual bool isInitialized() const;
-  };
-
-  //! @}
 
   namespace Logitech {
 

@@ -5,7 +5,7 @@
 #include "nilException.h"
 #include "nilPnP.h"
 #include "nilHID.h"
-#include "nilLogitech.h"
+#include "nilCommon.h"
 
 namespace Nil {
 
@@ -18,6 +18,34 @@ namespace Nil {
   class Mouse;
   class Keyboard;
   class Controller;
+
+  //! \class ExternalModule
+  //! Base class for an external, optional module supported by the system.
+  class ExternalModule
+  {
+    protected:
+      HMODULE mModule; //!< The module handle
+      bool mInitialized; //!< Whether the module is initialized
+    public:
+      ExternalModule();
+
+      //! Possible initialization call return values.
+      enum InitReturn: unsigned int {
+        Initialization_OK = 0,  //!< Module initialized OK
+        Initialization_ModuleNotFound, //!< Module was not found
+        Initialization_MissingExports, //!< Module was missing expected exports
+        Initialization_Unavailable //!< Module was unavailable for use
+      };
+
+      //! Initializes this ExternalModule.
+      virtual InitReturn initialize() = 0;
+
+      //! Shuts down this ExternalModule and frees any resources it is using.
+      virtual void shutdown() = 0;
+
+      //! Query whether the module is initialized or not.
+      virtual bool isInitialized() const;
+  };
 
   class RawInputDeviceInfo
   {
@@ -77,6 +105,33 @@ namespace Nil {
 
       //! Get the DirectInput instance ID.
       virtual const GUID getInstanceID() const;
+  };
+
+  typedef DWORD( WINAPI *fnXInputGetState )( DWORD dwUserIndex, XINPUT_STATE* pState );
+  typedef DWORD( WINAPI *fnXInputSetState )( DWORD dwUserIndex, XINPUT_VIBRATION* pVibration );
+  typedef DWORD( WINAPI *fnXInputGetCapabilities )( DWORD dwUserIndex, DWORD dwFlags, XINPUT_CAPABILITIES* pCapabilities );
+
+  //! \class XInput
+  //! XInput dynamic module loader.
+  //! \sa ExternalModule
+  class XInput: public ExternalModule {
+  public:
+    enum Version {
+      Version_None = 0,
+      Version_910,
+      Version_13,
+      Version_14
+    } mVersion;
+    struct Functions {
+      fnXInputGetState pfnXInputGetState;
+      fnXInputSetState pfnXInputSetState;
+      fnXInputGetCapabilities pfnXInputGetCapabilities;
+      Functions();
+    } mFunctions;
+    XInput();
+    virtual InitReturn initialize();
+    virtual void shutdown();
+    ~XInput();
   };
 
   //! \class XInputDevice
