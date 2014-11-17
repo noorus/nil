@@ -385,6 +385,7 @@ namespace Nil {
     SAFE_RELEASE( mDirectInput );
     SAFE_DELETE( mLogitechLEDs );
     SAFE_DELETE( mLogitechGKeys );
+    SAFE_DELETE( mXInput );
   }
 
 }
