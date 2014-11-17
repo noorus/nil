@@ -378,7 +378,10 @@ namespace Nil {
   System::~System()
   {
     for ( Device* device : mDevices )
+    {
+      device->disable();
       delete device;
+    }
 
     SAFE_DELETE( mHIDManager );
     SAFE_DELETE( mMonitor );
