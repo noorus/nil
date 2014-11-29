@@ -132,7 +132,7 @@
       <Filter>Source Files\Windows\Logitech</Filter>
     </ClCompile>
     <ClCompile Include="src\XInput.cpp">
-      <Filter>Source Files\Windows</Filter>
+      <Filter>Source Files\Windows\XInput</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
