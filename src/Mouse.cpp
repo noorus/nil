@@ -37,6 +37,11 @@ namespace Nil {
     mListeners.remove( listener );
   }
 
+  const MouseState& Mouse::getState() const
+  {
+    return mState;
+  }
+
   Mouse::~Mouse()
   {
     //

@@ -175,6 +175,9 @@ namespace Nil {
 
       virtual void update() = 0;
 
+      //! Get the Mouse state.
+      virtual const MouseState& getState() const;
+
       //! Destructor.
       virtual ~Mouse();
   };

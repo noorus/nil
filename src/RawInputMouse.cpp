@@ -27,7 +27,7 @@ namespace Nil {
     // All this raw device info is usually worthless, at least when using
     // the default Windows mouse driver. The number of buttons will be "16",
     // sample rate will be 0 and it will not indicate horizontal scrolling
-    // even when the feature exists.
+    // even when horizontal scrolling is available.
     // So don't actually trust this information for anything.
     // (We will use it for sizing the button vector, however)
 
