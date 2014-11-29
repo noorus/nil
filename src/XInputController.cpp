@@ -34,7 +34,7 @@ namespace Nil {
         mType = cXInputTypes[i].second;
 
     mState.mPOVs.resize( 1 );
-    mState.mButtons.resize( 12 );
+    mState.mButtons.resize( 10 );
     mState.mAxes.resize( 6 );
   }
 
@@ -111,9 +111,11 @@ namespace Nil {
 
     ControllerState lastState = mState;
 
-    // Buttons
-    for ( size_t i = 0; i < mState.mButtons.size(); i++ )
-      mState.mButtons[i].pushed = ( ( mXInputState.Gamepad.wButtons & ( 1 << ( i + 4 ) ) ) != 0 ); //-V112
+    // Buttons - skip 0x400 & 0x800 as they are undefined in the API
+    for ( size_t i = 0; i < 6; i++ )
+      mState.mButtons[i].pushed = ( ( mXInputState.Gamepad.wButtons & ( 1 << ( i + 4 ) ) ) != 0 );
+    for ( size_t i = 6; i < 10; i++ )
+      mState.mButtons[i].pushed = ( ( mXInputState.Gamepad.wButtons & ( 1 << ( i + 6 ) ) ) != 0 );
 
     // Axes
     mState.mAxes[0].absolute = filterLeftThumbAxis( mXInputState.Gamepad.sThumbLX );
