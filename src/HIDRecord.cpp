@@ -4,32 +4,33 @@
 namespace Nil {
 
   HIDRecord::HIDRecord( const wideString& path, HANDLE handle ):
-  mPath( path ), mIsXInput( false ), mIsRDP( false )
+  mPath( path ), mIsXInput( false ), mIsRDP( false ), mAvailable( false )
   {
     HIDD_ATTRIBUTES attributes = { sizeof( HIDD_ATTRIBUTES ) };
 
-    if ( !HidD_GetAttributes( handle, &attributes ) )
-      NIL_EXCEPT( "HidD_GetAttributes failed" );
+    if ( HidD_GetAttributes( handle, &attributes ) )
+    {
+      mAvailable = true;
+      mVendorID = attributes.VendorID;
+      mProductID = attributes.ProductID;
 
-    mVendorID = attributes.VendorID;
-    mProductID = attributes.ProductID;
+      mIdentifier = MAKELONG( mVendorID, mProductID );
 
-    mIdentifier = MAKELONG( mVendorID, mProductID );
+      PHIDP_PREPARSED_DATA preparsedData;
+      if ( !HidD_GetPreparsedData( handle, &preparsedData ) )
+        NIL_EXCEPT( "HIdD_GetPreparsedData failed" );
 
-    PHIDP_PREPARSED_DATA preparsedData;
-    if ( !HidD_GetPreparsedData( handle, &preparsedData ) )
-      NIL_EXCEPT( "HIdD_GetPreparsedData failed" );
+      HidP_GetCaps( preparsedData, &mCapabilities );
+      HidD_FreePreparsedData( preparsedData );
 
-    HidP_GetCaps( preparsedData, &mCapabilities );
-    HidD_FreePreparsedData( preparsedData );
-
-    wchar_t buffer[256];
-    if ( HidD_GetProductString( handle, &buffer, 256 ) )
-      mName = Util::cleanupName( Util::wideToUtf8( buffer ) );
-    if ( HidD_GetManufacturerString( handle, &buffer, 256 ) )
-      mManufacturer = Util::cleanupName( Util::wideToUtf8( buffer ) );
-    if ( HidD_GetSerialNumberString( handle, &buffer, 256 ) )
-      mSerialNumber = Util::wideToUtf8( buffer );
+      wchar_t buffer[256];
+      if ( HidD_GetProductString( handle, &buffer, 256 ) )
+        mName = Util::cleanupName( Util::wideToUtf8( buffer ) );
+      if ( HidD_GetManufacturerString( handle, &buffer, 256 ) )
+        mManufacturer = Util::cleanupName( Util::wideToUtf8( buffer ) );
+      if ( HidD_GetSerialNumberString( handle, &buffer, 256 ) )
+        mSerialNumber = Util::wideToUtf8( buffer );
+    }
 
     identify();
   }
@@ -44,6 +45,11 @@ namespace Nil {
     {
       mIsRDP = true;
     }
+  }
+
+  bool HIDRecord::isAvailable() const
+  {
+    return mAvailable;
   }
 
   bool HIDRecord::isXInput() const

@@ -34,6 +34,7 @@ namespace Nil {
       utf8String mName; //!< Device name
       utf8String mManufacturer; //!< Device manufacturer
       utf8String mSerialNumber; //!< Device serial number
+      bool mAvailable; //!< Is this device actually available?
       bool mIsXInput; //!< Am I an XInput device?
       bool mIsRDP; //!< Am I a Remote Desktop device?
 
@@ -43,6 +44,9 @@ namespace Nil {
       //! \param  path   Full system path to the device.
       //! \param  handle Device handle.
       HIDRecord( const wideString& path, HANDLE handle );
+
+      //! Am I available for usage?
+      bool isAvailable() const;
 
       //! Am I a Remote Desktop device?
       bool isRDP() const;
