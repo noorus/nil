@@ -4,6 +4,58 @@
 
 namespace Nil {
 
+  void System::Internals::store()
+  {
+    swapMouseButtons = ( GetSystemMetrics( SM_SWAPBUTTON ) != 0 );
+
+    storedStickyKeys.cbSize = sizeof( storedStickyKeys );
+    SystemParametersInfoW( SPI_GETSTICKYKEYS, sizeof( STICKYKEYS ), &storedStickyKeys, 0 );
+
+    storedToggleKeys.cbSize = sizeof( storedToggleKeys );
+    SystemParametersInfoW( SPI_GETTOGGLEKEYS, sizeof( TOGGLEKEYS ), &storedToggleKeys, 0 );
+
+    storedFilterKeys.cbSize = sizeof( storedFilterKeys );
+    SystemParametersInfoW( SPI_GETFILTERKEYS, sizeof( FILTERKEYS ), &storedFilterKeys, 0 );
+  }
+
+  void System::Internals::disableHotKeyHarassment()
+  {
+    // Don't touch stickykeys/togglekeys/filterkeys if they're being used,
+    // but if they aren't, make sure Windows doesn't harass the user about 
+    // maybe enabling them.
+
+    auto stickyKeys = storedStickyKeys;
+    if ( ( stickyKeys.dwFlags & SKF_STICKYKEYSON ) == 0 )
+    {
+      stickyKeys.dwFlags &= ~SKF_HOTKEYACTIVE;
+      stickyKeys.dwFlags &= ~SKF_CONFIRMHOTKEY;
+      SystemParametersInfoW( SPI_SETSTICKYKEYS, sizeof( STICKYKEYS ), &stickyKeys, 0 );
+    }
+
+    auto toggleKeys = storedToggleKeys;
+    if ( ( toggleKeys.dwFlags & TKF_TOGGLEKEYSON ) == 0 )
+    {
+      toggleKeys.dwFlags &= ~TKF_HOTKEYACTIVE;
+      toggleKeys.dwFlags &= ~TKF_CONFIRMHOTKEY;
+      SystemParametersInfoW( SPI_SETTOGGLEKEYS, sizeof( TOGGLEKEYS ), &toggleKeys, 0 );
+    }
+
+    auto filterKeys = storedFilterKeys;
+    if ( ( filterKeys.dwFlags & FKF_FILTERKEYSON ) == 0 )
+    {
+      filterKeys.dwFlags &= ~FKF_HOTKEYACTIVE;
+      filterKeys.dwFlags &= ~FKF_CONFIRMHOTKEY;
+      SystemParametersInfoW( SPI_SETFILTERKEYS, sizeof( FILTERKEYS ), &filterKeys, 0 );
+    }
+  }
+
+  void System::Internals::restore()
+  {
+    SystemParametersInfoW( SPI_SETSTICKYKEYS, sizeof( STICKYKEYS ), &storedStickyKeys, 0 );
+    SystemParametersInfoW( SPI_SETTOGGLEKEYS, sizeof( TOGGLEKEYS ), &storedToggleKeys, 0 );
+    SystemParametersInfoW( SPI_SETFILTERKEYS, sizeof( FILTERKEYS ), &storedFilterKeys, 0 );
+  }
+
   System::System( HINSTANCE instance, HWND window, const Cooperation coop,
   SystemListener* listener ): mCooperation( coop ),
   mWindow( window ), mInstance( instance ), mDirectInput( nullptr ),
@@ -18,9 +70,15 @@ namespace Nil {
     if ( !IsWindow( mWindow ) )
       NIL_EXCEPT( "Window handle is invalid" );
 
+    // Store accessibility feature states, and tell Windows not to be annoying
+    mInternals.store();
+    mInternals.disableHotKeyHarassment();
+
+    // Init Logitech SDKs where available
     mLogitechGKeys = new Logitech::GKeySDK();
     mLogitechLEDs = new Logitech::LedSDK();
 
+    // Init XInput subsystem
     mXInput = new XInput();
     if ( mXInput->initialize() != ExternalModule::Initialization_OK )
       NIL_EXCEPT( "Loading XInput failed" );
@@ -389,6 +447,9 @@ namespace Nil {
     SAFE_DELETE( mLogitechLEDs );
     SAFE_DELETE( mLogitechGKeys );
     SAFE_DELETE( mXInput );
+    
+    // Restore accessiblity features
+    mInternals.restore();
   }
 
 }

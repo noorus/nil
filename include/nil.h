@@ -80,6 +80,15 @@ namespace Nil {
       SystemListener* mListener;  //!< Our single event listener
       XInput* mXInput; //!< XInput module handler
       const Cooperation mCooperation; //!< Cooperation mode
+      struct Internals {
+        bool swapMouseButtons;
+        STICKYKEYS storedStickyKeys;
+        TOGGLEKEYS storedToggleKeys;
+        FILTERKEYS storedFilterKeys;
+        void store();
+        void disableHotKeyHarassment();
+        void restore();
+      } mInternals;
       void initializeDevices();
       void refreshDevices();
       void identifyXInputDevices();
