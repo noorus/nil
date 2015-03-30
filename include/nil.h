@@ -96,6 +96,7 @@ namespace Nil {
       int getNextMouseIndex();
       int getNextKeyboardIndex();
       int getNextControllerIndex();
+      bool getDefaultMouseButtonSwapping();
       void deviceConnect( Device* device );
       void deviceDisconnect( Device* device );
       void mouseEnabled( Device* device, Mouse* instance );

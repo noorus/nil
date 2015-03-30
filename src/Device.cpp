@@ -64,7 +64,7 @@ namespace Nil {
         NIL_EXCEPT( "Dynamic cast failed for RawInputDevice" );
       if ( getType() == Device_Mouse )
       {
-        mInstance = new RawInputMouse( rawDevice );
+        mInstance = new RawInputMouse( rawDevice, mSystem->getDefaultMouseButtonSwapping() );
         mSystem->mouseEnabled( this, (Mouse*)mInstance );
       }
       else if ( getType() == Device_Keyboard )

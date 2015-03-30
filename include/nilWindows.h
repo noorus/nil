@@ -179,7 +179,8 @@ namespace Nil {
     public:
       //! Constructor.
       //! \param device The device.
-      RawInputMouse( RawInputDevice* device );
+      //! \param swapButtons Whether to swap the first & second buttons.
+      RawInputMouse( RawInputDevice* device, const bool swapButtons );
 
       virtual void update();
 

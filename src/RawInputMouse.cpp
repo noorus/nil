@@ -19,8 +19,8 @@ namespace Nil {
     listener->onMouseButtonReleased( this, mState, x ); \
 }
 
-  RawInputMouse::RawInputMouse( RawInputDevice* rawDevice ):
-  Mouse( rawDevice->getSystem(), rawDevice )
+  RawInputMouse::RawInputMouse( RawInputDevice* rawDevice, const bool swapButtons ):
+  Mouse( rawDevice->getSystem(), rawDevice, swapButtons )
   {
     rawDevice->getSystem()->mapMouse( rawDevice->getRawHandle(), this );
 
@@ -73,14 +73,16 @@ namespace Nil {
 
     if ( mState.mButtons.size() > 0 )
     {
-      NIL_RAW_TEST_MOUSE_BUTTON_DOWN( RI_MOUSE_BUTTON_1_DOWN, 0 );
-      NIL_RAW_TEST_MOUSE_BUTTON_UP( RI_MOUSE_BUTTON_1_UP, 0 );
+      int btn = ( mSwapButtons ? 1 : 0 );
+      NIL_RAW_TEST_MOUSE_BUTTON_DOWN( RI_MOUSE_BUTTON_1_DOWN, btn );
+      NIL_RAW_TEST_MOUSE_BUTTON_UP( RI_MOUSE_BUTTON_1_UP, btn );
     }
 
     if ( mState.mButtons.size() > 1 )
     {
-      NIL_RAW_TEST_MOUSE_BUTTON_DOWN( RI_MOUSE_BUTTON_2_DOWN, 1 );
-      NIL_RAW_TEST_MOUSE_BUTTON_UP( RI_MOUSE_BUTTON_2_UP, 1 );
+      int btn = ( mSwapButtons ? 0 : 1 );
+      NIL_RAW_TEST_MOUSE_BUTTON_DOWN( RI_MOUSE_BUTTON_2_DOWN, btn );
+      NIL_RAW_TEST_MOUSE_BUTTON_UP( RI_MOUSE_BUTTON_2_UP, btn );
     }
 
     if ( mState.mButtons.size() > 2 )

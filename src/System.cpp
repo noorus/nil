@@ -117,6 +117,11 @@ namespace Nil {
     return mIDPool++;
   }
 
+  bool System::getDefaultMouseButtonSwapping()
+  {
+    return mInternals.swapMouseButtons;
+  }
+
   void System::onPnPPlug( const GUID& deviceClass, const wideString& devicePath )
   {
     // Refresh all currently connected devices,

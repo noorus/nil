@@ -159,11 +159,13 @@ namespace Nil {
       MouseState mState;  //!< Current state
       Vector2i mLastPosition; //!< Previous position when mouse gives absolutes
       MouseListenerList mListeners; //!< Registered event listeners
+      bool mSwapButtons; //!< Whether first & second buttons are swapped
     public:
       //! Constructor.
       //! \param system The system.
       //! \param device The device.
-      Mouse( System* system, Device* device );
+      //! \param swapButtons Whether to swap first & second buttons.
+      Mouse( System* system, Device* device, const bool swapButtons );
 
       //! Add a mouse input listener.
       //! \param listener The listener.
