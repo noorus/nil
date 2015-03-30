@@ -258,11 +258,8 @@ namespace Nil {
       DWORD mLastPacket; //!< Internal previous input packet's ID
       XINPUT_STATE mXInputState; //!< Internal XInput state
 
-      //! Filter a left thumb axis value.
-      inline Real filterLeftThumbAxis( int val );
-
-      //! Filter a right thumb axis value.
-      inline Real filterRightThumbAxis( int val );
+      //! Filter a thumb axis value.
+      inline Real filterThumbAxis( int val, int deadzone );
 
       //! Filter a trigger value.
       inline Real filterTrigger( int val );

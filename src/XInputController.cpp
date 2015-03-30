@@ -38,44 +38,22 @@ namespace Nil {
     mState.mAxes.resize( 6 );
   }
 
-  Real XInputController::filterLeftThumbAxis( int val )
+  Real XInputController::filterThumbAxis( int val, int deadzone )
   {
     if ( val < 0 )
     {
-      if ( val > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
+      if ( val > -deadzone )
         return NIL_REAL_ZERO;
-      val += XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
-      Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
+      val += deadzone;
+      Real ret = (Real)val / (Real)( 32767 - deadzone );
       return ( ret < NIL_REAL_MINUSONE ? NIL_REAL_MINUSONE : ret );
     }
     else if ( val > 0 )
     {
-      if ( val < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE )
+      if ( val < deadzone )
         return NIL_REAL_ZERO;
-      val -= XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE;
-      Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
-      return ( ret > NIL_REAL_ONE ? NIL_REAL_ONE : ret );
-    }
-    else
-      return NIL_REAL_ZERO;
-  }
-
-  Real XInputController::filterRightThumbAxis( int val )
-  {
-    if ( val < 0 )
-    {
-      if ( val > -XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
-        return NIL_REAL_ZERO;
-      val += XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE;
-      Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
-      return ( ret < NIL_REAL_MINUSONE ? NIL_REAL_MINUSONE : ret );
-    }
-    else if ( val > 0 )
-    {
-      if ( val < XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE )
-        return NIL_REAL_ZERO;
-      val -= XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE;
-      Real ret = (Real)val / (Real)( 32767 - XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
+      val -= deadzone;
+      Real ret = (Real)val / (Real)( 32767 - deadzone );
       return ( ret > NIL_REAL_ONE ? NIL_REAL_ONE : ret );
     }
     else
@@ -118,10 +96,10 @@ namespace Nil {
       mState.mButtons[i].pushed = ( ( mXInputState.Gamepad.wButtons & ( 1 << ( i + 6 ) ) ) != 0 );
 
     // Axes
-    mState.mAxes[0].absolute = filterLeftThumbAxis( mXInputState.Gamepad.sThumbLX );
-    mState.mAxes[1].absolute = filterLeftThumbAxis( mXInputState.Gamepad.sThumbLY );
-    mState.mAxes[2].absolute = filterRightThumbAxis( mXInputState.Gamepad.sThumbRX );
-    mState.mAxes[3].absolute = filterRightThumbAxis( mXInputState.Gamepad.sThumbRY );
+    mState.mAxes[0].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbLX, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
+    mState.mAxes[1].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbLY, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
+    mState.mAxes[2].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbRX, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
+    mState.mAxes[3].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbRY, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
     mState.mAxes[4].absolute = filterTrigger( mXInputState.Gamepad.bLeftTrigger );
     mState.mAxes[5].absolute = filterTrigger( mXInputState.Gamepad.bRightTrigger );
 
