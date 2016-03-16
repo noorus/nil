@@ -74,7 +74,7 @@ namespace Nil {
 
   void EventMonitor::handleRawInput( HRAWINPUT input, const bool sinked )
   {
-    unsigned int dataSize;
+    unsigned int dataSize = 0;
 
     // TODO:LOW We could probably get away with just one GetRawInputData call?
     if ( GetRawInputData( input, RID_INPUT, NULL, &dataSize, sizeof( RAWINPUTHEADER ) ) == (UINT)-1 )
@@ -87,7 +87,7 @@ namespace Nil {
     if ( dataSize > mInputBufferSize )
     {
       mInputBufferSize = dataSize;
-      mInputBuffer = realloc( mInputBuffer, (size_t)dataSize );
+      mInputBuffer = ( mInputBuffer ? realloc( mInputBuffer, (size_t)dataSize ) : malloc( (size_t)dataSize ) );
       if ( !mInputBuffer )
         NIL_EXCEPT( "Couldn't reallocate input read buffer" );
     }

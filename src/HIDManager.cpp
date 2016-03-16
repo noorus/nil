@@ -88,6 +88,8 @@ namespace Nil {
         NIL_EXCEPT_WINAPI( "SetupDiGetDeviceInterfaceDetailW failed" );
 
       auto detailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA_W)malloc( (size_t)length );
+      if ( !detailData )
+        NIL_EXCEPT( "Memory allocation failed" );
       detailData->cbSize = sizeof( SP_INTERFACE_DEVICE_DETAIL_DATA_W );
 
       SP_DEVINFO_DATA deviceData = { sizeof( SP_DEVINFO_DATA ) };

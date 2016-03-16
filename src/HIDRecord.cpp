@@ -18,9 +18,10 @@ namespace Nil {
 
       PHIDP_PREPARSED_DATA preparsedData;
       if ( !HidD_GetPreparsedData( handle, &preparsedData ) )
-        NIL_EXCEPT( "HIdD_GetPreparsedData failed" );
+        NIL_EXCEPT( "HidD_GetPreparsedData failed" );
 
-      HidP_GetCaps( preparsedData, &mCapabilities );
+      if ( HidP_GetCaps( preparsedData, &mCapabilities ) != HIDP_STATUS_SUCCESS )
+        NIL_EXCEPT( "HidP_GetCaps failed" );
       HidD_FreePreparsedData( preparsedData );
 
       wchar_t buffer[256];

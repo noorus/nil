@@ -88,7 +88,7 @@ namespace Nil {
       mExclusive ? AcquireSRWLockExclusive( mLock ) : AcquireSRWLockShared( mLock );
     }
     //! Call directly if you want to unlock before object leaves scope.
-    void unlock()
+    _Requires_lock_held_(mLock) void unlock()
     {
       if ( mLocked )
         mExclusive ? ReleaseSRWLockExclusive( mLock ) : ReleaseSRWLockShared( mLock );

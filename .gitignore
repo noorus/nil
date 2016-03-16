@@ -32,3 +32,4 @@ _ReSharper*/
 *.config
 doc/
 lib/
+*.db
