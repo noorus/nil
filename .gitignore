@@ -33,3 +33,4 @@ _ReSharper*/
 doc/
 lib/
 *.db
+*.VC.db*

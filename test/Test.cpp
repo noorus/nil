@@ -33,11 +33,11 @@ public:
   }
   virtual void onMouseButtonPressed( Nil::Mouse* mouse, const Nil::MouseState& state, size_t button )
   {
-    printf_s( "Mouse button pressed: %d (%s)\n", button, mouse->getDevice()->getName().c_str() );
+    printf_s( "Mouse button pressed: %d (%s)\n", (int)button, mouse->getDevice()->getName().c_str() );
   }
   virtual void onMouseButtonReleased( Nil::Mouse* mouse, const Nil::MouseState& state, size_t button )
   {
-    printf_s( "Mouse button released: %d (%s)\n", button, mouse->getDevice()->getName().c_str() );
+    printf_s( "Mouse button released: %d (%s)\n", (int)button, mouse->getDevice()->getName().c_str() );
   }
   virtual void onMouseWheelMoved( Nil::Mouse* mouse, const Nil::MouseState& state )
   {
@@ -72,23 +72,23 @@ class DummyControllerListener: public Nil::ControllerListener {
 public:
   virtual void onControllerButtonPressed( Nil::Controller* controller, const Nil::ControllerState& state, size_t button )
   {
-    printf_s( "Controller button %d pressed (%s)\n", button, controller->getDevice()->getName().c_str() );
+    printf_s( "Controller button %d pressed (%s)\n", (int)button, controller->getDevice()->getName().c_str() );
   }
   virtual void onControllerButtonReleased( Nil::Controller* controller, const Nil::ControllerState& state, size_t button )
   {
-    printf_s( "Controller button %d released (%s)\n", button, controller->getDevice()->getName().c_str() );
+    printf_s( "Controller button %d released (%s)\n", (int)button, controller->getDevice()->getName().c_str() );
   }
   virtual void onControllerAxisMoved( Nil::Controller* controller, const Nil::ControllerState& state, size_t axis )
   {
-    printf_s( "Controller axis %d moved: %f (%s)\n", axis, state.mAxes[axis].absolute, controller->getDevice()->getName().c_str() );
+    printf_s( "Controller axis %d moved: %f (%s)\n", (int)axis, state.mAxes[axis].absolute, controller->getDevice()->getName().c_str() );
   }
   virtual void onControllerSliderMoved( Nil::Controller* controller, const Nil::ControllerState& state, size_t slider )
   {
-    printf_s( "Controller slider %d moved (%s)\n", slider, controller->getDevice()->getName().c_str() );
+    printf_s( "Controller slider %d moved (%s)\n", (int)slider, controller->getDevice()->getName().c_str() );
   }
   virtual void onControllerPOVMoved( Nil::Controller* controller, const Nil::ControllerState& state, size_t pov )
   {
-    printf_s( "Controller POV %d moved: 0x%08X (%s)\n", pov, state.mPOVs[pov].direction, controller->getDevice()->getName().c_str() );
+    printf_s( "Controller POV %d moved: 0x%08X (%s)\n", (int)pov, state.mPOVs[pov].direction, controller->getDevice()->getName().c_str() );
   }
 };
 
