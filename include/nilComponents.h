@@ -2,7 +2,7 @@
 
 #include "nilTypes.h"
 
-namespace Nil {
+namespace nil {
 
   //! \addtogroup Nil
   //! @{

@@ -9,7 +9,8 @@
 #include <windows.h>
 #include <dbt.h>
 #include <objbase.h>
-#include <stdlib.h>
+#include <cstdlib>
+#include <cassert>
 
 #include <initguid.h>
 #include <devguid.h>
@@ -20,7 +21,7 @@
 #include <xinput.h>
 
 #include <memory>
-#include <stdint.h>
+#include <cstdint>
 #include <exception>
 #include <string>
 #include <map>
@@ -28,29 +29,28 @@
 #include <list>
 #include <sstream>
 #include <queue>
-#include <boost/variant.hpp>
-#include <boost/algorithm/string.hpp>
+#include <variant>
 
-namespace Nil {
+namespace nil {
 
   //! \addtogroup Nil
   //! @{
 
   //! \addtogroup Types
   //! @{
-  
-  typedef uint32_t DeviceID; //!< A device ID type.
-  typedef uint32_t POVDirection; //!< A POV (D-pad) direction type.
-  typedef unsigned int VirtualKeyCode; //!< A virtual key code type.
-  
-  typedef float Real; //!< Real number type.
+
+  using DeviceID = uint32_t; //!< A device ID type.
+  using POVDirection = uint32_t; //!< A POV (D-pad) direction type.
+  using VirtualKeyCode = unsigned int; //!< A virtual key code type.
+
+  using Real = float; //!< Real number type.
 
 # define NIL_REAL_ZERO 0.0f //!< Real number zero constant.
 # define NIL_REAL_ONE 1.0f //!< Real number one constant.
 # define NIL_REAL_MINUSONE -1.0f //!< Real number minus one constant.
 
-  typedef std::string utf8String; //!< UTF-8 string type.
-  typedef std::wstring wideString; //!< Wide string type.
+  using utf8String = std::string; //!< UTF-8 string type.
+  using wideString = std::wstring; //!< Wide string type.
 
   enum Cooperation: int {
     Cooperation_Foreground,
@@ -63,7 +63,7 @@ namespace Nil {
   using std::vector;
   using std::stringstream;
   using std::wstringstream;
-  using boost::variant;
+  using std::variant;
 
   //! \struct Color
   //! A color value.

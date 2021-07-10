@@ -2,7 +2,7 @@
 #include "nilUtil.h"
 #include "nilWindows.h"
 
-namespace Nil {
+namespace nil {
 
   const utf8String cXInputDefaultName = "XInput Controller";
 

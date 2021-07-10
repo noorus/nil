@@ -1,7 +1,7 @@
 #include "nilPnP.h"
 #include "nilUtil.h"
 
-namespace Nil {
+namespace nil {
 
   const wchar_t* cEventMonitorClass = L"NIL_MONITOR";
 
@@ -77,7 +77,7 @@ namespace Nil {
     unsigned int dataSize = 0;
 
     // TODO:LOW We could probably get away with just one GetRawInputData call?
-    if ( GetRawInputData( input, RID_INPUT, NULL, &dataSize, sizeof( RAWINPUTHEADER ) ) == (UINT)-1 )
+    if ( GetRawInputData( input, RID_INPUT, nullptr, &dataSize, sizeof( RAWINPUTHEADER ) ) == (UINT)-1 )
       return;
 
     if ( !dataSize )

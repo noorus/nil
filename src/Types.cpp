@@ -1,7 +1,7 @@
 #include "nil.h"
 #include "nilUtil.h"
 
-namespace Nil {
+namespace nil {
 
   const Vector2i Vector2i::ZERO( 0, 0 );
 

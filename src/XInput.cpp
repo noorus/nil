@@ -4,7 +4,7 @@
 
 # define NIL_LOAD_EXTERNAL_FUNC(x) mFunctions.pfn##x##=(fn##x##)GetProcAddress(mModule,#x)
 
-namespace Nil {
+namespace nil {
 
   XInput::Functions::Functions(): pfnXInputGetState( nullptr ),
   pfnXInputSetState( nullptr ), pfnXInputGetCapabilities( nullptr )

@@ -1,10 +1,9 @@
 #include "nil.h"
 #include "nilUtil.h"
-#include <boost/algorithm/string/trim_all.hpp>
 
-namespace Nil {
+namespace nil {
 
-  namespace Util {
+  namespace util {
 
     uint32_t fnv_32a_buf( void* buf, size_t len, uint32_t hashval )
     {
@@ -18,10 +17,30 @@ namespace Nil {
       return hashval;
     }
 
+    inline void ltrim( utf8String& s )
+    {
+      s.erase( s.begin(), std::find_if( s.begin(), s.end(), []( unsigned char ch ) {
+        return !std::isspace( ch );
+      }));
+    }
+
+    inline void rtrim( utf8String& s )
+    {
+      s.erase( std::find_if( s.rbegin(), s.rend(), []( unsigned char ch ) {
+        return !std::isspace( ch );
+      }).base(), s.end() );
+    }
+
+    inline void trim( utf8String& s )
+    {
+      ltrim( s );
+      rtrim( s );
+    }
+
     inline utf8String cleanupName( utf8String name ) throw()
     {
-      boost::algorithm::trim_all( name );
-      if ( boost::iequals( name, "?" ) )
+      trim( name );
+      if ( name.compare( "?" ) != 0 )
         return utf8String();
       return name;
     }

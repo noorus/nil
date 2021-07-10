@@ -11,7 +11,7 @@
 #define NIL_DIJ2OFS_SLIDER2(n) (NIL_FIELD_OFFSET(DIJOYSTATE2, rglASlider)+(n)*sizeof(LONG))
 #define NIL_DIJ2OFS_SLIDER3(n) (NIL_FIELD_OFFSET(DIJOYSTATE2, rglFSlider)+(n)*sizeof(LONG))
 
-namespace Nil {
+namespace nil {
 
   const unsigned long cJoystickEvents = 64;
 

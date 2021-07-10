@@ -1,8 +1,7 @@
 #pragma once
 #include "nil.h"
-#include <boost/noncopyable.hpp>
 
-namespace Nil {
+namespace nil {
 
   //! \addtogroup Nil
   //! @{
@@ -32,11 +31,11 @@ namespace Nil {
 #   error NIL_EXCEPT* macro already defined!
 # else
   //! Fire a generic exception.
-#   define NIL_EXCEPT(description) {throw Nil::Exception(description,__FUNCTION__,Nil::Exception::Generic);}
+#   define NIL_EXCEPT(description) {throw nil::Exception(description,__FUNCTION__,nil::Exception::Generic);}
   //! Fire a WinAPI exception.
-#   define NIL_EXCEPT_WINAPI(description) {throw Nil::Exception(description,__FUNCTION__,Nil::Exception::WinAPI);}
+#   define NIL_EXCEPT_WINAPI(description) {throw nil::Exception(description,__FUNCTION__,nil::Exception::WinAPI);}
   //! Fire a DirectInput exception.
-#   define NIL_EXCEPT_DINPUT(hr,description) {throw Nil::Exception(description,__FUNCTION__,hr,Nil::Exception::DirectInput);}
+#   define NIL_EXCEPT_DINPUT(hr,description) {throw nil::Exception(description,__FUNCTION__,hr,nil::Exception::DirectInput);}
 # endif
 
   static GUID g_HIDInterfaceGUID = { 0x4D1E55B2, 0xF16F, 0x11CF, { 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } };
@@ -73,7 +72,7 @@ namespace Nil {
   //! \class ScopedSRWLock
   //! Automation for scoped acquisition and release of an SRWLOCK.
   //! \warning Lock must be initialized in advance!
-  class ScopedSRWLock: boost::noncopyable {
+  class ScopedSRWLock {
   protected:
     PSRWLOCK mLock; //!< The lock
     bool mExclusive; //!< Whether we're acquired in exclusive mode
@@ -106,7 +105,7 @@ namespace Nil {
   //! 32-bit Fowler/Noll/Vo hash initialization value
 # define FNV1_32A_INIT FNV1_32_INIT
 
-  namespace Util
+  namespace util
   {
     //! 32-bit Fowler/Noll/Vo-1a hash function.
     extern uint32_t fnv_32a_buf( void* buf, size_t len, uint32_t hashval );

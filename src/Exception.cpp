@@ -1,7 +1,7 @@
 #include "nil.h"
 #include "nilUtil.h"
 
-namespace Nil {
+namespace nil {
 
   struct DirectInputErrorEntry {
   public:
@@ -121,13 +121,13 @@ namespace Nil {
 
       if ( mType == WinAPI )
       {
-        const WinAPIError& error = boost::get<WinAPIError>( mAdditional );
-        stream << "\r\nWinAPI error code " << std::hex << error.code << ":\r\n" << Util::wideToUtf8( error.description );
+        const WinAPIError& error = std::get<WinAPIError>( mAdditional );
+        stream << "\r\nWinAPI error code " << std::hex << error.code << ":\r\n" << util::wideToUtf8( error.description );
       }
       else if ( mType == DirectInput )
       {
-        const WinAPIError& error = boost::get<WinAPIError>( mAdditional );
-        stream << "\r\nDirectInput error code " << std::hex << error.code << ":\r\n" << Util::wideToUtf8( error.description );
+        const WinAPIError& error = std::get<WinAPIError>( mAdditional );
+        stream << "\r\nDirectInput error code " << std::hex << error.code << ":\r\n" << util::wideToUtf8( error.description );
       }
 
       mFullDescription = stream.str();
@@ -135,7 +135,7 @@ namespace Nil {
     return mFullDescription;
   }
 
-  const char* Exception::what() const
+  const char* Exception::what() const throw()
   {
     return mFullDescription.c_str();
   }

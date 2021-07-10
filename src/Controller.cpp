@@ -1,7 +1,7 @@
 #include "nil.h"
 #include "nilUtil.h"
 
-namespace Nil {
+namespace nil {
 
   // ControllerState class
 

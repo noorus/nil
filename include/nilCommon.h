@@ -6,7 +6,7 @@
 #include "nilPnP.h"
 #include "nilHID.h"
 
-namespace Nil {
+namespace nil {
 
   //! \addtogroup Nil
   //! @{

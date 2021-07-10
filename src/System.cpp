@@ -2,7 +2,7 @@
 #include "nilUtil.h"
 #include "nilLogitech.h"
 
-namespace Nil {
+namespace nil {
 
   void System::Internals::store()
   {
@@ -21,7 +21,7 @@ namespace Nil {
   void System::Internals::disableHotKeyHarassment()
   {
     // Don't touch stickykeys/togglekeys/filterkeys if they're being used,
-    // but if they aren't, make sure Windows doesn't harass the user about 
+    // but if they aren't, make sure Windows doesn't harass the user about
     // maybe enabling them.
 
     auto stickyKeys = storedStickyKeys;
@@ -85,7 +85,7 @@ namespace Nil {
 
     // Create DirectInput instance
     auto hr = DirectInput8Create( mInstance, DIRECTINPUT_VERSION,
-      IID_IDirectInput8W, (LPVOID*)&mDirectInput, NULL );
+      IID_IDirectInput8W, (LPVOID*)&mDirectInput, nullptr );
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, "Could not instantiate DirectInput 8" );
 
@@ -101,7 +101,7 @@ namespace Nil {
 
     // Register ourselves as a raw event listener
     mMonitor->registerRawListener( this );
-    
+
     // Fetch initial devices
     initializeDevices();
     refreshDevices();
@@ -140,7 +140,7 @@ namespace Nil {
   {
     UINT pathLength = 0;
 
-    if ( GetRawInputDeviceInfoW( handle, RIDI_DEVICENAME, NULL, &pathLength ) )
+    if ( GetRawInputDeviceInfoW( handle, RIDI_DEVICENAME, nullptr, &pathLength ) )
       NIL_EXCEPT_WINAPI( "GetRawInputDeviceInfoW failed" );
 
     wideString rawPath( pathLength, '\0' );
@@ -452,7 +452,7 @@ namespace Nil {
     SAFE_DELETE( mLogitechLEDs );
     SAFE_DELETE( mLogitechGKeys );
     SAFE_DELETE( mXInput );
-    
+
     // Restore accessiblity features
     mInternals.restore();
   }

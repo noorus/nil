@@ -1,7 +1,7 @@
 #pragma once
 #include "nilWindows.h"
 
-namespace Nil {
+namespace nil {
 
   namespace Logitech {
 
@@ -86,7 +86,7 @@ namespace Nil {
         GKeySDK();
 
         //! Try to initialize the G-Key SDK module.
-        virtual InitReturn initialize();
+        InitReturn initialize() override;
 
         //! Add a G-Key event listener.
         void addListener( GKeyListener* listener );
@@ -98,7 +98,7 @@ namespace Nil {
         void update();
 
         //! Shut down the G-Key SDK module.
-        virtual void shutdown();
+        void shutdown() override;
 
         ~GKeySDK();
     };
@@ -137,13 +137,13 @@ namespace Nil {
         LedSDK();
 
         //! Try to initialize the Led SDK module.
-        virtual InitReturn initialize();
+        InitReturn initialize() override;
 
         //! Set LED lighting to given color value on supported hardware.
         void setLighting( const Color& color );
 
         //! Shut down the Led SDK module.
-        virtual void shutdown();
+        void shutdown() override;
 
         ~LedSDK();
     };

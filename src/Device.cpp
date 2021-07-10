@@ -1,7 +1,7 @@
 #include "nil.h"
 #include "nilUtil.h"
 
-namespace Nil {
+namespace nil {
 
   Device::Device( System* system, DeviceID id, Type type ): mSystem( system ),
   mID( id ), mType( type ), mStatus( Status_Pending ),
@@ -23,7 +23,7 @@ namespace Nil {
     }
 
     // Autogenerate a device name, which can be overridden later
-    mName = Util::generateName( mType, mTypedIndex );
+    mName = util::generateName( mType, mTypedIndex );
   }
 
   void Device::enable()

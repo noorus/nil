@@ -7,7 +7,7 @@
 #include "nilHID.h"
 #include "nilCommon.h"
 
-namespace Nil {
+namespace nil {
 
   //! \addtogroup Nil
   //! @{
@@ -71,8 +71,8 @@ namespace Nil {
       RawInputDevice( System* system, DeviceID id, HANDLE rawHandle, wideString& rawPath );
     public:
       virtual ~RawInputDevice();
-      virtual const Handler getHandler() const;
-      virtual const DeviceID getStaticID() const;
+      const Handler getHandler() const override;
+      const DeviceID getStaticID() const override;
 
       //! Get the RawInput device handle.
       virtual const HANDLE getRawHandle() const;
@@ -97,8 +97,8 @@ namespace Nil {
       DirectInputDevice( System* system, DeviceID id,
         LPCDIDEVICEINSTANCEW instance );
     public:
-      virtual const Handler getHandler() const;
-      virtual const DeviceID getStaticID() const;
+      const Handler getHandler() const override;
+      const DeviceID getStaticID() const override;
 
       //! Get the DirectInput product ID.
       virtual const GUID getProductID() const;
@@ -129,8 +129,8 @@ namespace Nil {
       Functions();
     } mFunctions;
     XInput();
-    virtual InitReturn initialize();
-    virtual void shutdown();
+    InitReturn initialize() override;
+    void shutdown() override;
     ~XInput();
   };
 
@@ -147,12 +147,12 @@ namespace Nil {
 
       XInputDevice( System* system, DeviceID id, int xinputID );
       virtual void identify();
-      virtual void setStatus( Status status );
-      virtual void onDisconnect();
-      virtual void onConnect();
+      void setStatus( Status status ) override;
+      void onDisconnect() override;
+      void onConnect() override;
     public:
-      virtual const Handler getHandler() const;
-      virtual const DeviceID getStaticID() const;
+      const Handler getHandler() const override;
+      const DeviceID getStaticID() const override;
 
       //! Get the XInput device ID.
       virtual const int getXInputID() const;
@@ -182,7 +182,7 @@ namespace Nil {
       //! \param swapButtons Whether to swap the first & second buttons.
       RawInputMouse( RawInputDevice* device, const bool swapButtons );
 
-      virtual void update();
+      void update() override;
 
       //! Destructor.
       virtual ~RawInputMouse();
@@ -209,7 +209,7 @@ namespace Nil {
       //! \param device The device.
       RawInputKeyboard( RawInputDevice* device );
 
-      virtual void update();
+      void update() override;
 
       //! Destructor.
       virtual ~RawInputKeyboard();
@@ -243,7 +243,7 @@ namespace Nil {
       //! \param device The device.
       DirectInputController( DirectInputDevice* device, const Cooperation coop );
 
-      virtual void update();
+      void update() override;
 
       //! Destructor.
       virtual ~DirectInputController();
@@ -268,7 +268,7 @@ namespace Nil {
       //! \param device The device.
       XInputController( XInputDevice* device );
 
-      virtual void update();
+      void update() override;
 
       //! Destructor.
       virtual ~XInputController();

@@ -1,7 +1,7 @@
 #include "nilHID.h"
 #include "nilUtil.h"
 
-namespace Nil {
+namespace nil {
 
   HIDManager::HIDManager()
   {
@@ -57,7 +57,7 @@ namespace Nil {
     for ( auto record : mRecords )
       if ( !_wcsicmp( record->getPath().c_str(), devicePath.c_str() ) )
         return;
-    
+
     SafeHandle deviceHandle( CreateFileW( devicePath.c_str(), 0,
       FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL ) );
 
@@ -73,7 +73,7 @@ namespace Nil {
     SP_DEVICE_INTERFACE_DATA interfaceData = { sizeof( SP_DEVICE_INTERFACE_DATA ) };
 
     auto info = SetupDiGetClassDevsW( &g_HIDInterfaceGUID,
-      NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
+      nullptr, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
 
     if ( info == INVALID_HANDLE_VALUE )
       NIL_EXCEPT_WINAPI( "SetupDiGetClassDevsW failed" );
@@ -82,7 +82,7 @@ namespace Nil {
     info, 0, &g_HIDInterfaceGUID, i, &interfaceData ); i++ )
     {
       unsigned long length = 0;
-      SetupDiGetDeviceInterfaceDetailW( info, &interfaceData, NULL, 0, &length, NULL );
+      SetupDiGetDeviceInterfaceDetailW( info, &interfaceData, nullptr, 0, &length, nullptr );
 
       if ( GetLastError() != ERROR_INSUFFICIENT_BUFFER )
         NIL_EXCEPT_WINAPI( "SetupDiGetDeviceInterfaceDetailW failed" );
@@ -95,7 +95,7 @@ namespace Nil {
       SP_DEVINFO_DATA deviceData = { sizeof( SP_DEVINFO_DATA ) };
 
       if ( SetupDiGetDeviceInterfaceDetailW( info, &interfaceData,
-      detailData, length, NULL, &deviceData ) )
+      detailData, length, nullptr, &deviceData ) )
       {
         processDevice( interfaceData, deviceData, detailData->DevicePath );
       }

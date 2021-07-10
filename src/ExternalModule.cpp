@@ -1,7 +1,7 @@
 #include "nil.h"
 #include "nilWindows.h"
 
-namespace Nil {
+namespace nil {
 
   ExternalModule::ExternalModule(): mModule( NULL ), mInitialized( false )
   {

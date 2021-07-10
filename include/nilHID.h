@@ -8,7 +8,7 @@ extern "C" {
 # include <hidsdi.h>
 };
 
-namespace Nil {
+namespace nil {
 
   //! \addtogroup Nil
   //! @{
@@ -101,10 +101,10 @@ namespace Nil {
       HIDRecordList mRecords; //!< Records container
 
       //! \b Internal My PnP plug callback.
-      virtual void onPnPPlug( const GUID& deviceClass, const wideString& devicePath );
+      void onPnPPlug( const GUID& deviceClass, const wideString& devicePath ) override;
 
       //! \b Internal My PnP unplug callback.
-      virtual void onPnPUnplug( const GUID& deviceClass, const wideString& devicePath );
+      void onPnPUnplug( const GUID& deviceClass, const wideString& devicePath ) override;
 
       //! \b Internal Process an existing device.
       void processDevice( SP_DEVICE_INTERFACE_DATA& interfaceData,

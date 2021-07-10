@@ -2,7 +2,7 @@
 #include "nilUtil.h"
 #include "nilWindows.h"
 
-namespace Nil {
+namespace nil {
 
   inline Device::Type resolveDIDeviceType( unsigned long type )
   {
@@ -29,7 +29,7 @@ namespace Nil {
   mInstanceID( instance->guidInstance )
   {
     // Only replace auto-generated name if fetched one isn't empty
-    utf8String tmpName = Util::cleanupName( Util::wideToUtf8( instance->tszInstanceName ) );
+    utf8String tmpName = util::cleanupName( util::wideToUtf8( instance->tszInstanceName ) );
     if ( !tmpName.empty() )
       mName = tmpName;
   }
@@ -44,7 +44,7 @@ namespace Nil {
     // Static ID for DirectInput devices:
     // 4 bits of handler ID, 28 bits of unique id (hashed instance GUID)
 
-    DeviceID id = Util::fnv_32a_buf(
+    DeviceID id = util::fnv_32a_buf(
       (void*)&mInstanceID, sizeof( GUID ), FNV1_32A_INIT );
 
     return ( ( id >> 4 ) | ( ( Handler_DirectInput + 1 ) << 28 ) );

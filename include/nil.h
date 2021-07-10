@@ -9,7 +9,7 @@
 #include "nilWindows.h"
 #include "nilLogitech.h"
 
-namespace Nil {
+namespace nil {
 
   //! \addtogroup Nil
   //! @{
@@ -110,17 +110,17 @@ namespace Nil {
       void mapKeyboard( HANDLE handle, RawInputKeyboard* keyboard );
       void unmapKeyboard( HANDLE handle );
       //! \b Internal My PnP plug callback.
-      virtual void onPnPPlug( const GUID& deviceClass, const wideString& devicePath );
+      void onPnPPlug( const GUID& deviceClass, const wideString& devicePath ) override;
       //! \b Internal My PnP unplug callback.
-      virtual void onPnPUnplug( const GUID& deviceClass, const wideString& devicePath );
+      void onPnPUnplug( const GUID& deviceClass, const wideString& devicePath ) override;
       //! \b Internal My Raw arrival callback.
-      virtual void onRawArrival( HANDLE handle );
+      void onRawArrival( HANDLE handle ) override;
       //! \b Internal My Raw mouse input callback.
-      virtual void onRawMouseInput( HANDLE handle, const RAWMOUSE& input, const bool sinked );
+      void onRawMouseInput( HANDLE handle, const RAWMOUSE& input, const bool sinked ) override;
       //! \b Internal My Raw keyboard input callback.
-      virtual void onRawKeyboardInput( HANDLE handle, const RAWKEYBOARD& input, const bool sinked );
+      void onRawKeyboardInput( HANDLE handle, const RAWKEYBOARD& input, const bool sinked ) override;
       //! \b Internal My Raw removal callback.
-      virtual void onRawRemoval( HANDLE handle );
+      void onRawRemoval( HANDLE handle ) override;
       //! \b Internal My DirectInput device enumeration callback.
       static BOOL CALLBACK diDeviceEnumCallback(
         LPCDIDEVICEINSTANCEW instance, LPVOID referer );

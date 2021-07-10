@@ -2,7 +2,7 @@
 #include "nilUtil.h"
 #include "nilWindows.h"
 
-namespace Nil {
+namespace nil {
 
   // RawInputDeviceInfo class
 
@@ -60,7 +60,7 @@ namespace Nil {
       if ( HidD_GetProductString( deviceHandle, &buffer, 256 ) )
       {
         // Only replace auto-generated name if fetched one isn't empty
-        utf8String tmpName = Util::cleanupName( Util::wideToUtf8( buffer ) );
+        utf8String tmpName = util::cleanupName( util::wideToUtf8( buffer ) );
         if ( !tmpName.empty() )
           mName = tmpName;
       }
@@ -81,7 +81,7 @@ namespace Nil {
     // Static ID for RawInput devices:
     // 4 bits of handler ID, 28 bits of unique id (hashed raw path)
  
-    DeviceID id = Util::fnv_32a_buf(
+    DeviceID id = util::fnv_32a_buf(
       (void*)mRawPath.c_str(),
       mRawPath.length() * sizeof( wchar_t ),
       FNV1_32A_INIT );

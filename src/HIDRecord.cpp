@@ -1,7 +1,7 @@
 #include "nilHID.h"
 #include "nilUtil.h"
 
-namespace Nil {
+namespace nil {
 
   HIDRecord::HIDRecord( const wideString& path, HANDLE handle ):
   mPath( path ), mIsXInput( false ), mIsRDP( false ), mAvailable( false )
@@ -26,11 +26,11 @@ namespace Nil {
 
       wchar_t buffer[256];
       if ( HidD_GetProductString( handle, &buffer, 256 ) )
-        mName = Util::cleanupName( Util::wideToUtf8( buffer ) );
+        mName = util::cleanupName( util::wideToUtf8( buffer ) );
       if ( HidD_GetManufacturerString( handle, &buffer, 256 ) )
-        mManufacturer = Util::cleanupName( Util::wideToUtf8( buffer ) );
+        mManufacturer = util::cleanupName( util::wideToUtf8( buffer ) );
       if ( HidD_GetSerialNumberString( handle, &buffer, 256 ) )
-        mSerialNumber = Util::wideToUtf8( buffer );
+        mSerialNumber = util::wideToUtf8( buffer );
     }
 
     identify();

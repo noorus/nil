@@ -1,8 +1,8 @@
 #include "nil.h"
 #include "nilUtil.h"
-#include <math.h>
+#include <cmath>
 
-HANDLE stopEvent = NULL;
+HANDLE stopEvent = nullptr;
 
 // Cosine wave table for color cycling; not really needed for anything
 BYTE costable[256]={
@@ -25,21 +25,21 @@ BYTE costable[256]={
 };
 
 // Shared mouse listener
-class DummyMouseListener: public Nil::MouseListener {
+class DummyMouseListener: public nil::MouseListener {
 public:
-  virtual void onMouseMoved( Nil::Mouse* mouse, const Nil::MouseState& state )
+  void onMouseMoved( nil::Mouse* mouse, const nil::MouseState& state ) override
   {
     //
   }
-  virtual void onMouseButtonPressed( Nil::Mouse* mouse, const Nil::MouseState& state, size_t button )
+  void onMouseButtonPressed( nil::Mouse* mouse, const nil::MouseState& state, size_t button ) override
   {
     printf_s( "Mouse button pressed: %d (%s)\n", (int)button, mouse->getDevice()->getName().c_str() );
   }
-  virtual void onMouseButtonReleased( Nil::Mouse* mouse, const Nil::MouseState& state, size_t button )
+  void onMouseButtonReleased( nil::Mouse* mouse, const nil::MouseState& state, size_t button ) override
   {
     printf_s( "Mouse button released: %d (%s)\n", (int)button, mouse->getDevice()->getName().c_str() );
   }
-  virtual void onMouseWheelMoved( Nil::Mouse* mouse, const Nil::MouseState& state )
+  void onMouseWheelMoved( nil::Mouse* mouse, const nil::MouseState& state ) override
   {
     printf_s( "Mouse wheel moved: %d (%s)\n", state.mWheel.relative, mouse->getDevice()->getName().c_str() );
   }
@@ -48,17 +48,17 @@ public:
 DummyMouseListener gDummyMouseListener;
 
 // Shared keyboard listener
-class DummyKeyboardListener: public Nil::KeyboardListener {
+class DummyKeyboardListener: public nil::KeyboardListener {
 public:
-  virtual void onKeyPressed( Nil::Keyboard* keyboard, const Nil::VirtualKeyCode keycode )
+  void onKeyPressed( nil::Keyboard* keyboard, const nil::VirtualKeyCode keycode ) override
   {
     printf_s( "Key pressed: 0x%X (%s)\n", keycode, keyboard->getDevice()->getName().c_str() );
   }
-  virtual void onKeyRepeat( Nil::Keyboard* keyboard, const Nil::VirtualKeyCode keycode )
+  void onKeyRepeat( nil::Keyboard* keyboard, const nil::VirtualKeyCode keycode ) override
   {
     printf_s( "Key repeat: 0x%X (%s)\n", keycode, keyboard->getDevice()->getName().c_str() );
   }
-  virtual void onKeyReleased( Nil::Keyboard* keyboard, const Nil::VirtualKeyCode keycode )
+  void onKeyReleased( nil::Keyboard* keyboard, const nil::VirtualKeyCode keycode ) override
   {
     printf_s( "Key released: 0x%X (%s)\n", keycode, keyboard->getDevice()->getName().c_str() );
   }
@@ -68,25 +68,25 @@ DummyKeyboardListener gDummyKeyboardListener;
 
 // Shared controller listener; 
 // A controller is any input device that is not a mouse nor a keyboard
-class DummyControllerListener: public Nil::ControllerListener {
+class DummyControllerListener: public nil::ControllerListener {
 public:
-  virtual void onControllerButtonPressed( Nil::Controller* controller, const Nil::ControllerState& state, size_t button )
+  void onControllerButtonPressed( nil::Controller* controller, const nil::ControllerState& state, size_t button ) override
   {
     printf_s( "Controller button %d pressed (%s)\n", (int)button, controller->getDevice()->getName().c_str() );
   }
-  virtual void onControllerButtonReleased( Nil::Controller* controller, const Nil::ControllerState& state, size_t button )
+  void onControllerButtonReleased( nil::Controller* controller, const nil::ControllerState& state, size_t button ) override
   {
     printf_s( "Controller button %d released (%s)\n", (int)button, controller->getDevice()->getName().c_str() );
   }
-  virtual void onControllerAxisMoved( Nil::Controller* controller, const Nil::ControllerState& state, size_t axis )
+  void onControllerAxisMoved( nil::Controller* controller, const nil::ControllerState& state, size_t axis ) override
   {
     printf_s( "Controller axis %d moved: %f (%s)\n", (int)axis, state.mAxes[axis].absolute, controller->getDevice()->getName().c_str() );
   }
-  virtual void onControllerSliderMoved( Nil::Controller* controller, const Nil::ControllerState& state, size_t slider )
+  void onControllerSliderMoved( nil::Controller* controller, const nil::ControllerState& state, size_t slider ) override
   {
     printf_s( "Controller slider %d moved (%s)\n", (int)slider, controller->getDevice()->getName().c_str() );
   }
-  virtual void onControllerPOVMoved( Nil::Controller* controller, const Nil::ControllerState& state, size_t pov )
+  void onControllerPOVMoved( nil::Controller* controller, const nil::ControllerState& state, size_t pov ) override
   {
     printf_s( "Controller POV %d moved: 0x%08X (%s)\n", (int)pov, state.mPOVs[pov].direction, controller->getDevice()->getName().c_str() );
   }
@@ -96,13 +96,13 @@ DummyControllerListener gDummyControllerListener;
 
 // This is a listener for Logitech's proprietary G-keys on
 // support keyboard & mice
-class DummyGKeyListener: public Nil::Logitech::GKeyListener {
+class DummyGKeyListener: public nil::Logitech::GKeyListener {
 public:
-  virtual void onGKeyPressed( Nil::Logitech::GKey key )
+  void onGKeyPressed( nil::Logitech::GKey key ) override
   {
     printf_s( "G-Key pressed: %d\n", key );
   }
-  virtual void onGKeyReleased( Nil::Logitech::GKey key )
+  void onGKeyReleased( nil::Logitech::GKey key ) override
   {
     printf_s( "G-Key released: %d\n", key );
   }
@@ -111,54 +111,54 @@ public:
 DummyGKeyListener gDummyGKeyListener;
 
 // This is the main system listener, which must always exist
-class MyListener: public Nil::SystemListener {
+class MyListener: public nil::SystemListener {
 public:
-  virtual void onDeviceConnected( Nil::Device* device )
+  void onDeviceConnected( nil::Device* device ) override
   {
     printf_s( "Connected: %s\r\n", device->getName().c_str() );
     // Enable any device instantly when it is connected
     device->enable();
   }
-  virtual void onDeviceDisconnected( Nil::Device* device )
+  void onDeviceDisconnected( nil::Device* device ) override
   {
     printf_s( "Disconnected: %s\n", device->getName().c_str() );
   }
-  virtual void onMouseEnabled( Nil::Device* device, Nil::Mouse* instance )
+  void onMouseEnabled( nil::Device* device, nil::Mouse* instance ) override
   {
     printf_s( "Mouse enabled: %s\n", device->getName().c_str() );
     printf_s( "Static ID: 0x%08X\n", device->getStaticID() );
     // Add our listener for every mouse that is enabled
     instance->addListener( &gDummyMouseListener );
   }
-  virtual void onKeyboardEnabled( Nil::Device* device, Nil::Keyboard* instance )
+  void onKeyboardEnabled( nil::Device* device, nil::Keyboard* instance ) override
   {
     printf_s( "Keyboard enabled: %s\n", device->getName().c_str() );
     printf_s( "Static ID: 0x%08X\n", device->getStaticID() );
     // Add our listener for every keyboard that is enabled
     instance->addListener( &gDummyKeyboardListener );
   }
-  virtual void onControllerEnabled( Nil::Device* device, Nil::Controller* instance )
+  void onControllerEnabled( nil::Device* device, nil::Controller* instance ) override
   {
     printf_s( "Controller enabled: %s\r\n", device->getName().c_str() );
     printf_s( "Static ID: 0x%08X\r\n", device->getStaticID() );
     // Add our listener for every controller that is enabled
     instance->addListener( &gDummyControllerListener );
   }
-  virtual void onMouseDisabled( Nil::Device* device, Nil::Mouse* instance )
+  void onMouseDisabled( nil::Device* device, nil::Mouse* instance ) override
   {
     printf_s( "Mouse disabled: %s\n", device->getName().c_str() );
     printf_s( "Static ID: 0x%08X\n", device->getStaticID() );
     // Removing listeners at this point is unnecessary,
     // as the device instance is destroyed anyway
   }
-  virtual void onKeyboardDisabled( Nil::Device* device, Nil::Keyboard* instance )
+  void onKeyboardDisabled( nil::Device* device, nil::Keyboard* instance ) override
   {
     printf_s( "Keyboard disabled: %s\n", device->getName().c_str() );
     printf_s( "Static ID: 0x%08X\n", device->getStaticID() );
     // Removing listeners at this point is unnecessary,
     // as the device instance is destroyed anyway
   }
-  virtual void onControllerDisabled( Nil::Device* device, Nil::Controller* instance )
+  void onControllerDisabled( nil::Device* device, nil::Controller* instance ) override
   {
     printf_s( "Controller disabled: %s\n", device->getName().c_str() );
     printf_s( "Static ID: 0x%08X\n", device->getStaticID() );
@@ -190,19 +190,19 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
     SetConsoleCtrlHandler( consoleHandler, TRUE );
 
     // Init system
-    Nil::System* system = new Nil::System(
+    nil::System* system = new nil::System(
       GetModuleHandleW( nullptr ),
       GetConsoleWindow(),
       // Using background cooperation mode, because the default console window
       // is actually not owned by our process (it is owned by cmd.exe) and thus
       // we would not receive any mouse & keyboard events in foreground mode.
       // For applications that own their own window foreground mode works fine.
-      Nil::Cooperation_Background,
+      nil::Cooperation_Background,
       &gMyListener );
 
     // Init Logitech G-keys subsystem, if available
-    Nil::ExternalModule::InitReturn ret = system->getLogitechGKeys()->initialize();
-    if ( ret == Nil::ExternalModule::Initialization_OK )
+    nil::ExternalModule::InitReturn ret = system->getLogitechGKeys()->initialize();
+    if ( ret == nil::ExternalModule::Initialization_OK )
     {
       printf_s( "G-keys initialized\n" );
       system->getLogitechGKeys()->addListener( &gDummyGKeyListener );
@@ -211,7 +211,7 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
 
     // Init Logitech LED subsytem, if available
     ret = system->getLogitechLEDs()->initialize();
-    if ( ret == Nil::ExternalModule::Initialization_OK )
+    if ( ret == nil::ExternalModule::Initialization_OK )
       printf_s( "LEDs initialized\r\n" );
     else
       printf_s( "LEDs initialization failed with 0x%X\n", ret );
@@ -234,7 +234,7 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
       // Cycle some LED colors for fun
       if ( system->getLogitechLEDs()->isInitialized() )
       {
-        Nil::Color clr;
+        nil::Color clr;
         clr.r = (float)costable[x] / 99.0f;
         clr.g = (float)costable[y] / 99.0f;
         clr.b = (float)costable[z] / 99.0f;
@@ -255,7 +255,7 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
     delete system;
 #ifndef _DEBUG
   }
-  catch ( Nil::Exception& e )
+  catch ( nil::Exception& e )
   {
     printf_s( "Exception: %s\n", e.getFullDescription().c_str() );
     return EXIT_FAILURE;

@@ -1,7 +1,7 @@
 #pragma once
 #include "nilTypes.h"
 
-namespace Nil {
+namespace nil {
 
   //! \addtogroup Nil
   //! @{
@@ -53,7 +53,7 @@ namespace Nil {
       virtual const utf8String& getFullDescription() const;
 
       //! Get the std::exception compatible exception description.
-      virtual const char* what() const throw();
+      const char* what() const throw() override;
   };
 
   //! @}

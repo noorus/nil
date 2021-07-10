@@ -1,7 +1,7 @@
 #include "nil.h"
 #include "nilWindows.h"
 
-namespace Nil {
+namespace nil {
 
   RawInputKeyboard::RawInputKeyboard( RawInputDevice* device ):
   Keyboard( device->getSystem(), device )
