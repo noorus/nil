@@ -25,13 +25,13 @@ namespace nil {
   DirectInputDevice::DirectInputDevice( System* system, DeviceID id,
   LPCDIDEVICEINSTANCEW instance ):
   Device( system, id, resolveDIDeviceType( instance->dwDevType ) ),
-  mProductID( instance->guidProduct ),
-  mInstanceID( instance->guidInstance )
+  pid_( instance->guidProduct ),
+  inst_( instance->guidInstance )
   {
     // Only replace auto-generated name if fetched one isn't empty
     utf8String tmpName = util::cleanupName( util::wideToUtf8( instance->tszInstanceName ) );
     if ( !tmpName.empty() )
-      mName = tmpName;
+      name_ = tmpName;
   }
 
   const Device::Handler DirectInputDevice::getHandler() const
@@ -45,19 +45,19 @@ namespace nil {
     // 4 bits of handler ID, 28 bits of unique id (hashed instance GUID)
 
     DeviceID id = util::fnv_32a_buf(
-      (void*)&mInstanceID, sizeof( GUID ), FNV1_32A_INIT );
+      (void*)&inst_, sizeof( GUID ), FNV1_32A_INIT );
 
     return ( ( id >> 4 ) | ( ( Handler_DirectInput + 1 ) << 28 ) );
   }
 
   const GUID DirectInputDevice::getProductID() const
   {
-    return mProductID;
+    return pid_;
   }
 
   const GUID DirectInputDevice::getInstanceID() const
   {
-    return mInstanceID;
+    return inst_;
   }
 
 }

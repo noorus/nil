@@ -24,8 +24,8 @@ namespace nil {
   class ExternalModule
   {
     protected:
-      HMODULE mModule; //!< The module handle
-      bool mInitialized; //!< Whether the module is initialized
+      HMODULE module_; //!< The module handle
+      bool isInitialized_; //!< Whether the module is initialized
     public:
       ExternalModule();
 
@@ -50,7 +50,7 @@ namespace nil {
   class RawInputDeviceInfo
   {
   protected:
-    RID_DEVICE_INFO* mRawInfo;
+    RID_DEVICE_INFO* rawInfo_;
     const Device::Type rawInfoResolveType() const;
   public:
     RawInputDeviceInfo( HANDLE handle );
@@ -65,8 +65,8 @@ namespace nil {
   {
     friend class System;
     private:
-      HANDLE mRawHandle; //!< The internal raw input device handle
-      wideString mRawPath; //!< The full input device raw path
+      HANDLE rawHandle_; //!< The internal raw input device handle
+      wideString rawPath_; //!< The full input device raw path
 
       RawInputDevice( System* system, DeviceID id, HANDLE rawHandle, wideString& rawPath );
     public:
@@ -91,8 +91,8 @@ namespace nil {
   {
     friend class System;
     private:
-      GUID mProductID; //!< DirectInput's product identifier
-      GUID mInstanceID; //!< DirectInput's instance identifier
+      GUID pid_; //!< DirectInput's product identifier
+      GUID inst_; //!< DirectInput's instance identifier
 
       DirectInputDevice( System* system, DeviceID id,
         LPCDIDEVICEINSTANCEW instance );
@@ -121,13 +121,13 @@ namespace nil {
       Version_910,
       Version_13,
       Version_14
-    } mVersion;
+    } version_;
     struct Functions {
       fnXInputGetState pfnXInputGetState;
       fnXInputSetState pfnXInputSetState;
       fnXInputGetCapabilities pfnXInputGetCapabilities;
       Functions();
-    } mFunctions;
+    } funcs_;
     XInput();
     InitReturn initialize() override;
     void shutdown() override;
@@ -141,9 +141,9 @@ namespace nil {
   {
     friend class System;
     private:
-      int mXInputID; //!< Internal XInput device identifier
-      bool mIdentified; //!< true if identified
-      XINPUT_CAPABILITIES mCapabilities; //!< Internal XInput capabilities
+      int xinputId_; //!< Internal XInput device identifier
+      bool identified_; //!< true if identified
+      XINPUT_CAPABILITIES caps_; //!< Internal XInput capabilities
 
       XInputDevice( System* system, DeviceID id, int xinputID );
       virtual void identify();
@@ -171,8 +171,8 @@ namespace nil {
   {
     friend class System;
     private:
-      unsigned int mSampleRate; //!< The sample rate
-      bool mHorizontalWheel; //!< true to horizontal wheel
+      unsigned int sampleRate_; //!< The sample rate
+      bool hasHorizontalWheel_; //!< true to horizontal wheel
 
       //! My raw input callback.
       virtual void onRawInput( const RAWMOUSE& input );
@@ -200,7 +200,7 @@ namespace nil {
   {
     friend class System;
     private:
-      list<VirtualKeyCode> mPressedKeys; //!< List of keys that are currently pressed
+      list<VirtualKeyCode> pressedKeys_; //!< List of keys that are currently pressed
 
       //! My raw input callback.
       virtual void onRawInput( const RAWKEYBOARD& input );
@@ -226,11 +226,11 @@ namespace nil {
   class DirectInputController: public Controller
   {
     private:
-      IDirectInputDevice8W* mDIDevice; //!< The DirectInput device
-      DIDEVCAPS mDICapabilities; //!< DirectInput capabilities
-      size_t mAxisEnum; //!< Internal axis enumeration
-      size_t mSliderEnum; //!< Internal slider enumeration
-      const Cooperation mCooperation; //!< Cooperation mode
+      IDirectInputDevice8W* diDevice_; //!< The DirectInput device
+      DIDEVCAPS diCaps_; //!< DirectInput capabilities
+      size_t axisEnum_; //!< Internal axis enumeration
+      size_t sliderEnum_; //!< Internal slider enumeration
+      const Cooperation coop_; //!< Cooperation mode
 
       //! Axis value filter.
       inline Real filterAxis( int val );
@@ -255,8 +255,8 @@ namespace nil {
   class XInputController: public Controller
   {
     private:
-      DWORD mLastPacket; //!< Internal previous input packet's ID
-      XINPUT_STATE mXInputState; //!< Internal XInput state
+      DWORD lastPacket_; //!< Internal previous input packet's ID
+      XINPUT_STATE xinputState_; //!< Internal XInput state
 
       //! Filter a thumb axis value.
       inline Real filterThumbAxis( int val, int deadzone );
@@ -276,8 +276,8 @@ namespace nil {
 
   //! @}
 
-  typedef map<HANDLE, RawInputMouse*> RawMouseMap;
-  typedef map<HANDLE, RawInputKeyboard*> RawKeyboardMap;
+  using RawMouseMap = map<HANDLE, RawInputMouse*>;
+  using RawKeyboardMap = map<HANDLE, RawInputKeyboard*>;
 
   //! @}
 

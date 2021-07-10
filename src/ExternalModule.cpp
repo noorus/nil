@@ -3,13 +3,13 @@
 
 namespace nil {
 
-  ExternalModule::ExternalModule(): mModule( NULL ), mInitialized( false )
+  ExternalModule::ExternalModule(): module_( NULL ), isInitialized_( false )
   {
   }
 
   bool ExternalModule::isInitialized() const
   {
-    return mInitialized;
+    return isInitialized_;
   }
 
 }

@@ -53,19 +53,19 @@ namespace nil {
   }
 
   Exception::Exception( const utf8String& description, Type type ):
-  mDescription( description ), mType( type )
+  description_( description ), type_( type )
   {
     handleAdditional();
   }
 
   Exception::Exception( const utf8String& description, const utf8String& source, Type type ):
-  mDescription( description ), mSource( source ), mType( type )
+  description_( description ), source_( source ), type_( type )
   {
     handleAdditional();
   }
 
   Exception::Exception( const utf8String& description, const utf8String& source, HRESULT hr, Type type ):
-  mDescription( description ), mSource( source ), mType( type )
+  description_( description ), source_( source ), type_( type )
   {
     handleAdditional( hr );
   }
@@ -73,7 +73,7 @@ namespace nil {
   void Exception::handleAdditional( HRESULT hr )
   {
     WinAPIError error;
-    if ( mType == WinAPI )
+    if ( type_ == WinAPI )
     {
       error.code = GetLastError();
 
@@ -91,9 +91,9 @@ namespace nil {
         LocalFree( message );
       }
 
-      mAdditional = error;
+      additional_ = error;
     }
-    else if ( mType == DirectInput )
+    else if ( type_ == DirectInput )
     {
       error.code = hr;
       for ( unsigned long i = 0; i < cErrorDescriptionCount; i++ )
@@ -104,40 +104,40 @@ namespace nil {
           break;
         }
       }
-      mAdditional = error;
+      additional_ = error;
     }
   }
 
   const utf8String& Exception::getFullDescription() const
   {
-    if ( mFullDescription.empty() )
+    if ( fullDescription_.empty() )
     {
       stringstream stream;
 
-      stream << mDescription;
+      stream << description_;
 
-      if ( !mSource.empty() )
-        stream << "\r\nIn function " << mSource;
+      if ( !source_.empty() )
+        stream << "\r\nIn function " << source_;
 
-      if ( mType == WinAPI )
+      if ( type_ == WinAPI )
       {
-        const WinAPIError& error = std::get<WinAPIError>( mAdditional );
+        const WinAPIError& error = std::get<WinAPIError>( additional_ );
         stream << "\r\nWinAPI error code " << std::hex << error.code << ":\r\n" << util::wideToUtf8( error.description );
       }
-      else if ( mType == DirectInput )
+      else if ( type_ == DirectInput )
       {
-        const WinAPIError& error = std::get<WinAPIError>( mAdditional );
+        const WinAPIError& error = std::get<WinAPIError>( additional_ );
         stream << "\r\nDirectInput error code " << std::hex << error.code << ":\r\n" << util::wideToUtf8( error.description );
       }
 
-      mFullDescription = stream.str();
+      fullDescription_ = stream.str();
     }
-    return mFullDescription;
+    return fullDescription_;
   }
 
   const char* Exception::what() const throw()
   {
-    return mFullDescription.c_str();
+    return fullDescription_.c_str();
   }
 
 }

@@ -14,32 +14,32 @@ namespace nil {
   {
     // We do NOT reset buttons!
 
-    mWheel.relative = 0;
+    wheel.relative = 0;
 
-    mMovement.relative.x = 0;
-    mMovement.relative.y = 0;
+    movement.relative.x = 0;
+    movement.relative.y = 0;
   }
 
   // Mouse class
 
   Mouse::Mouse( System* system, Device* device, const bool swapButtons ):
-  DeviceInstance( system, device ), mSwapButtons( swapButtons )
+  DeviceInstance( system, device ), swapButtons_( swapButtons )
   {
   }
 
   void Mouse::addListener( MouseListener* listener )
   {
-    mListeners.push_back( listener );
+    listeners_.push_back( listener );
   }
 
   void Mouse::removeListener( MouseListener* listener )
   {
-    mListeners.remove( listener );
+    listeners_.remove( listener );
   }
 
   const MouseState& Mouse::getState() const
   {
-    return mState;
+    return state_;
   }
 
   Mouse::~Mouse()

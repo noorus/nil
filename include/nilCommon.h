@@ -47,15 +47,15 @@ namespace nil {
         Status_Connected //!< Up-to-date and available
       };
     protected:
-      DeviceID mID; //!< Unique identifier, only valid per session
-      Status mStatus; //!< Current status
-      Status mSavedStatus; //!< Status backup when updating
-      utf8String mName; //!< Device name
-      Type mType; //!< Device type
-      System* mSystem; //!< My owner
-      DeviceInstance* mInstance; //!< My instance, if created
-      bool mDisconnectFlagged; //!< Whether I am flagged for disconnection or not
-      int mTypedIndex; //!< This is a device-type-specific index for the device
+      DeviceID id_; //!< Unique identifier, only valid per session
+      Status status_; //!< Current status
+      Status savedStatus_; //!< Status backup when updating
+      utf8String name_; //!< Device name
+      Type type_; //!< Device type
+      System* system_; //!< My owner
+      DeviceInstance* instance_; //!< My instance, if created
+      bool disconnectFlag_; //!< Whether I am flagged for disconnection or not
+      int typedIndex_; //!< This is a device-type-specific index for the device
 
       explicit Device( System* system, DeviceID id, Type type );
       virtual ~Device();
@@ -81,15 +81,15 @@ namespace nil {
   };
 
   //! A list of devices.
-  typedef list<Device*> DeviceList;
+  using DeviceList = list<Device*>;
 
   //! \class DeviceInstance
   //! Device instance base class.
   class DeviceInstance
   {
     protected:
-      System* mSystem; //!< The system
-      Device* mDevice; //!< The device
+      System* system_; //!< The system
+      Device* device_; //!< The device
     public:
       //! Constructor.
       //! \param system The system.
@@ -108,7 +108,7 @@ namespace nil {
   };
 
   //! \brief A list of device instances.
-  typedef list<DeviceInstance*> DeviceInstanceList;
+  using DeviceInstanceList = list<DeviceInstance*>;
 
   //! \addtogroup Mouse
   //! @{
@@ -117,12 +117,11 @@ namespace nil {
   //! Mouse state structure.
   struct MouseState
   {
-    public:
-      MouseState();
-      void reset(); //!< Reset the state of one-shot components
-      vector<Button> mButtons; //!< My buttons
-      Wheel mWheel; //!< My wheel
-      Movement mMovement; //!< My movement
+    MouseState();
+    void reset(); //!< Reset the state of one-shot components
+    vector<Button> buttons; //!< My buttons
+    Wheel wheel; //!< My wheel
+    Movement movement; //!< My movement
   };
 
   //! \class MouseListener
@@ -130,25 +129,21 @@ namespace nil {
   //! Derive your own listener from this class.
   class MouseListener
   {
-    public:
+  public:
       //! Called when the mouse is moved.
-      virtual void onMouseMoved(
-        Mouse* mouse, const MouseState& state ) = 0;
+      virtual void onMouseMoved( Mouse* mouse, const MouseState& state ) = 0;
 
       //! Called when a button is pressed on the mouse.
-      virtual void onMouseButtonPressed(
-        Mouse* mouse, const MouseState& state, size_t button ) = 0;
+      virtual void onMouseButtonPressed( Mouse* mouse, const MouseState& state, size_t button ) = 0;
 
       //! Called when a button is released on the mouse.
-      virtual void onMouseButtonReleased(
-        Mouse* mouse, const MouseState& state, size_t button ) = 0;
+      virtual void onMouseButtonReleased( Mouse* mouse, const MouseState& state, size_t button ) = 0;
 
       //! Called when the mouse wheel is rotated.
-      virtual void onMouseWheelMoved(
-        Mouse* mouse, const MouseState& state ) = 0;
+      virtual void onMouseWheelMoved( Mouse* mouse, const MouseState& state ) = 0;
   };
 
-  typedef list<MouseListener*> MouseListenerList;
+  using MouseListenerList = list<MouseListener*>;
 
   //! \class Mouse
   //! Mouse device instance base class.
@@ -156,10 +151,10 @@ namespace nil {
   class Mouse: public DeviceInstance
   {
     protected:
-      MouseState mState;  //!< Current state
-      Vector2i mLastPosition; //!< Previous position when mouse gives absolutes
-      MouseListenerList mListeners; //!< Registered event listeners
-      bool mSwapButtons; //!< Whether first & second buttons are swapped
+      MouseState state_;  //!< Current state
+      Vector2i lastPosition_; //!< Previous position when mouse gives absolutes
+      MouseListenerList listeners_; //!< Registered event listeners
+      bool swapButtons_; //!< Whether first & second buttons are swapped
     public:
       //! Constructor.
       //! \param system The system.
@@ -196,19 +191,16 @@ namespace nil {
   {
     public:
       //! Called when a key is pressed on the keyboard.
-      virtual void onKeyPressed(
-        Keyboard* keyboard, const VirtualKeyCode keycode ) = 0;
+      virtual void onKeyPressed( Keyboard* keyboard, const VirtualKeyCode keycode ) = 0;
 
       //! Called when a pressed down key triggers a key repeat on the keyboard.
-      virtual void onKeyRepeat(
-        Keyboard* keyboard, const VirtualKeyCode keycode ) = 0;
+      virtual void onKeyRepeat( Keyboard* keyboard, const VirtualKeyCode keycode ) = 0;
 
       //! Called when a key is released on the keyboard.
-      virtual void onKeyReleased(
-        Keyboard* keyboard, const VirtualKeyCode keycode ) = 0;
+      virtual void onKeyReleased( Keyboard* keyboard, const VirtualKeyCode keycode ) = 0;
   };
 
-  typedef list<KeyboardListener*> KeyboardListenerList;
+  using KeyboardListenerList = list<KeyboardListener*>;
 
   //! \class Keyboard
   //! Keyboard device instance base class.
@@ -216,7 +208,7 @@ namespace nil {
   class Keyboard: public DeviceInstance
   {
     protected:
-      KeyboardListenerList mListeners; //!< Registered event listeners
+      KeyboardListenerList listeners_; //!< Registered event listeners
     public:
       //! KeyCode values.
       enum KeyCode: VirtualKeyCode
@@ -258,13 +250,12 @@ namespace nil {
   //! Game controller state structure.
   struct ControllerState
   {
-    public:
-      ControllerState();
-      void reset(); //!< Reset the state of my components
-      vector<Button> mButtons; //!< My buttons
-      vector<Axis> mAxes; //!< My axes
-      vector<Slider> mSliders; //!< My sliders
-      vector<POV> mPOVs; //!< My POVs
+    ControllerState();
+    void reset(); //!< Reset the state of my components
+    vector<Button> buttons; //!< My buttons
+    vector<Axis> axes; //!< My axes
+    vector<Slider> sliders; //!< My sliders
+    vector<POV> povs; //!< My POVs
   };
 
   //! \class ControllerListener
@@ -294,7 +285,7 @@ namespace nil {
         const ControllerState& state, size_t pov ) = 0;
   };
 
-  typedef list<ControllerListener*> ControllerListenerList;
+  using ControllerListenerList = list<ControllerListener*>;
 
   //! \class Controller
   //! Game controller device instance base class.
@@ -317,9 +308,9 @@ namespace nil {
         Controller_ArcadePad //!< I'm a huge arcade controller
       };
     protected:
-      Type mType; //!< The type of controller I am
-      ControllerState mState; //!< Current controls state
-      ControllerListenerList mListeners; //!< Registered state change listeners
+      Type type_; //!< The type of controller I am
+      ControllerState state_; //!< Current controls state
+      ControllerListenerList listeners_; //!< Registered state change listeners
 
       //! Figure out changes in state and fire change events accordingly.
       virtual void fireChanges( const ControllerState& lastState );

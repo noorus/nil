@@ -2,7 +2,7 @@
 #include "nilLogitech.h"
 #include "nilUtil.h"
 
-# define NIL_LOAD_SDK_FUNC(x) mFunctions.pfn##x##=(fn##x##)GetProcAddress(mModule,#x)
+# define NIL_LOAD_SDK_FUNC(x) funcs_.pfn##x##=(fn##x##)GetProcAddress(module_,#x)
 
 namespace nil {
 
@@ -20,23 +20,23 @@ namespace nil {
 
     GKeySDK::GKeySDK(): ExternalModule()
     {
-      InitializeSRWLock( &mLock );
+      InitializeSRWLock( &lock_ );
     }
 
     void GKeySDK::addListener( GKeyListener* listener )
     {
-      mListeners.push_back( listener );
+      listeners_.push_back( listener );
     }
 
     void GKeySDK::removeListener( GKeyListener* listener )
     {
-      mListeners.remove( listener );
+      listeners_.remove( listener );
     }
 
     GKeySDK::InitReturn GKeySDK::initialize()
     {
-      mModule = LoadLibraryW( cLogitechGKeyModuleName );
-      if ( !mModule )
+      module_ = LoadLibraryW( cLogitechGKeyModuleName );
+      if ( !module_ )
         return Initialization_ModuleNotFound;
 
       NIL_LOAD_SDK_FUNC( LogiGkeyInit );
@@ -44,19 +44,19 @@ namespace nil {
       NIL_LOAD_SDK_FUNC( LogiGkeyGetKeyboardGkeyString );
       NIL_LOAD_SDK_FUNC( LogiGkeyShutdown );
 
-      if ( !mFunctions.pfnLogiGkeyInit
-        || !mFunctions.pfnLogiGkeyGetMouseButtonString
-        || !mFunctions.pfnLogiGkeyGetKeyboardGkeyString
-        || !mFunctions.pfnLogiGkeyShutdown )
+      if ( !funcs_.pfnLogiGkeyInit
+        || !funcs_.pfnLogiGkeyGetMouseButtonString
+        || !funcs_.pfnLogiGkeyGetKeyboardGkeyString
+        || !funcs_.pfnLogiGkeyShutdown )
         return Initialization_MissingExports;
 
-      mContext.gkeyContext = this;
-      mContext.gkeyCallBack = keyCallback;
+      context_.gkeyContext = this;
+      context_.gkeyCallBack = keyCallback;
 
-      if ( !mFunctions.pfnLogiGkeyInit( &mContext ) )
+      if ( !funcs_.pfnLogiGkeyInit( &context_ ) )
         return Initialization_Unavailable;
 
-      mInitialized = true;
+      isInitialized_ = true;
 
       return Initialization_OK;
     }
@@ -65,41 +65,41 @@ namespace nil {
     {
       auto sdk = reinterpret_cast<GKeySDK*>( context );
 
-      ScopedSRWLock lock( &sdk->mLock );
+      ScopedSRWLock lock( &sdk->lock_ );
 
-      sdk->mQueue.push( key );
+      sdk->queue_.push( key );
     }
 
     void GKeySDK::update()
     {
-      ScopedSRWLock lock( &mLock );
+      ScopedSRWLock lock( &lock_ );
 
-      while ( !mQueue.empty() )
+      while ( !queue_.empty() )
       {
-        for ( auto listener : mListeners )
+        for ( auto listener : listeners_ )
         {
-          if ( mQueue.front().keyDown )
-            listener->onGKeyPressed( mQueue.front().keyIdx );
+          if ( queue_.front().keyDown )
+            listener->onGKeyPressed( queue_.front().keyIdx );
           else
-            listener->onGKeyReleased( mQueue.front().keyIdx );
+            listener->onGKeyReleased( queue_.front().keyIdx );
         }
-        mQueue.pop();
+        queue_.pop();
       }
     }
 
     void GKeySDK::shutdown()
     {
-      ScopedSRWLock lock( &mLock );
+      ScopedSRWLock lock( &lock_ );
 
-      if ( mModule )
+      if ( module_ )
       {
-        if ( mInitialized )
-          mFunctions.pfnLogiGkeyShutdown();
-        FreeLibrary( mModule );
-        mModule = NULL;
+        if ( isInitialized_ )
+          funcs_.pfnLogiGkeyShutdown();
+        FreeLibrary( module_ );
+        module_ = nullptr;
       }
 
-      mInitialized = false;
+      isInitialized_ = false;
     }
 
     GKeySDK::~GKeySDK()

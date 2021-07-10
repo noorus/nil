@@ -2,7 +2,7 @@
 #include "nilUtil.h"
 #include "nilWindows.h"
 
-# define NIL_LOAD_EXTERNAL_FUNC(x) mFunctions.pfn##x##=(fn##x##)GetProcAddress(mModule,#x)
+# define NIL_LOAD_EXTERNAL_FUNC(x) funcs_.pfn##x##=(fn##x##)GetProcAddress(module_,#x)
 
 namespace nil {
 
@@ -11,25 +11,25 @@ namespace nil {
   {
   }
 
-  XInput::XInput(): mVersion( Version_None )
+  XInput::XInput(): version_( Version_None )
   {
   }
 
   XInput::InitReturn XInput::initialize()
   {
-    mModule = LoadLibraryW( L"xinput1_4.dll" );
-    if ( mModule )
-      mVersion = Version_14;
+    module_ = LoadLibraryW( L"xinput1_4.dll" );
+    if ( module_ )
+      version_ = Version_14;
     else
     {
-      mModule = LoadLibraryW( L"xinput1_3.dll" );
-      if ( mModule )
-        mVersion = Version_13;
+      module_ = LoadLibraryW( L"xinput1_3.dll" );
+      if ( module_ )
+        version_ = Version_13;
       else
       {
-        mModule = LoadLibraryW( L"xinput9_1_0.dll" );
-        if ( mModule )
-          mVersion = Version_910;
+        module_ = LoadLibraryW( L"xinput9_1_0.dll" );
+        if ( module_ )
+          version_ = Version_910;
         else
           return Initialization_ModuleNotFound;
       }
@@ -39,24 +39,24 @@ namespace nil {
     NIL_LOAD_EXTERNAL_FUNC( XInputSetState );
     NIL_LOAD_EXTERNAL_FUNC( XInputGetCapabilities );
 
-    if ( !mFunctions.pfnXInputGetState
-      || !mFunctions.pfnXInputSetState
-      || !mFunctions.pfnXInputGetCapabilities )
+    if ( !funcs_.pfnXInputGetState
+      || !funcs_.pfnXInputSetState
+      || !funcs_.pfnXInputGetCapabilities )
       return Initialization_MissingExports;
 
-    mInitialized = true;
+    isInitialized_ = true;
 
     return Initialization_OK;
   }
 
   void XInput::shutdown()
   {
-    if ( mModule )
+    if ( module_ )
     {
-      FreeLibrary( mModule );
-      mModule = NULL;
+      FreeLibrary( module_ );
+      module_ = nullptr;
     }
-    mInitialized = false;
+    isInitialized_ = false;
   }
 
   XInput::~XInput()

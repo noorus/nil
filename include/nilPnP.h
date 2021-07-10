@@ -27,16 +27,14 @@ namespace nil {
   {
     public:
       //! Plug-n-Play device plug event.
-      virtual void onPnPPlug( const GUID& deviceClass,
-        const wideString& devicePath ) = 0;
+      virtual void onPnPPlug( const GUID& deviceClass, const wideString& devicePath ) = 0;
 
       //! Plug-n-Play device unplug event.
-      virtual void onPnPUnplug( const GUID& deviceClass,
-        const wideString& devicePath ) = 0;
+      virtual void onPnPUnplug( const GUID& deviceClass, const wideString& devicePath ) = 0;
   };
 
   //! A list of Plug-and-Play event listeners.
-  typedef list<PnPListener*> PnPListenerList;
+  using PnPListenerList = list<PnPListener*>;
 
   //! \class RawListener
   //! Raw input event listener base class.
@@ -44,39 +42,35 @@ namespace nil {
   {
     public:
       //! Raw input device arrival event.
-      virtual void onRawArrival(
-        HANDLE handle ) = 0;
+      virtual void onRawArrival( HANDLE handle ) = 0;
 
       //! Raw mouse input event.
-      virtual void onRawMouseInput(
-        HANDLE handle, const RAWMOUSE& input, const bool sinked ) = 0;
+      virtual void onRawMouseInput( HANDLE handle, const RAWMOUSE& input, const bool sinked ) = 0;
 
       //! Raw keyboard input event.
-      virtual void onRawKeyboardInput(
-        HANDLE handle, const RAWKEYBOARD& input, const bool sinked ) = 0;
+      virtual void onRawKeyboardInput( HANDLE handle, const RAWKEYBOARD& input, const bool sinked ) = 0;
 
       //! Raw input device removal event.
-      virtual void onRawRemoval(
-        HANDLE handle ) = 0;
+      virtual void onRawRemoval( HANDLE handle ) = 0;
   };
 
   //! A list of raw input device listeners.
-  typedef list<RawListener*> RawListenerList;
+  using RawListenerList = list<RawListener*>;
 
   //! \class EventMonitor
   //! Monitors for Plug-n-Play (USB) and Raw device events.
   class EventMonitor
   {
     protected:
-      HINSTANCE mInstance;  //!< Host application instance handle
-      ATOM mClass;  //!< Class registration handle
-      HWND mWindow; //!< Window handle
-      HDEVNOTIFY mNotifications;  //!< Device notifications registration
-      PnPListenerList mPnPListeners;  //!< Our Plug-n-Play listeners
-      RawListenerList mRawListeners;  //!< Our raw listeners
-      void* mInputBuffer; //!< Buffer for input reads
-      unsigned int mInputBufferSize;  //!< Size of input buffer
-      const Cooperation mCooperation; //!< Cooperation mode
+      HINSTANCE instance_;  //!< Host application instance handle
+      ATOM class_;  //!< Class registration handle
+      HWND window_; //!< Window handle
+      HDEVNOTIFY notifications_;  //!< Device notifications registration
+      PnPListenerList pnpListeners_;  //!< Our Plug-n-Play listeners
+      RawListenerList rawListeners_;  //!< Our raw listeners
+      void* inputBuffer_; //!< Buffer for input reads
+      unsigned int inputBufferSize_;  //!< Size of input buffer
+      const Cooperation coop_; //!< Cooperation mode
     protected:
       //! \b Internal Register myself for event notifications.
       void registerNotifications();

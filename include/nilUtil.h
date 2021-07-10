@@ -74,24 +74,24 @@ namespace nil {
   //! \warning Lock must be initialized in advance!
   class ScopedSRWLock {
   protected:
-    PSRWLOCK mLock; //!< The lock
-    bool mExclusive; //!< Whether we're acquired in exclusive mode
-    bool mLocked; //!< Whether we're still locked
+    PSRWLOCK lock_; //!< The lock
+    bool exclusive_; //!< Whether we're acquired in exclusive mode
+    bool isLocked_; //!< Whether we're still locked
   public:
     //! \brief Constructor.
     //! \param  lock      The lock to acquire.
     //! \param  exclusive (Optional) true to acquire in exclusive mode, false for shared.
     ScopedSRWLock( PSRWLOCK lock, bool exclusive = true ):
-      mLock( lock ), mExclusive( exclusive ), mLocked( true )
+    lock_( lock ), exclusive_( exclusive ), isLocked_( true )
     {
-      mExclusive ? AcquireSRWLockExclusive( mLock ) : AcquireSRWLockShared( mLock );
+      exclusive_ ? AcquireSRWLockExclusive( lock_ ) : AcquireSRWLockShared( lock_ );
     }
     //! Call directly if you want to unlock before object leaves scope.
-    _Requires_lock_held_(mLock) void unlock()
+    _Requires_lock_held_(lock_) void unlock()
     {
-      if ( mLocked )
-        mExclusive ? ReleaseSRWLockExclusive( mLock ) : ReleaseSRWLockShared( mLock );
-      mLocked = false;
+      if ( isLocked_ )
+        exclusive_ ? ReleaseSRWLockExclusive( lock_ ) : ReleaseSRWLockShared( lock_ );
+      isLocked_ = false;
     }
     //! Destructor.
     ~ScopedSRWLock()

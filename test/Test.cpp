@@ -41,7 +41,7 @@ public:
   }
   void onMouseWheelMoved( nil::Mouse* mouse, const nil::MouseState& state ) override
   {
-    printf_s( "Mouse wheel moved: %d (%s)\n", state.mWheel.relative, mouse->getDevice()->getName().c_str() );
+    printf_s( "Mouse wheel moved: %d (%s)\n", state.wheel.relative, mouse->getDevice()->getName().c_str() );
   }
 };
 
@@ -80,7 +80,7 @@ public:
   }
   void onControllerAxisMoved( nil::Controller* controller, const nil::ControllerState& state, size_t axis ) override
   {
-    printf_s( "Controller axis %d moved: %f (%s)\n", (int)axis, state.mAxes[axis].absolute, controller->getDevice()->getName().c_str() );
+    printf_s( "Controller axis %d moved: %f (%s)\n", (int)axis, state.axes[axis].absolute, controller->getDevice()->getName().c_str() );
   }
   void onControllerSliderMoved( nil::Controller* controller, const nil::ControllerState& state, size_t slider ) override
   {
@@ -88,7 +88,7 @@ public:
   }
   void onControllerPOVMoved( nil::Controller* controller, const nil::ControllerState& state, size_t pov ) override
   {
-    printf_s( "Controller POV %d moved: 0x%08X (%s)\n", (int)pov, state.mPOVs[pov].direction, controller->getDevice()->getName().c_str() );
+    printf_s( "Controller POV %d moved: 0x%08X (%s)\n", (int)pov, state.povs[pov].direction, controller->getDevice()->getName().c_str() );
   }
 };
 
@@ -249,7 +249,7 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
     }
 
     // Done, shut down
-    SetConsoleCtrlHandler( NULL, FALSE );
+    SetConsoleCtrlHandler( nullptr, FALSE );
     CloseHandle( stopEvent );
 
     delete system;

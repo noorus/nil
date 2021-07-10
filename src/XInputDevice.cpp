@@ -29,24 +29,24 @@ namespace nil {
 #endif
 
   XInputDevice::XInputDevice( System* system, DeviceID id, int xinputID ):
-  Device( system, id, Device_Controller ), mXInputID( xinputID ),
-  mIdentified( false )
+  Device( system, id, Device_Controller ), xinputId_( xinputID ),
+  identified_( false )
   {
-    memset( &mCapabilities, NULL, sizeof( XINPUT_CAPABILITIES ) );
-    mName = cXInputDefaultName;
+    memset( &caps_, NULL, sizeof( XINPUT_CAPABILITIES ) );
+    name_ = cXInputDefaultName;
   }
 
   void XInputDevice::identify()
   {
-    if ( mSystem->getXInput()->mFunctions.pfnXInputGetCapabilities( mXInputID, 0, &mCapabilities ) != ERROR_SUCCESS )
+    if ( system_->getXInput()->funcs_.pfnXInputGetCapabilities( xinputId_, 0, &caps_ ) != ERROR_SUCCESS )
       return;
 
     for ( int i = 0; i < cMaxXInputModels; i++ ) {
-      if ( cXInputModels[i].first == mCapabilities.SubType )
-        mName = cXInputModels[i].second;
+      if ( cXInputModels[i].first == caps_.SubType )
+        name_ = cXInputModels[i].second;
     }
 
-    mIdentified = true;
+    identified_ = true;
   }
 
   const DeviceID XInputDevice::getStaticID() const
@@ -54,13 +54,13 @@ namespace nil {
     // Static ID for XInput devices:
     // 4 bits of handler ID, 28 bits of XInput controller ID (1-4)
 
-    DeviceID id = ( mXInputID | ( ( Handler_XInput + 1 ) << 28 ) );
+    DeviceID id = ( xinputId_ | ( ( Handler_XInput + 1 ) << 28 ) );
     return id;
   }
 
   void XInputDevice::onConnect()
   {
-    if ( !mIdentified )
+    if ( !identified_ )
       identify();
 
     Device::onConnect();
@@ -73,7 +73,7 @@ namespace nil {
 
   void XInputDevice::setStatus( Status status )
   {
-    if ( status == Status_Connected && !mIdentified )
+    if ( status == Status_Connected && !identified_ )
       identify();
 
     Device::setStatus( status );
@@ -86,12 +86,12 @@ namespace nil {
 
   const int XInputDevice::getXInputID() const
   {
-    return mXInputID;
+    return xinputId_;
   }
 
   const XINPUT_CAPABILITIES& XInputDevice::getCapabilities() const
   {
-    return mCapabilities;
+    return caps_;
   }
 
 }

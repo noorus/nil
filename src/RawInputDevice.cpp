@@ -6,23 +6,23 @@ namespace nil {
 
   // RawInputDeviceInfo class
 
-  RawInputDeviceInfo::RawInputDeviceInfo( HANDLE handle ): mRawInfo( nullptr )
+  RawInputDeviceInfo::RawInputDeviceInfo( HANDLE handle ): rawInfo_( nullptr )
   {
     UINT size = 0;
     if ( GetRawInputDeviceInfoW( handle, RIDI_DEVICEINFO, NULL, &size ) != 0 )
       NIL_EXCEPT_WINAPI( "GetRawInputDeviceInfoW failed" );
 
-    mRawInfo = (RID_DEVICE_INFO*)malloc( (size_t)size );
-    if ( !mRawInfo )
+    rawInfo_ = (RID_DEVICE_INFO*)malloc( (size_t)size );
+    if ( !rawInfo_ )
       NIL_EXCEPT( "Memory allocation failed" );
 
-    if ( !GetRawInputDeviceInfoW( handle, RIDI_DEVICEINFO, mRawInfo, &size ) )
+    if ( !GetRawInputDeviceInfoW( handle, RIDI_DEVICEINFO, rawInfo_, &size ) )
       NIL_EXCEPT_WINAPI( "GetRawInputDeviceInfoW failed" );
   }
 
   const Device::Type RawInputDeviceInfo::rawInfoResolveType() const
   {
-    switch ( mRawInfo->dwType )
+    switch ( rawInfo_->dwType )
     {
       case RIM_TYPEMOUSE:
         return Device::Device_Mouse;
@@ -38,7 +38,7 @@ namespace nil {
 
   RawInputDeviceInfo::~RawInputDeviceInfo()
   {
-    free( mRawInfo );
+    free( rawInfo_ );
   }
 
   // RawInputDevice class
@@ -47,9 +47,9 @@ namespace nil {
   HANDLE rawHandle, wideString& rawPath ):
   RawInputDeviceInfo( rawHandle ),
   Device( system, id, rawInfoResolveType() ),
-  mRawHandle( rawHandle ), mRawPath( rawPath )
+  rawHandle_( rawHandle ), rawPath_( rawPath )
   {
-    SafeHandle deviceHandle( CreateFileW( mRawPath.c_str(), 0,
+    SafeHandle deviceHandle( CreateFileW( rawPath_.c_str(), 0,
       FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL ) );
 
     if ( deviceHandle.valid() )
@@ -62,7 +62,7 @@ namespace nil {
         // Only replace auto-generated name if fetched one isn't empty
         utf8String tmpName = util::cleanupName( util::wideToUtf8( buffer ) );
         if ( !tmpName.empty() )
-          mName = tmpName;
+          name_ = tmpName;
       }
     }
   }
@@ -80,10 +80,10 @@ namespace nil {
   {
     // Static ID for RawInput devices:
     // 4 bits of handler ID, 28 bits of unique id (hashed raw path)
- 
+
     DeviceID id = util::fnv_32a_buf(
-      (void*)mRawPath.c_str(),
-      mRawPath.length() * sizeof( wchar_t ),
+      (void*)rawPath_.c_str(),
+      rawPath_.length() * sizeof( wchar_t ),
       FNV1_32A_INIT );
 
     return ( ( id >> 4 ) | ( ( Handler_RawInput + 1 ) << 28 ) );
@@ -91,17 +91,17 @@ namespace nil {
 
   const HANDLE RawInputDevice::getRawHandle() const
   {
-    return mRawHandle;
+    return rawHandle_;
   }
 
   const wideString& RawInputDevice::getRawPath() const
   {
-    return mRawPath;
+    return rawPath_;
   }
 
   const RID_DEVICE_INFO* RawInputDevice::getRawInfo() const
   {
-    return mRawInfo;
+    return rawInfo_;
   }
 
 }

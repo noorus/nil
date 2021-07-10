@@ -97,14 +97,14 @@ namespace nil {
 
     if ( flags & RI_KEY_BREAK )
     {
-      mPressedKeys.remove( virtualKey );
-      for ( auto listener : mListeners )
+      pressedKeys_.remove( virtualKey );
+      for ( auto listener : listeners_ )
         listener->onKeyReleased( this, virtualKey );
     }
     else
     {
       bool isPressed = false;
-      for ( auto pressed : mPressedKeys )
+      for ( auto pressed : pressedKeys_ )
         if ( pressed == virtualKey )
         {
           isPressed = true;
@@ -112,13 +112,13 @@ namespace nil {
         }
       if ( isPressed )
       {
-        for ( auto listener : mListeners )
+        for ( auto listener : listeners_ )
           listener->onKeyRepeat( this, virtualKey );
       }
       else
       {
-        mPressedKeys.push_back( virtualKey );
-        for ( auto listener : mListeners )
+        pressedKeys_.push_back( virtualKey );
+        for ( auto listener : listeners_ )
           listener->onKeyPressed( this, virtualKey );
       }
     }
@@ -139,7 +139,7 @@ namespace nil {
 
   RawInputKeyboard::~RawInputKeyboard()
   {
-    auto rawDevice = static_cast<RawInputDevice*>( mDevice );
+    auto rawDevice = static_cast<RawInputDevice*>( device_ );
     rawDevice->getSystem()->unmapKeyboard( rawDevice->getRawHandle() );
   }
 

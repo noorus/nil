@@ -6,27 +6,27 @@ namespace nil {
   const wchar_t* cEventMonitorClass = L"NIL_MONITOR";
 
   EventMonitor::EventMonitor( HINSTANCE instance, const Cooperation coop ):
-  mInstance( instance ), mClass( 0 ), mWindow( 0 ), mNotifications( 0 ),
-  mInputBuffer( nullptr ), mCooperation( coop ),
-  mInputBufferSize( 10240 ) // 10KB default
+  instance_( instance ), class_( 0 ), window_( 0 ), notifications_( nullptr ),
+  inputBuffer_( nullptr ), coop_( coop ),
+  inputBufferSize_( 10240 ) // 10KB default
   {
     WNDCLASSEXW wx   = { 0 };
     wx.cbSize        = sizeof( WNDCLASSEXW );
     wx.lpfnWndProc   = wndProc;
-    wx.hInstance     = mInstance;
+    wx.hInstance     = instance_;
     wx.lpszClassName = cEventMonitorClass;
 
-    mClass = RegisterClassExW( &wx );
-    if ( !mClass )
+    class_ = RegisterClassExW( &wx );
+    if ( !class_ )
       NIL_EXCEPT_WINAPI( "Window class registration failed" );
 
-    mWindow = CreateWindowExW(
-      0, (LPCWSTR)mClass, nullptr, 0, 0, 0, 0, 0, 0, 0, mInstance, this ); //-V542
-    if ( !mWindow )
+    window_ = CreateWindowExW(
+      0, (LPCWSTR)class_, nullptr, 0, 0, 0, 0, 0, 0, 0, instance_, this ); //-V542
+    if ( !window_ )
       NIL_EXCEPT_WINAPI( "Window creation failed" );
 
-    mInputBuffer = malloc( (size_t)mInputBufferSize );
-    if ( !mInputBuffer )
+    inputBuffer_ = malloc( (size_t)inputBufferSize_ );
+    if ( !inputBuffer_ )
       NIL_EXCEPT( "Couldn't allocate input read buffer" );
 
     registerNotifications();
@@ -34,41 +34,41 @@ namespace nil {
 
   void EventMonitor::registerPnPListener( PnPListener* listener )
   {
-    mPnPListeners.push_back( listener );
+    pnpListeners_.push_back( listener );
   }
 
   void EventMonitor::unregisterPnPListener( PnPListener* listener )
   {
-    mPnPListeners.remove( listener );
+    pnpListeners_.remove( listener );
   }
 
   void EventMonitor::registerRawListener( RawListener* listener )
   {
-    mRawListeners.push_back( listener );
+    rawListeners_.push_back( listener );
   }
 
   void EventMonitor::unregisterRawListener( RawListener* listener )
   {
-    mRawListeners.remove( listener );
+    rawListeners_.remove( listener );
   }
 
   void EventMonitor::handleInterfaceArrival( const GUID& deviceClass,
   const wideString& devicePath )
   {
-    for ( auto listener : mPnPListeners )
+    for ( auto listener : pnpListeners_ )
       listener->onPnPPlug( deviceClass, devicePath );
   }
 
   void EventMonitor::handleInterfaceRemoval( const GUID& deviceClass,
   const wideString& devicePath )
   {
-    for ( auto listener : mPnPListeners )
+    for ( auto listener : pnpListeners_ )
       listener->onPnPUnplug( deviceClass, devicePath );
   }
 
   void EventMonitor::handleRawArrival( HANDLE handle )
   {
-    for ( auto listener : mRawListeners )
+    for ( auto listener : rawListeners_ )
       listener->onRawArrival( handle );
   }
 
@@ -84,35 +84,35 @@ namespace nil {
       return;
 
     // Resize our input buffer if packet size exceeds previous cap
-    if ( dataSize > mInputBufferSize )
+    if ( dataSize > inputBufferSize_ )
     {
-      mInputBufferSize = dataSize;
-      mInputBuffer = ( mInputBuffer ? realloc( mInputBuffer, (size_t)dataSize ) : malloc( (size_t)dataSize ) );
-      if ( !mInputBuffer )
+      inputBufferSize_ = dataSize;
+      inputBuffer_ = ( inputBuffer_ ? realloc( inputBuffer_, (size_t)dataSize ) : malloc( (size_t)dataSize ) );
+      if ( !inputBuffer_ )
         NIL_EXCEPT( "Couldn't reallocate input read buffer" );
     }
 
-    if ( GetRawInputData( input, RID_INPUT, mInputBuffer, &dataSize, sizeof( RAWINPUTHEADER ) ) == (UINT)-1 )
+    if ( GetRawInputData( input, RID_INPUT, inputBuffer_, &dataSize, sizeof( RAWINPUTHEADER ) ) == (UINT)-1 )
       return;
 
-    auto raw = (const RAWINPUT*)mInputBuffer;
+    auto raw = (const RAWINPUT*)inputBuffer_;
 
     // Ping our listeners
     if ( raw->header.dwType == RIM_TYPEMOUSE )
     {
-      for ( auto listener : mRawListeners )
+      for ( auto listener : rawListeners_ )
         listener->onRawMouseInput( raw->header.hDevice, raw->data.mouse, sinked );
     }
     else if ( raw->header.dwType == RIM_TYPEKEYBOARD )
     {
-      for ( auto listener : mRawListeners )
+      for ( auto listener : rawListeners_ )
         listener->onRawKeyboardInput( raw->header.hDevice, raw->data.keyboard, sinked );
     }
   }
 
   void EventMonitor::handleRawRemoval( HANDLE handle )
   {
-    for ( auto listener : mRawListeners )
+    for ( auto listener : rawListeners_ )
       listener->onRawRemoval( handle );
   }
 
@@ -125,26 +125,26 @@ namespace nil {
     filter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
     filter.dbcc_classguid  = g_HIDInterfaceGUID;
 
-    mNotifications = RegisterDeviceNotificationW( mWindow, &filter,
+    notifications_ = RegisterDeviceNotificationW( window_, &filter,
       DEVICE_NOTIFY_WINDOW_HANDLE );
-    if ( !mNotifications )
+    if ( !notifications_ )
       NIL_EXCEPT_WINAPI( "Couldn't register for device interface notifications" );
 
     RAWINPUTDEVICE rawDevices[2];
 
     rawDevices[0].dwFlags =
-      ( mCooperation == Cooperation_Background )
+      ( coop_ == Cooperation_Background )
       ? RIDEV_DEVNOTIFY | RIDEV_INPUTSINK
       : RIDEV_DEVNOTIFY;
-    rawDevices[0].hwndTarget = mWindow;
+    rawDevices[0].hwndTarget = window_;
     rawDevices[0].usUsagePage = USBUsagePage_Desktop;
     rawDevices[0].usUsage = USBDesktopUsage_Mice;
 
     rawDevices[1].dwFlags =
-      ( mCooperation == Cooperation_Background )
+      ( coop_ == Cooperation_Background )
       ? RIDEV_DEVNOTIFY | RIDEV_INPUTSINK
       : RIDEV_DEVNOTIFY;
-    rawDevices[1].hwndTarget = mWindow;
+    rawDevices[1].hwndTarget = window_;
     rawDevices[1].usUsagePage = USBUsagePage_Desktop;
     rawDevices[1].usUsage = USBDesktopUsage_Keyboards;
 
@@ -239,10 +239,10 @@ namespace nil {
 
     RegisterRawInputDevices( rawDevices, 2, sizeof( RAWINPUTDEVICE ) );
 
-    if ( mNotifications )
+    if ( notifications_ )
     {
-      UnregisterDeviceNotification( mNotifications );
-      mNotifications = 0;
+      UnregisterDeviceNotification( notifications_ );
+      notifications_ = 0;
     }
   }
 
@@ -250,7 +250,7 @@ namespace nil {
   {
     MSG msg;
     // Run all queued messages
-    while ( PeekMessageW( &msg, mWindow, 0, 0, PM_REMOVE ) > 0 )
+    while ( PeekMessageW( &msg, window_, 0, 0, PM_REMOVE ) > 0 )
     {
       DispatchMessageW( &msg );
     }
@@ -259,11 +259,11 @@ namespace nil {
   EventMonitor::~EventMonitor()
   {
     unregisterNotifications();
-    free( mInputBuffer );
-    if ( mWindow )
-      DestroyWindow( mWindow );
-    if ( mClass )
-      UnregisterClassW( (LPCWSTR)mClass, mInstance ); //-V542
+    free( inputBuffer_ );
+    if ( window_ )
+      DestroyWindow( window_ );
+    if ( class_ )
+      UnregisterClassW( (LPCWSTR)class_, instance_ ); //-V542
   }
 
 }

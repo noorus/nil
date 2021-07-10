@@ -17,7 +17,7 @@ namespace nil {
 
 #pragma pack( push, 1 )
 
-    typedef struct
+    struct GkeyCode
     {
       unsigned int keyIdx         : 8;  //!< index of the G key or mouse button, for example, 6 for G6 or Button 6
       unsigned int keyDown        : 1;  //!< key up or down, 1 is down, 0 is up
@@ -25,7 +25,7 @@ namespace nil {
       unsigned int mouse          : 1;  //!< indicate if the Event comes from a mouse, 1 is yes, 0 is no.
       unsigned int reserved1      : 4;  //!< reserved1
       unsigned int reserved2      : 16; //!< reserved2
-    } GkeyCode;
+    };
 
     typedef void (__cdecl *logiGkeyCB)( GkeyCode gkeyCode, const wchar_t* gkeyOrButtonString, void* context );
 
@@ -38,7 +38,7 @@ namespace nil {
 #pragma pack( pop )
 
     //! G-key type.
-    typedef unsigned int GKey;
+    using GKey = unsigned int;
 
     //! \class GKeyListener
     //! A G-Key listener base class.
@@ -53,14 +53,14 @@ namespace nil {
         virtual void onGKeyReleased( GKey key ) = 0;
     };
 
-    typedef list<GKeyListener*> GKeyListenerList;
+    using GKeyListenerList = list<GKeyListener*>;
 
     typedef BOOL (*fnLogiGkeyInit)( logiGkeyCBContext* context );
     typedef wchar_t* (*fnLogiGkeyGetMouseButtonString)( int button );
     typedef wchar_t* (*fnLogiGkeyGetKeyboardGkeyString)( int key, int mode );
     typedef void (*fnLogiGkeyShutdown)();
 
-    typedef queue<GkeyCode> GKeyQueue;
+    using GKeyQueue = queue<GkeyCode>;
 
     //! \class GKeySDK
     //! Logitech G-Key SDK module.
@@ -74,12 +74,12 @@ namespace nil {
           fnLogiGkeyGetKeyboardGkeyString pfnLogiGkeyGetKeyboardGkeyString;
           fnLogiGkeyShutdown pfnLogiGkeyShutdown;
           Functions();
-        } mFunctions; //!< G-Key SDK's import functions
+        } funcs_; //!< G-Key SDK's import functions
 
-        logiGkeyCBContext mContext; //!< The context
-        SRWLOCK mLock;  //!< The lock
-        GKeyQueue mQueue; //!< The queue
-        GKeyListenerList mListeners;  //!< The listeners
+        logiGkeyCBContext context_; //!< The context
+        SRWLOCK lock_;  //!< The lock
+        GKeyQueue queue_; //!< The queue
+        GKeyListenerList listeners_;  //!< The listeners
 
         static void __cdecl keyCallback( GkeyCode key, const wchar_t* name, void* context );
       public:
@@ -130,7 +130,7 @@ namespace nil {
           fnLogiLedRestoreLighting pfnLogiLedRestoreLighting;
           fnLogiLedShutdown pfnLogiLedShutdown;
           Functions();
-        } mFunctions; //!< Led SDK's import functions
+        } funcs_; //!< Led SDK's import functions
 
         bool mSavedOriginal; //!< Whether original LED state was saved on init or not
       public:

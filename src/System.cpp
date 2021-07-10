@@ -57,17 +57,17 @@ namespace nil {
   }
 
   System::System( HINSTANCE instance, HWND window, const Cooperation coop,
-  SystemListener* listener ): mCooperation( coop ),
-  mWindow( window ), mInstance( instance ), mDirectInput( nullptr ),
-  mMonitor( nullptr ), mIDPool( 0 ), mInitializing( true ),
-  mHIDManager( nullptr ), mLogitechGKeys( nullptr ), mLogitechLEDs( nullptr ),
-  mListener( listener ), mMouseIndexPool( 0 ), mKeyboardIndexPool( 0 ),
-  mControllerIndexPool( 0 ), mXInput( nullptr )
+  SystemListener* listener ): coop_( coop ),
+  window_( window ), instance_( instance ), dinput_( nullptr ),
+  eventMonitor_( nullptr ), idPool_( 0 ), isInitializing_( true ),
+  hidManager_( nullptr ), mLogitechGKeys( nullptr ), mLogitechLEDs( nullptr ),
+  listener_( listener ), mMouseIndexPool( 0 ), mKeyboardIndexPool( 0 ),
+  mControllerIndexPool( 0 ), xinput_( nullptr )
   {
-    assert( mListener );
+    assert( listener_ );
 
     // Validate the passes window handle
-    if ( !IsWindow( mWindow ) )
+    if ( !IsWindow( window_ ) )
       NIL_EXCEPT( "Window handle is invalid" );
 
     // Store accessibility feature states, and tell Windows not to be annoying
@@ -79,42 +79,42 @@ namespace nil {
     mLogitechLEDs = new Logitech::LedSDK();
 
     // Init XInput subsystem
-    mXInput = new XInput();
-    if ( mXInput->initialize() != ExternalModule::Initialization_OK )
+    xinput_ = new XInput();
+    if ( xinput_->initialize() != ExternalModule::Initialization_OK )
       NIL_EXCEPT( "Loading XInput failed" );
 
     // Create DirectInput instance
-    auto hr = DirectInput8Create( mInstance, DIRECTINPUT_VERSION,
-      IID_IDirectInput8W, (LPVOID*)&mDirectInput, nullptr );
+    auto hr = DirectInput8Create( instance_, DIRECTINPUT_VERSION,
+      IID_IDirectInput8W, (LPVOID*)&dinput_, nullptr );
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, "Could not instantiate DirectInput 8" );
 
     // Initialize our event monitor
-    mMonitor = new EventMonitor( mInstance, mCooperation );
+    eventMonitor_ = new EventMonitor( instance_, coop_ );
 
     // Initialize our HID manager
-    mHIDManager = new HIDManager();
+    hidManager_ = new HIDManager();
 
     // Register the HID manager and ourselves as PnP event listeners
-    mMonitor->registerPnPListener( mHIDManager );
-    mMonitor->registerPnPListener( this );
+    eventMonitor_->registerPnPListener( hidManager_ );
+    eventMonitor_->registerPnPListener( this );
 
     // Register ourselves as a raw event listener
-    mMonitor->registerRawListener( this );
+    eventMonitor_->registerRawListener( this );
 
     // Fetch initial devices
     initializeDevices();
     refreshDevices();
 
     // Update the monitor once, to receive initial Raw devices
-    mMonitor->update();
+    eventMonitor_->update();
 
-    mInitializing = false;
+    isInitializing_ = false;
   }
 
   DeviceID System::getNextID()
   {
-    return mIDPool++;
+    return idPool_++;
   }
 
   bool System::getDefaultMouseButtonSwapping()
@@ -148,7 +148,7 @@ namespace nil {
     GetRawInputDeviceInfoW( handle, RIDI_DEVICENAME, &rawPath[0], &pathLength );
     rawPath.resize( rawPath.length() - 1 );
 
-    for ( auto device : mDevices )
+    for ( auto device : devices_ )
     {
       if ( device->getHandler() != Device::Handler_RawInput )
         continue;
@@ -169,13 +169,13 @@ namespace nil {
     else
       deviceConnect( device );
 
-    mDevices.push_back( device );
+    devices_.push_back( device );
   }
 
   void System::onRawMouseInput( HANDLE handle,
   const RAWMOUSE& input, const bool sinked )
   {
-    if ( mInitializing || !handle )
+    if ( isInitializing_ || !handle )
       return;
 
     auto it = mMouseMapping.find( handle );
@@ -186,7 +186,7 @@ namespace nil {
   void System::onRawKeyboardInput( HANDLE handle,
   const RAWKEYBOARD& input, const bool sinked )
   {
-    if ( mInitializing || !handle )
+    if ( isInitializing_ || !handle )
       return;
 
     auto it = mKeyboardMapping.find( handle );
@@ -196,7 +196,7 @@ namespace nil {
 
   void System::onRawRemoval( HANDLE handle )
   {
-    for ( auto device : mDevices )
+    for ( auto device : devices_ )
     {
       if ( device->getHandler() != Device::Handler_RawInput )
         continue;
@@ -238,7 +238,7 @@ namespace nil {
     {
       mXInputIDs[i] = getNextID();
       auto device = new XInputDevice( this, mXInputIDs[i], i );
-      mDevices.push_back( device );
+      devices_.push_back( device );
     }
   }
 
@@ -246,31 +246,31 @@ namespace nil {
   {
     identifyXInputDevices();
 
-    for ( Device* device : mDevices )
+    for ( Device* device : devices_ )
       if ( device->getHandler() == Device::Handler_DirectInput )
       {
         device->saveStatus();
         device->setStatus( Device::Status_Pending );
       }
 
-    auto hr = mDirectInput->EnumDevices( DI8DEVCLASS_GAMECTRL,
+    auto hr = dinput_->EnumDevices( DI8DEVCLASS_GAMECTRL,
       diDeviceEnumCallback, this, DIEDFL_ATTACHEDONLY );
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, "Could not enumerate DirectInput devices!" );
 
-    for ( Device* device : mDevices )
+    for ( Device* device : devices_ )
       if ( device->getHandler() == Device::Handler_DirectInput
         && device->getSavedStatus() == Device::Status_Connected
         && device->getStatus() == Device::Status_Pending )
         deviceDisconnect( device );
 
     XINPUT_STATE state;
-    for ( Device* device : mDevices )
+    for ( Device* device : devices_ )
     {
       if ( device->getHandler() == Device::Handler_XInput )
       {
         auto xDevice = static_cast<XInputDevice*>( device );
-        auto status = mXInput->mFunctions.pfnXInputGetState( xDevice->getXInputID(), &state );
+        auto status = xinput_->funcs_.pfnXInputGetState( xDevice->getXInputID(), &state );
         if ( status == ERROR_DEVICE_NOT_CONNECTED )
         {
           if ( xDevice->getStatus() == Device::Status_Connected )
@@ -300,7 +300,7 @@ namespace nil {
       if ( instance->guidProduct.Data1 == identifier )
         return DIENUM_CONTINUE;
 
-    for ( auto device : system->mDevices )
+    for ( auto device : system->devices_ )
     {
       if ( device->getHandler() != Device::Handler_DirectInput )
         continue;
@@ -325,7 +325,7 @@ namespace nil {
     else
       system->deviceConnect( device );
 
-    system->mDevices.push_back( device );
+    system->devices_.push_back( device );
 
     return DIENUM_CONTINUE;
   }
@@ -333,61 +333,61 @@ namespace nil {
   void System::deviceConnect( Device* device )
   {
     device->onConnect();
-    mListener->onDeviceConnected( device );
+    listener_->onDeviceConnected( device );
   }
 
   void System::deviceDisconnect( Device* device )
   {
     device->onDisconnect();
-    mListener->onDeviceDisconnected( device );
+    listener_->onDeviceDisconnected( device );
   }
 
   void System::mouseEnabled( Device* device, Mouse* instance )
   {
-    mListener->onMouseEnabled( device, instance );
+    listener_->onMouseEnabled( device, instance );
   }
 
   void System::mouseDisabled( Device* device, Mouse* instance )
   {
-    mListener->onMouseDisabled( device, instance );
+    listener_->onMouseDisabled( device, instance );
   }
 
   void System::keyboardEnabled( Device* device, Keyboard* instance )
   {
-    mListener->onKeyboardEnabled( device, instance );
+    listener_->onKeyboardEnabled( device, instance );
   }
 
   void System::keyboardDisabled( Device* device, Keyboard* instance )
   {
-    mListener->onKeyboardDisabled( device, instance );
+    listener_->onKeyboardDisabled( device, instance );
   }
 
   void System::controllerEnabled( Device* device, Controller* instance )
   {
-    mListener->onControllerEnabled( device, instance );
+    listener_->onControllerEnabled( device, instance );
   }
 
   void System::controllerDisabled( Device* device, Controller* instance )
   {
-    mListener->onControllerDisabled( device, instance );
+    listener_->onControllerDisabled( device, instance );
   }
 
   void System::identifyXInputDevices()
   {
     mXInputDeviceIDs.clear();
-    for ( auto hidRecord : mHIDManager->getRecords() )
+    for ( auto hidRecord : hidManager_->getRecords() )
       if ( hidRecord->isXInput() )
         mXInputDeviceIDs.push_back( hidRecord->getIdentifier() );
   }
 
   DeviceList& System::getDevices()
   {
-    return mDevices;
+    return devices_;
   }
 
   const bool System::isInitializing() const
   {
-    return mInitializing;
+    return isInitializing_;
   }
 
   int System::getNextMouseIndex()
@@ -408,11 +408,11 @@ namespace nil {
   void System::update()
   {
     // Run PnP & raw events if there are any
-    mMonitor->update();
+    eventMonitor_->update();
 
     // Make sure that we disconnect failed devices,
     // and update the rest
-    for ( Device* device : mDevices )
+    for ( Device* device : devices_ )
       if ( device->isDisconnectFlagged() )
         deviceDisconnect( device );
       else
@@ -435,23 +435,23 @@ namespace nil {
 
   XInput* System::getXInput()
   {
-    return mXInput;
+    return xinput_;
   }
 
   System::~System()
   {
-    for ( Device* device : mDevices )
+    for ( Device* device : devices_ )
     {
       device->disable();
       delete device;
     }
 
-    SAFE_DELETE( mHIDManager );
-    SAFE_DELETE( mMonitor );
-    SAFE_RELEASE( mDirectInput );
+    SAFE_DELETE( hidManager_ );
+    SAFE_DELETE( eventMonitor_ );
+    SAFE_RELEASE( dinput_ );
     SAFE_DELETE( mLogitechLEDs );
     SAFE_DELETE( mLogitechGKeys );
-    SAFE_DELETE( mXInput );
+    SAFE_DELETE( xinput_ );
 
     // Restore accessiblity features
     mInternals.restore();

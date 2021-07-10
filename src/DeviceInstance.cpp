@@ -4,14 +4,14 @@
 namespace nil {
 
   DeviceInstance::DeviceInstance( System* system, Device* device ):
-  mSystem( system ), mDevice( device )
+  system_( system ), device_( device )
   {
-    assert( mDevice );
+    assert( device_ );
   }
 
   const Device* DeviceInstance::getDevice() const
   {
-    return mDevice;
+    return device_;
   }
 
   DeviceInstance::~DeviceInstance()

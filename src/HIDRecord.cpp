@@ -4,33 +4,33 @@
 namespace nil {
 
   HIDRecord::HIDRecord( const wideString& path, HANDLE handle ):
-  mPath( path ), mIsXInput( false ), mIsRDP( false ), mAvailable( false )
+  path_( path ), isXInput_( false ), isRDP_( false ), available_( false )
   {
     HIDD_ATTRIBUTES attributes = { sizeof( HIDD_ATTRIBUTES ) };
 
     if ( HidD_GetAttributes( handle, &attributes ) )
     {
-      mAvailable = true;
-      mVendorID = attributes.VendorID;
-      mProductID = attributes.ProductID;
+      available_ = true;
+      usbVid_ = attributes.VendorID;
+      usbPid_ = attributes.ProductID;
 
-      mIdentifier = MAKELONG( mVendorID, mProductID );
+      hidIdent_ = MAKELONG( usbVid_, usbPid_ );
 
       PHIDP_PREPARSED_DATA preparsedData;
       if ( !HidD_GetPreparsedData( handle, &preparsedData ) )
         NIL_EXCEPT( "HidD_GetPreparsedData failed" );
 
-      if ( HidP_GetCaps( preparsedData, &mCapabilities ) != HIDP_STATUS_SUCCESS )
+      if ( HidP_GetCaps( preparsedData, &caps_ ) != HIDP_STATUS_SUCCESS )
         NIL_EXCEPT( "HidP_GetCaps failed" );
       HidD_FreePreparsedData( preparsedData );
 
-      wchar_t buffer[256];
+      wchar_t buffer[256] = { 0 };
       if ( HidD_GetProductString( handle, &buffer, 256 ) )
-        mName = util::cleanupName( util::wideToUtf8( buffer ) );
+        name_ = util::cleanupName( util::wideToUtf8( buffer ) );
       if ( HidD_GetManufacturerString( handle, &buffer, 256 ) )
-        mManufacturer = util::cleanupName( util::wideToUtf8( buffer ) );
+        manufacturer_ = util::cleanupName( util::wideToUtf8( buffer ) );
       if ( HidD_GetSerialNumberString( handle, &buffer, 256 ) )
-        mSerialNumber = util::wideToUtf8( buffer );
+        serial_ = util::wideToUtf8( buffer );
     }
 
     identify();
@@ -38,74 +38,74 @@ namespace nil {
 
   void HIDRecord::identify()
   {
-    if ( wcsstr( mPath.c_str(), L"ig_" ) || wcsstr( mPath.c_str(), L"IG_" ) )
+    if ( wcsstr( path_.c_str(), L"ig_" ) || wcsstr( path_.c_str(), L"IG_" ) )
     {
-      mIsXInput = true;
+      isXInput_ = true;
     }
-    if ( wcsstr( mPath.c_str(), L"RDP_MOU" ) || wcsstr( mPath.c_str(), L"RDP_KBD" ) )
+    if ( wcsstr( path_.c_str(), L"RDP_MOU" ) || wcsstr( path_.c_str(), L"RDP_KBD" ) )
     {
-      mIsRDP = true;
+      isRDP_ = true;
     }
   }
 
   bool HIDRecord::isAvailable() const
   {
-    return mAvailable;
+    return available_;
   }
 
   bool HIDRecord::isXInput() const
   {
-    return mIsXInput;
+    return isXInput_;
   }
 
   bool HIDRecord::isRDP() const
   {
-    return mIsRDP;
+    return isRDP_;
   }
 
   bool HIDRecord::isMicrosoft() const
   {
-    return ( mVendorID == USBVendor_Microsoft );
+    return ( usbVid_ == USBVendor_Microsoft );
   }
 
   bool HIDRecord::isLogitech() const
   {
-    return ( mVendorID == USBVendor_Logitech );
+    return ( usbVid_ == USBVendor_Logitech );
   }
 
   uint32_t HIDRecord::getIdentifier() const
   {
-    return mIdentifier;
+    return hidIdent_;
   }
 
   uint16_t HIDRecord::getUsagePage() const
   {
-    return mCapabilities.UsagePage;
+    return caps_.UsagePage;
   }
 
   uint16_t HIDRecord::getUsage() const
   {
-    return mCapabilities.Usage;
+    return caps_.Usage;
   }
 
   const wideString& HIDRecord::getPath() const
   {
-    return mPath;
+    return path_;
   }
 
   const utf8String& HIDRecord::getManufacturer() const
   {
-    return mManufacturer;
+    return manufacturer_;
   }
 
   const utf8String& HIDRecord::getName() const
   {
-    return mName;
+    return name_;
   }
 
   const utf8String& HIDRecord::getSerialNumber() const
   {
-    return mSerialNumber;
+    return serial_;
   }
 
   HIDRecord::~HIDRecord()

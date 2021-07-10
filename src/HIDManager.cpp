@@ -10,7 +10,7 @@ namespace nil {
 
   const HIDRecordList& HIDManager::getRecords() const
   {
-    return mRecords;
+    return records_;
   }
 
   void HIDManager::onPnPPlug( const GUID& deviceClass, const wideString& devicePath )
@@ -18,7 +18,7 @@ namespace nil {
     if ( deviceClass != g_HIDInterfaceGUID )
       return;
 
-    for ( auto record : mRecords )
+    for ( auto record : records_ )
       if ( !_wcsicmp( record->getPath().c_str(), devicePath.c_str() ) )
         return;
 
@@ -28,7 +28,7 @@ namespace nil {
     if ( deviceHandle.valid() )
     {
       auto record = new HIDRecord( devicePath, deviceHandle );
-      mRecords.push_back( record );
+      records_.push_back( record );
     }
   }
 
@@ -37,10 +37,10 @@ namespace nil {
     if ( deviceClass != g_HIDInterfaceGUID )
       return;
 
-    for ( auto record : mRecords )
+    for ( auto record : records_ )
       if ( !_wcsicmp( record->getPath().c_str(), devicePath.c_str() ) )
       {
-        mRecords.remove( record );
+        records_.remove( record );
         delete record;
         return;
       }
@@ -54,7 +54,7 @@ namespace nil {
 
     // Well, this string comparison is kind of nasty, but it seems
     // to be what everyone does. Nothing else is quite reliable enough.
-    for ( auto record : mRecords )
+    for ( auto record : records_ )
       if ( !_wcsicmp( record->getPath().c_str(), devicePath.c_str() ) )
         return;
 
@@ -64,7 +64,7 @@ namespace nil {
     if ( deviceHandle.valid() )
     {
       auto record = new HIDRecord( devicePath, deviceHandle );
-      mRecords.push_back( record );
+      records_.push_back( record );
     }
   }
 
@@ -108,7 +108,7 @@ namespace nil {
 
   HIDManager::~HIDManager()
   {
-    for ( auto record : mRecords )
+    for ( auto record : records_ )
       delete record;
   }
 

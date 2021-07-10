@@ -19,14 +19,16 @@ namespace nil {
 
     inline void ltrim( utf8String& s )
     {
-      s.erase( s.begin(), std::find_if( s.begin(), s.end(), []( unsigned char ch ) {
+      s.erase( s.begin(), std::find_if( s.begin(), s.end(), []( unsigned char ch )
+      {
         return !std::isspace( ch );
       }));
     }
 
     inline void rtrim( utf8String& s )
     {
-      s.erase( std::find_if( s.rbegin(), s.rend(), []( unsigned char ch ) {
+      s.erase( std::find_if( s.rbegin(), s.rend(), []( unsigned char ch )
+      {
         return !std::isspace( ch );
       }).base(), s.end() );
     }
@@ -47,7 +49,7 @@ namespace nil {
 
     utf8String generateName( Device::Type deviceType, int index ) throw()
     {
-      char name[64];
+      char name[64] = { 0 };
       switch ( deviceType )
       {
         case Device::Device_Mouse:

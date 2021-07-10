@@ -26,17 +26,17 @@ namespace nil {
   class HIDRecord
   {
     private:
-      wideString mPath; //!< Raw device path
-      uint16_t mVendorID; //!< USB Vendor ID for this device
-      uint16_t mProductID; //!< USB Product ID for this device
-      uint32_t mIdentifier; //!< Combined HID identifier
-      HIDP_CAPS mCapabilities; //!< HID API capabilities
-      utf8String mName; //!< Device name
-      utf8String mManufacturer; //!< Device manufacturer
-      utf8String mSerialNumber; //!< Device serial number
-      bool mAvailable; //!< Is this device actually available?
-      bool mIsXInput; //!< Am I an XInput device?
-      bool mIsRDP; //!< Am I a Remote Desktop device?
+      wideString path_; //!< Raw device path
+      uint16_t usbVid_; //!< USB Vendor ID for this device
+      uint16_t usbPid_; //!< USB Product ID for this device
+      uint32_t hidIdent_; //!< Combined HID identifier
+      HIDP_CAPS caps_; //!< HID API capabilities
+      utf8String name_; //!< Device name
+      utf8String manufacturer_; //!< Device manufacturer
+      utf8String serial_; //!< Device serial number
+      bool available_; //!< Is this device actually available?
+      bool isXInput_; //!< Am I an XInput device?
+      bool isRDP_; //!< Am I a Remote Desktop device?
 
       void identify(); //!< \b Internal Figure out what I am
     public:
@@ -88,7 +88,7 @@ namespace nil {
   };
 
   //! \brief A list of HID records.
-  typedef list<HIDRecord*> HIDRecordList;
+  using HIDRecordList = list<HIDRecord*>;
 
   //! \class HIDManager
   //! Manages a list of connected Human Interface Devices.
@@ -98,7 +98,7 @@ namespace nil {
   class HIDManager: public PnPListener
   {
     private:
-      HIDRecordList mRecords; //!< Records container
+      HIDRecordList records_; //!< Records container
 
       //! \b Internal My PnP plug callback.
       void onPnPPlug( const GUID& deviceClass, const wideString& devicePath ) override;

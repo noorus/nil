@@ -12,73 +12,73 @@ namespace nil {
 
   void ControllerState::reset()
   {
-    for ( auto button : mButtons )
+    for ( auto button : buttons )
       button.pushed = false;
 
-    for ( auto axis : mAxes )
+    for ( auto axis : axes )
       axis.absolute = NIL_REAL_ZERO;
 
-    for ( auto slider : mSliders )
+    for ( auto slider : sliders )
       slider.absolute = Vector2f::ZERO;
 
-    for ( auto pov : mPOVs )
+    for ( auto pov : povs )
       pov.direction = POV::Centered;
   }
 
   // Controller class
 
   Controller::Controller( System* system, Device* device ):
-  DeviceInstance( system, device ), mType( Controller_Unknown )
+  DeviceInstance( system, device ), type_( Controller_Unknown )
   {
   }
 
   void Controller::fireChanges( const ControllerState& lastState )
   {
     // Notify all our listeners
-    for ( auto listener : mListeners )
+    for ( auto listener : listeners_ )
     {
       // Buttons
-      for ( size_t i = 0; i < mState.mButtons.size(); i++ )
-        if ( !lastState.mButtons[i].pushed && mState.mButtons[i].pushed )
-          listener->onControllerButtonPressed( this, mState, i );
-        else if ( lastState.mButtons[i].pushed && !mState.mButtons[i].pushed )
-          listener->onControllerButtonReleased( this, mState, i );
+      for ( size_t i = 0; i < state_.buttons.size(); i++ )
+        if ( !lastState.buttons[i].pushed && state_.buttons[i].pushed )
+          listener->onControllerButtonPressed( this, state_, i );
+        else if ( lastState.buttons[i].pushed && !state_.buttons[i].pushed )
+          listener->onControllerButtonReleased( this, state_, i );
 
       // Axes
-      for ( size_t i = 0; i < mState.mAxes.size(); i++ )
-        if ( lastState.mAxes[i].absolute != mState.mAxes[i].absolute ) //-V550
-          listener->onControllerAxisMoved( this, mState, i );
+      for ( size_t i = 0; i < state_.axes.size(); i++ )
+        if ( lastState.axes[i].absolute != state_.axes[i].absolute ) //-V550
+          listener->onControllerAxisMoved( this, state_, i );
 
       // Sliders
-      for ( size_t i = 0; i < mState.mSliders.size(); i++ )
-        if ( lastState.mSliders[i].absolute != mState.mSliders[i].absolute )
-          listener->onControllerSliderMoved( this, mState, i );
+      for ( size_t i = 0; i < state_.sliders.size(); i++ )
+        if ( lastState.sliders[i].absolute != state_.sliders[i].absolute )
+          listener->onControllerSliderMoved( this, state_, i );
 
       // POVs
-      for ( size_t i = 0; i < mState.mPOVs.size(); i++ )
-        if ( lastState.mPOVs[i].direction != mState.mPOVs[i].direction )
-          listener->onControllerPOVMoved( this, mState, i );
+      for ( size_t i = 0; i < state_.povs.size(); i++ )
+        if ( lastState.povs[i].direction != state_.povs[i].direction )
+          listener->onControllerPOVMoved( this, state_, i );
     }
   }
 
   void Controller::addListener( ControllerListener* listener )
   {
-    mListeners.push_back( listener );
+    listeners_.push_back( listener );
   }
 
   void Controller::removeListener( ControllerListener* listener )
   {
-    mListeners.remove( listener );
+    listeners_.remove( listener );
   }
 
   const Controller::Type Controller::getType() const
   {
-    return mType;
+    return type_;
   }
 
   const ControllerState& Controller::getState() const
   {
-    return mState;
+    return state_;
   }
 
   Controller::~Controller()

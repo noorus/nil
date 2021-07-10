@@ -60,26 +60,26 @@ namespace nil {
     friend class RawInputKeyboard;
     friend class RawInputMouse;
     private:
-      DeviceID mIDPool; //!< Device indexing pool
+      DeviceID idPool_; //!< Device indexing pool
       int mMouseIndexPool;  //!< Mouse indexing pool
       int mKeyboardIndexPool; //!< Keyboard indexing pool
       int mControllerIndexPool; //!< Controller indexing pool
       vector<DeviceID> mXInputIDs;  //!< XInput device ID mapping
       vector<uint32_t> mXInputDeviceIDs;  //!< Tracked list of XInput VIDs & PIDs
-      IDirectInput8W* mDirectInput; //!< Our DirectInput instance
-      HINSTANCE mInstance;  //!< Host application instance handle
-      HWND mWindow; //!< Host application window handle
-      EventMonitor* mMonitor; //!< Our Plug-n-Play & raw input event monitor
-      DeviceList mDevices;  //!< List of known devices
-      HIDManager* mHIDManager;  //!< Our HID manager
-      bool mInitializing; //!< Are we initializing?
+      IDirectInput8W* dinput_; //!< Our DirectInput instance
+      HINSTANCE instance_;  //!< Host application instance handle
+      HWND window_; //!< Host application window handle
+      EventMonitor* eventMonitor_; //!< Our Plug-n-Play & raw input event monitor
+      DeviceList devices_;  //!< List of known devices
+      HIDManager* hidManager_;  //!< Our HID manager
+      bool isInitializing_; //!< Are we initializing?
       RawMouseMap mMouseMapping;  //!< Raw mouse events mapping
       RawKeyboardMap mKeyboardMapping;  //!< Raw keyboard events mapping
       Logitech::GKeySDK* mLogitechGKeys;  //!< External module for Logitech G-Keys
       Logitech::LedSDK* mLogitechLEDs;  //!< External module for Logitech LEDs
-      SystemListener* mListener;  //!< Our single event listener
-      XInput* mXInput; //!< XInput module handler
-      const Cooperation mCooperation; //!< Cooperation mode
+      SystemListener* listener_;  //!< Our single event listener
+      XInput* xinput_; //!< XInput module handler
+      const Cooperation coop_; //!< Cooperation mode
       struct Internals {
         bool swapMouseButtons;
         STICKYKEYS storedStickyKeys;

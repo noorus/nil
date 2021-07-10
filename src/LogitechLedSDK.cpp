@@ -2,7 +2,7 @@
 #include "nilLogitech.h"
 #include "nilUtil.h"
 
-# define NIL_LOAD_SDK_FUNC(x) mFunctions.pfn##x##=(fn##x##)GetProcAddress(mModule,#x)
+# define NIL_LOAD_SDK_FUNC(x) funcs_.pfn##x##=(fn##x##)GetProcAddress(module_,#x)
 
 namespace nil {
 
@@ -26,8 +26,8 @@ namespace nil {
 
     LedSDK::InitReturn LedSDK::initialize()
     {
-      mModule = LoadLibraryW( cLogitechLedModuleName );
-      if ( !mModule )
+      module_ = LoadLibraryW( cLogitechLedModuleName );
+      if ( !module_ )
         return Initialization_ModuleNotFound;
 
       NIL_LOAD_SDK_FUNC( LogiLedInit );
@@ -36,48 +36,48 @@ namespace nil {
       NIL_LOAD_SDK_FUNC( LogiLedRestoreLighting );
       NIL_LOAD_SDK_FUNC( LogiLedShutdown );
 
-      if ( !mFunctions.pfnLogiLedInit
-        || !mFunctions.pfnLogiLedSaveCurrentLighting
-        || !mFunctions.pfnLogiLedSetLighting
-        || !mFunctions.pfnLogiLedRestoreLighting
-        || !mFunctions.pfnLogiLedShutdown )
+      if ( !funcs_.pfnLogiLedInit
+        || !funcs_.pfnLogiLedSaveCurrentLighting
+        || !funcs_.pfnLogiLedSetLighting
+        || !funcs_.pfnLogiLedRestoreLighting
+        || !funcs_.pfnLogiLedShutdown )
         return Initialization_MissingExports;
 
-      if ( !mFunctions.pfnLogiLedInit() )
+      if ( !funcs_.pfnLogiLedInit() )
         return Initialization_Unavailable;
 
-      if ( mFunctions.pfnLogiLedSaveCurrentLighting( LOGITECH_LED_ALL ) )
+      if ( funcs_.pfnLogiLedSaveCurrentLighting( LOGITECH_LED_ALL ) )
         mSavedOriginal = true;
 
-      mInitialized = true;
+      isInitialized_ = true;
 
       return Initialization_OK;
     }
 
     void LedSDK::setLighting( const Color& color )
     {
-      if ( !mInitialized )
+      if ( !isInitialized_ )
         return;
 
       int r = (int)( color.r * 100.0f );
       int g = (int)( color.g * 100.0f );
       int b = (int)( color.b * 100.0f );
 
-      mFunctions.pfnLogiLedSetLighting( LOGITECH_LED_ALL, r, g, b );
+      funcs_.pfnLogiLedSetLighting( LOGITECH_LED_ALL, r, g, b );
     }
 
     void LedSDK::shutdown()
     {
-      if ( mModule )
+      if ( module_ )
       {
         if ( mSavedOriginal )
-          mFunctions.pfnLogiLedRestoreLighting( LOGITECH_LED_ALL );
-        if ( mInitialized )
-          mFunctions.pfnLogiLedShutdown();
-        FreeLibrary( mModule );
-        mModule = NULL;
+          funcs_.pfnLogiLedRestoreLighting( LOGITECH_LED_ALL );
+        if ( isInitialized_ )
+          funcs_.pfnLogiLedShutdown();
+        FreeLibrary( module_ );
+        module_ = nullptr;
       }
-      mInitialized = false;
+      isInitialized_ = false;
       mSavedOriginal = false;
     }
 

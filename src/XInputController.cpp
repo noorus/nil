@@ -27,15 +27,15 @@ namespace nil {
 #endif
 
   XInputController::XInputController( XInputDevice* device ):
-  Controller( device->getSystem(), device ), mLastPacket( 0 )
+  Controller( device->getSystem(), device ), lastPacket_( 0 )
   {
     for ( int i = 0; i < cMaxXInputTypes; i++ )
       if ( cXInputTypes[i].first == device->getCapabilities().SubType )
-        mType = cXInputTypes[i].second;
+        type_ = cXInputTypes[i].second;
 
-    mState.mPOVs.resize( 1 );
-    mState.mButtons.resize( 10 );
-    mState.mAxes.resize( 6 );
+    state_.povs.resize( 1 );
+    state_.buttons.resize( 10 );
+    state_.axes.resize( 6 );
   }
 
   Real XInputController::filterThumbAxis( int val, int deadzone )
@@ -48,7 +48,7 @@ namespace nil {
       Real ret = (Real)val / (Real)( 32767 - deadzone );
       return ( ret < NIL_REAL_MINUSONE ? NIL_REAL_MINUSONE : ret );
     }
-    else if ( val > 0 )
+    if ( val > 0 )
     {
       if ( val < deadzone )
         return NIL_REAL_ZERO;
@@ -56,8 +56,7 @@ namespace nil {
       Real ret = (Real)val / (Real)( 32767 - deadzone );
       return ( ret > NIL_REAL_ONE ? NIL_REAL_ONE : ret );
     }
-    else
-      return NIL_REAL_ZERO;
+    return NIL_REAL_ZERO;
   }
 
   Real XInputController::filterTrigger( int val )
@@ -71,9 +70,9 @@ namespace nil {
 
   void XInputController::update()
   {
-    XInputDevice* xDevice = dynamic_cast<XInputDevice*>( mDevice );
+    auto xDevice = dynamic_cast<XInputDevice*>( device_ );
 
-    DWORD ret = mSystem->getXInput()->mFunctions.pfnXInputGetState( xDevice->getXInputID(), &mXInputState );
+    DWORD ret = system_->getXInput()->funcs_.pfnXInputGetState( xDevice->getXInputID(), &xinputState_ );
     if ( ret == ERROR_DEVICE_NOT_CONNECTED )
     {
       xDevice->flagDisconnected();
@@ -82,37 +81,37 @@ namespace nil {
     else if ( ret != ERROR_SUCCESS )
       NIL_EXCEPT( "XInputGetState failed" );
 
-    if ( mXInputState.dwPacketNumber == mLastPacket )
+    if ( xinputState_.dwPacketNumber == lastPacket_ )
       return;
 
-    mLastPacket = mXInputState.dwPacketNumber;
+    lastPacket_ = xinputState_.dwPacketNumber;
 
-    ControllerState lastState = mState;
+    ControllerState lastState = state_;
 
     // Buttons - skip 0x400 & 0x800 as they are undefined in the API
     for ( size_t i = 0; i < 6; i++ )
-      mState.mButtons[i].pushed = ( ( mXInputState.Gamepad.wButtons & ( 1 << ( i + 4 ) ) ) != 0 );
+      state_.buttons[i].pushed = ( ( xinputState_.Gamepad.wButtons & ( 1 << ( i + 4 ) ) ) != 0 );
     for ( size_t i = 6; i < 10; i++ )
-      mState.mButtons[i].pushed = ( ( mXInputState.Gamepad.wButtons & ( 1 << ( i + 6 ) ) ) != 0 );
+      state_.buttons[i].pushed = ( ( xinputState_.Gamepad.wButtons & ( 1 << ( i + 6 ) ) ) != 0 );
 
     // Axes
-    mState.mAxes[0].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbLX, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
-    mState.mAxes[1].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbLY, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
-    mState.mAxes[2].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbRX, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
-    mState.mAxes[3].absolute = filterThumbAxis( mXInputState.Gamepad.sThumbRY, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
-    mState.mAxes[4].absolute = filterTrigger( mXInputState.Gamepad.bLeftTrigger );
-    mState.mAxes[5].absolute = filterTrigger( mXInputState.Gamepad.bRightTrigger );
+    state_.axes[0].absolute = filterThumbAxis( xinputState_.Gamepad.sThumbLX, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
+    state_.axes[1].absolute = filterThumbAxis( xinputState_.Gamepad.sThumbLY, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE );
+    state_.axes[2].absolute = filterThumbAxis( xinputState_.Gamepad.sThumbRX, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
+    state_.axes[3].absolute = filterThumbAxis( xinputState_.Gamepad.sThumbRY, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE );
+    state_.axes[4].absolute = filterTrigger( xinputState_.Gamepad.bLeftTrigger );
+    state_.axes[5].absolute = filterTrigger( xinputState_.Gamepad.bRightTrigger );
 
     // POV
-    POVDirection& xPov = mState.mPOVs[0].direction;
+    POVDirection& xPov = state_.povs[0].direction;
     xPov = POV::Centered;
-    if ( mXInputState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP )
+    if ( xinputState_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP )
       xPov |= POV::North;
-    else if ( mXInputState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN )
+    else if ( xinputState_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN )
       xPov |= POV::South;
-    if ( mXInputState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT )
+    if ( xinputState_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT )
       xPov |= POV::West;
-    else if ( mXInputState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT )
+    else if ( xinputState_.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT )
       xPov |= POV::East;
 
     fireChanges( lastState );

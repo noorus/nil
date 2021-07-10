@@ -29,11 +29,11 @@ namespace nil {
     private:
       Exception();
 
-      Type mType; //!< Exception type
-      utf8String mDescription; //!< Exception description
-      utf8String mSource; //!< Exception source
-      mutable utf8String mFullDescription; //!< Full, extended description
-      variant<WinAPIError> mAdditional; //!< \b Internal Additional exception data
+      Type type_; //!< Exception type
+      utf8String description_; //!< Exception description
+      utf8String source_; //!< Exception source
+      mutable utf8String fullDescription_; //!< Full, extended description
+      variant<WinAPIError> additional_; //!< \b Internal Additional exception data
 
       //! \b Internal Handle additional exception data for WinAPI/DI exceptions.
       void handleAdditional( HRESULT hr = 0 );

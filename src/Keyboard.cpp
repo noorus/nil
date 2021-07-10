@@ -11,12 +11,12 @@ namespace nil {
 
   void Keyboard::addListener( KeyboardListener* listener )
   {
-    mListeners.push_back( listener );
+    listeners_.push_back( listener );
   }
 
   void Keyboard::removeListener( KeyboardListener* listener )
   {
-    mListeners.remove( listener );
+    listeners_.remove( listener );
   }
 
   Keyboard::~Keyboard()

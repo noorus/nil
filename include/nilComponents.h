@@ -14,27 +14,24 @@ namespace nil {
   //! Digital push button component.
   struct Button
   {
-    public:
-      bool pushed; //!< Pushed state
-      Button();
+    bool pushed; //!< Pushed state
+    Button();
   };
 
   //! \struct Axis
   //! Analog axis controller component.
   struct Axis
   {
-    public:
-      Real absolute; //!< Absolute value in {-1..1}
-      Axis();
+    Real absolute; //!< Absolute value in {-1..1}
+    Axis();
   };
 
   //! \struct Slider
   //! Two-dimensional analog controller component.
   struct Slider
   {
-    public:
-      Vector2f absolute; //!< Absolute value in [{-1..1},{-1..1}]
-      Slider();
+    Vector2f absolute; //!< Absolute value in [{-1..1},{-1..1}]
+    Slider();
   };
 
   //! \struct POV
@@ -60,18 +57,16 @@ namespace nil {
   //! Mouse wheel component.
   struct Wheel
   {
-    public:
-      int relative; //!< Wheel rotation delta, in eights of a degree
-      Wheel();
+    int relative; //!< Wheel rotation delta, in eights of a degree
+    Wheel();
   };
 
   //! \struct Movement
   //! Mouse movement component.
   struct Movement
   {
-    public:
-      Vector2i relative; //!< Relative value delta in points
-      Movement();
+    Vector2i relative; //!< Relative value delta in points
+    Movement();
   };
 
   //! @}
