@@ -1,13 +1,16 @@
 #pragma once
+#include "nilConfig.h"
 
 #include "nilTypes.h"
 #include "nilComponents.h"
 #include "nilException.h"
-#include "nilPnP.h"
-#include "nilHID.h"
 #include "nilCommon.h"
-#include "nilWindows.h"
-#include "nilLogitech.h"
+
+#ifdef NIL_PLATFORM_WINDOWS
+# include "nilWindows.h"
+# include "nilWindowsPNP.h"
+# include "nilLogitech.h"
+#endif
 
 namespace nil {
 
@@ -48,12 +51,14 @@ namespace nil {
       virtual void onControllerDisabled( Device* device, Controller* instance ) = 0;
   };
 
+#ifdef NIL_PLATFORM_WINDOWS
+
   //! \class System
   //! The Nil input system root.
   //! Create one to get started.
   //! \sa PnPListener
   //! \sa RawListener
-  class System: public PnPListener, public RawListener
+  class System: public windows::PnPListener, public windows::RawListener
   {
     friend class Device;
     friend class DirectInputController;
@@ -64,19 +69,19 @@ namespace nil {
       int mouseIdPool_;  //!< Mouse indexing pool
       int keyboardIdPool_; //!< Keyboard indexing pool
       int controllerIdPool_; //!< Controller indexing pool
-      vector<DeviceID> mXInputIDs;  //!< XInput device ID mapping
-      vector<uint32_t> mXInputDeviceIDs;  //!< Tracked list of XInput VIDs & PIDs
+      vector<DeviceID> xinputIds_;  //!< XInput device ID mapping
+      vector<uint32_t> xinputDeviceIds_;  //!< Tracked list of XInput VIDs & PIDs
       IDirectInput8W* dinput_; //!< Our DirectInput instance
       HINSTANCE instance_;  //!< Host application instance handle
       HWND window_; //!< Host application window handle
-      unique_ptr<EventMonitor> eventMonitor_; //!< Our Plug-n-Play & raw input event monitor
+      unique_ptr<windows::EventMonitor> eventMonitor_; //!< Our Plug-n-Play & raw input event monitor
       DeviceList devices_;  //!< List of known devices
-      unique_ptr<HIDManager> hidManager_;  //!< Our HID manager
+      unique_ptr<windows::HIDManager> hidManager_;  //!< Our HID manager
       bool isInitializing_; //!< Are we initializing?
       RawMouseMap mouseMap_;  //!< Raw mouse events mapping
       RawKeyboardMap keyboardMap_;  //!< Raw keyboard events mapping
-      unique_ptr<Logitech::GKeySDK> logitechGkeys_;  //!< External module for Logitech G-Keys
-      unique_ptr<Logitech::LedSDK> logitechLeds_;  //!< External module for Logitech LEDs
+      unique_ptr<logitech::GKeySDK> logitechGkeys_;  //!< External module for Logitech G-Keys
+      unique_ptr<logitech::LedSDK> logitechLeds_;  //!< External module for Logitech LEDs
       unique_ptr<SystemListener> listener_;  //!< Our single event listener
       unique_ptr<XInput> xinput_; //!< XInput module handler
       const Cooperation coop_; //!< Cooperation mode
@@ -143,11 +148,11 @@ namespace nil {
 
       //! Get Logitech G-Key SDK, if available.
       //! \return null if it fails, else the Logitech G-Keys SDK object.
-      Logitech::GKeySDK* getLogitechGKeys();
+      logitech::GKeySDK* getLogitechGKeys();
 
       //! Get Logitech LED SDK, if available.
       //! \return null if it fails, else the Logitech LED SDK object.
-      Logitech::LedSDK* getLogitechLEDs();
+      logitech::LedSDK* getLogitechLEDs();
 
       XInput* getXInput();
 
@@ -158,6 +163,8 @@ namespace nil {
       //! Destructor.
       ~System();
   };
+
+#endif
 
   //! @}
 

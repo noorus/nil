@@ -1,7 +1,59 @@
+#include "nilConfig.h"
+
 #include "nil.h"
 #include "nilUtil.h"
 
 namespace nil {
+
+  Exception::Exception( const utf8String& description, Type type ):
+  description_( description ), type_( type )
+  {
+    handleAdditional();
+  }
+
+  Exception::Exception( const utf8String& description, const utf8String& source, Type type ):
+  description_( description ), source_( source ), type_( type )
+  {
+    handleAdditional();
+  }
+
+  const utf8String& Exception::getFullDescription() const
+  {
+    if ( fullDescription_.empty() )
+    {
+      stringstream stream;
+
+      stream << description_;
+
+      if ( !source_.empty() )
+        stream << "\r\nIn function " << source_;
+
+#ifdef NIL_PLATFORM_WINDOWS
+
+      if ( type_ == WinAPI )
+      {
+        const WinAPIError& error = std::get<WinAPIError>( additional_ );
+        stream << "\r\nWinAPI error code " << std::hex << error.code << ":\r\n" << util::wideToUtf8( error.description );
+      }
+      else if ( type_ == DirectInput )
+      {
+        const WinAPIError& error = std::get<WinAPIError>( additional_ );
+        stream << "\r\nDirectInput error code " << std::hex << error.code << ":\r\n" << util::wideToUtf8( error.description );
+      }
+
+#endif
+
+      fullDescription_ = stream.str();
+    }
+    return fullDescription_;
+  }
+
+  const char* Exception::what() const throw( )
+  {
+    return fullDescription_.c_str();
+  }
+
+#ifdef NIL_PLATFORM_WINDOWS
 
   struct DirectInputErrorEntry {
   public:
@@ -9,9 +61,9 @@ namespace nil {
     wchar_t* description;
   };
 
-  const int cErrorDescriptionCount = 32;
+  const int c_dinputErrorCount = 32;
 
-  const DirectInputErrorEntry cErrorDescriptions[cErrorDescriptionCount] =
+  const DirectInputErrorEntry c_dinputErrors[c_dinputErrorCount] =
   {
     { (uint32_t)DIERR_ACQUIRED, L"The operation cannot be performed while the device is acquired." },
     { (uint32_t)DIERR_ALREADYINITIALIZED, L"The object is already initialized." },
@@ -47,18 +99,6 @@ namespace nil {
     { (uint32_t)E_POINTER, L"An invalid pointer was passed as a parameter." }
   };
 
-  Exception::Exception( const utf8String& description, Type type ):
-  description_( description ), type_( type )
-  {
-    handleAdditional();
-  }
-
-  Exception::Exception( const utf8String& description, const utf8String& source, Type type ):
-  description_( description ), source_( source ), type_( type )
-  {
-    handleAdditional();
-  }
-
   Exception::Exception( const utf8String& description, const utf8String& source, HRESULT hr, Type type ):
   description_( description ), source_( source ), type_( type )
   {
@@ -91,11 +131,11 @@ namespace nil {
     else if ( type_ == DirectInput )
     {
       error.code = hr;
-      for ( auto cErrorDescription : cErrorDescriptions )
+      for ( auto dinputError : c_dinputErrors )
       {
-        if ( cErrorDescription.code == error.code )
+        if ( dinputError.code == error.code )
         {
-          error.description = cErrorDescription.description;
+          error.description = dinputError.description;
           break;
         }
       }
@@ -103,36 +143,6 @@ namespace nil {
     }
   }
 
-  const utf8String& Exception::getFullDescription() const
-  {
-    if ( fullDescription_.empty() )
-    {
-      stringstream stream;
-
-      stream << description_;
-
-      if ( !source_.empty() )
-        stream << "\r\nIn function " << source_;
-
-      if ( type_ == WinAPI )
-      {
-        const WinAPIError& error = std::get<WinAPIError>( additional_ );
-        stream << "\r\nWinAPI error code " << std::hex << error.code << ":\r\n" << util::wideToUtf8( error.description );
-      }
-      else if ( type_ == DirectInput )
-      {
-        const WinAPIError& error = std::get<WinAPIError>( additional_ );
-        stream << "\r\nDirectInput error code " << std::hex << error.code << ":\r\n" << util::wideToUtf8( error.description );
-      }
-
-      fullDescription_ = stream.str();
-    }
-    return fullDescription_;
-  }
-
-  const char* Exception::what() const throw()
-  {
-    return fullDescription_.c_str();
-  }
+#endif
 
 }

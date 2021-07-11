@@ -1,10 +1,9 @@
 #pragma once
+#include "nilConfig.h"
 
 #include "nilTypes.h"
 #include "nilComponents.h"
 #include "nilException.h"
-#include "nilPnP.h"
-#include "nilHID.h"
 #include "nilCommon.h"
 
 namespace nil {

@@ -1,4 +1,6 @@
 #pragma once
+#include "nilConfig.h"
+
 #include "nil.h"
 
 namespace nil {

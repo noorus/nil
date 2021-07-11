@@ -1,3 +1,5 @@
+#include "nilConfig.h"
+
 #include "nil.h"
 #include "nilUtil.h"
 
@@ -65,6 +67,8 @@ namespace nil {
       return name;
     }
 
+#ifdef NIL_PLATFORM_WINDOWS
+
     inline wideString utf8ToWide( const utf8String& in ) throw()
     {
       int length = MultiByteToWideChar( CP_UTF8, 0, in.c_str(), -1, nullptr, 0 );
@@ -84,6 +88,8 @@ namespace nil {
       WideCharToMultiByte( CP_UTF8, 0, in.c_str(), -1, &conversion[0], length, 0, FALSE );
       return utf8String( &conversion[0] );
     }
+
+#endif
 
   }
 

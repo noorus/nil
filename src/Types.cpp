@@ -1,3 +1,5 @@
+#include "nilConfig.h"
+
 #include "nil.h"
 #include "nilUtil.h"
 

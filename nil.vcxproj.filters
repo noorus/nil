@@ -39,10 +39,7 @@
     <ClInclude Include="include\nilTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\nilHID.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\nilPnP.h">
+    <ClInclude Include="include\nilWindowsPNP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\nilException.h">
@@ -60,11 +57,11 @@
     <ClInclude Include="include\nilCommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\nilConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\System.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -92,47 +89,50 @@
     <ClCompile Include="src\Components.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\HIDManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\HIDRecord.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\ExternalModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EventMonitor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DirectInputController.cpp">
+    <ClCompile Include="src\windows\directinput\DirectInputController.cpp">
       <Filter>Source Files\Windows\DirectInput</Filter>
     </ClCompile>
-    <ClCompile Include="src\DirectInputDevice.cpp">
+    <ClCompile Include="src\windows\directinput\DirectInputDevice.cpp">
       <Filter>Source Files\Windows\DirectInput</Filter>
     </ClCompile>
-    <ClCompile Include="src\RawInputDevice.cpp">
-      <Filter>Source Files\Windows\RawInput</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RawInputKeyboard.cpp">
-      <Filter>Source Files\Windows\RawInput</Filter>
-    </ClCompile>
-    <ClCompile Include="src\RawInputMouse.cpp">
-      <Filter>Source Files\Windows\RawInput</Filter>
-    </ClCompile>
-    <ClCompile Include="src\XInputDevice.cpp">
-      <Filter>Source Files\Windows\XInput</Filter>
-    </ClCompile>
-    <ClCompile Include="src\XInputController.cpp">
-      <Filter>Source Files\Windows\XInput</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LogitechLedSDK.cpp">
+    <ClCompile Include="src\windows\logitech\LogitechGkeySDK.cpp">
       <Filter>Source Files\Windows\Logitech</Filter>
     </ClCompile>
-    <ClCompile Include="src\LogitechGkeySDK.cpp">
+    <ClCompile Include="src\windows\logitech\LogitechLedSDK.cpp">
       <Filter>Source Files\Windows\Logitech</Filter>
     </ClCompile>
-    <ClCompile Include="src\XInput.cpp">
+    <ClCompile Include="src\windows\rawinput\RawInputDevice.cpp">
+      <Filter>Source Files\Windows\RawInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windows\rawinput\RawInputKeyboard.cpp">
+      <Filter>Source Files\Windows\RawInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windows\rawinput\RawInputMouse.cpp">
+      <Filter>Source Files\Windows\RawInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windows\xinput\XInput.cpp">
       <Filter>Source Files\Windows\XInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windows\xinput\XInputController.cpp">
+      <Filter>Source Files\Windows\XInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windows\xinput\XInputDevice.cpp">
+      <Filter>Source Files\Windows\XInput</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windows\EventMonitor.cpp">
+      <Filter>Source Files\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windows\HIDManager.cpp">
+      <Filter>Source Files\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windows\HIDRecord.cpp">
+      <Filter>Source Files\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windows\WindowsSystem.cpp">
+      <Filter>Source Files\Windows</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

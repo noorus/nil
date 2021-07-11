@@ -1,24 +1,5 @@
 #pragma once
-
-#ifndef NTDDI_VERSION
-# define NTDDI_VERSION NTDDI_VISTA
-# define _WIN32_WINNT _WIN32_WINNT_VISTA
-#endif
-#include <sdkddkver.h>
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <dbt.h>
-#include <objbase.h>
-#include <cstdlib>
-#include <cassert>
-
-#include <initguid.h>
-#include <devguid.h>
-#include <devpkey.h>
-
-#define DIRECTINPUT_VERSION 0x0800
-#include <dinput.h>
-#include <xinput.h>
+#include "nilConfig.h"
 
 #include <memory>
 #include <cstdint>

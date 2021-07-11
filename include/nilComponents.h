@@ -1,4 +1,5 @@
 #pragma once
+#include "nilConfig.h"
 
 #include "nilTypes.h"
 

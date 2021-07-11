@@ -96,13 +96,13 @@ DummyControllerListener gDummyControllerListener;
 
 // This is a listener for Logitech's proprietary G-keys on
 // support keyboard & mice
-class DummyGKeyListener: public nil::Logitech::GKeyListener {
+class DummyGKeyListener: public nil::logitech::GKeyListener {
 public:
-  void onGKeyPressed( nil::Logitech::GKey key ) override
+  void onGKeyPressed( nil::logitech::GKey key ) override
   {
     printf_s( "G-Key pressed: %d\n", key );
   }
-  void onGKeyReleased( nil::Logitech::GKey key ) override
+  void onGKeyReleased( nil::logitech::GKey key ) override
   {
     printf_s( "G-Key released: %d\n", key );
   }

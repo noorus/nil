@@ -1,9 +1,11 @@
 #pragma once
+#include "nilConfig.h"
+
 #include "nilWindows.h"
 
 namespace nil {
 
-  namespace Logitech {
+  namespace logitech {
 
     // Logitech G-Key SDK (1.02.004) implementation
     // Portions of following code copyright (c) Logitech.
