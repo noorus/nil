@@ -1,37 +1,25 @@
 Nice Input Library
 ==================
-NIL is a gaming input library, currently for Windows only, inspired by the Open Input System.  
-[![Project Stats](https://www.ohloh.net/p/nil-input/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/nil-input)
+NIL is a gaming input library written in C++. It is somewhat battle-tested, but currently implemented for Windows only.
 
 ### Platform
 
-Supported platforms are Windows Vista and newer. XP is not supported.
+Tested against Windows 10 and newer. Previous generation (before 2019) was tested against Windows Vista.  
+Should work fine on Windows 8, possibly on Windows 7, with few modifications.
 
 ### Building
 
-NIL is written in C++11, and by default builds as a statically linked x64 library under Visual Studio 2012.  
-NIL uses certain APIs from the Windows Driver Kit, so the WDK is required for building NIL.
+NIL is compiled with C++17, and by default builds as a statically linked library under Visual Studio 2019.  
+It uses certain APIs from the Windows Driver Kit. WDK is nowadays included in the Windows SDK.
 
-### Technology
+### Features
 
-NIL utilises three different input APIs to achieve best possible input from different types of devices:
-* [Raw Input API](http://msdn.microsoft.com/en-us/library/windows/desktop/ms645543%28v=vs.85%29.aspx) for all mice & keyboard input, with zero lag and no special key weirdness
-* [XInput API](http://msdn.microsoft.com/en-us/library/windows/desktop/hh405053%28v=vs.85%29.aspx) for XBOX 360 controller input
-* [DirectInput API](http://msdn.microsoft.com/en-us/library/windows/desktop/ee416842%28v=vs.85%29.aspx) for all other joysticks & gamepads
-
-NIL can tell apart every input device connected to the computer, including keyboards and mice.  
-Multi-keyboard and multi-mice input support is, for once, a breeze.
-
-NIL is fully based on Plug-and-Play support: It knows when devices are connected and disconnected  
-from the computer, and remembers previously-connected devices when reconnected.
-
-Additionally, NIL is capable of receiving direct input from the [G-keys](https://logitech-en-amr.custhelp.com/app/answers/detail/a_id/21506) of certain Logitech Gaming keyboards & mice.
-
-NIL is single-threaded, buffered and fully listener-based.
-
-### Todo
-
-* Force feedback support.
+* Full multi-keyboard and multi-mice support. Every connected input device has a unique ID.
+* Plug-and-Play device runtime addition & removal support.
+* Singlethreaded, buffered and listener-based.
+* Uses [Raw Input](http://msdn.microsoft.com/en-us/library/windows/desktop/ms645543%28v=vs.85%29.aspx) for mice & keyboards, [XInput](http://msdn.microsoft.com/en-us/library/windows/desktop/hh405053%28v=vs.85%29.aspx) for XBOX and emulated controllers, and [DirectInput](http://msdn.microsoft.com/en-us/library/windows/desktop/ee416842%28v=vs.85%29.aspx) for old-school gamepads.
+* Optional support for [Logitech G-keys](https://logitech-en-amr.custhelp.com/app/answers/detail/a_id/21506), which are extra buttons on some Logitech Gaming keyboards.
+* NO force feedback support. Not categorically against them, but not going to spend time on it.
 
 ### Pitfalls
 
