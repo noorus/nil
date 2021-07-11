@@ -21,7 +21,7 @@ namespace nil {
   axisEnum_( 0 ), coop_( coop )
   {
     HRESULT hr = device->getSystem()->dinput_->CreateDevice(
-      device->getInstanceID(), &diDevice_, NULL );
+      device->getInstanceID(), &diDevice_, nullptr );
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, "Could not create DirectInput8 device" );
 
@@ -31,7 +31,7 @@ namespace nil {
 
     // Force feedback, to be implemented later, requires exclusive access.
     hr = diDevice_->SetCooperativeLevel( device->getSystem()->window_,
-      ( coop_ == Cooperation_Background )
+      ( coop_ == Cooperation::Background )
       ? DISCL_BACKGROUND | DISCL_EXCLUSIVE
       : DISCL_FOREGROUND | DISCL_EXCLUSIVE );
     if ( FAILED( hr ) )
@@ -205,12 +205,12 @@ namespace nil {
         else if ( (size_t)buffers[i].dwOfs >= NIL_DIJ2OFS_BUTTON( 0 )
         && (size_t)buffers[i].dwOfs < NIL_DIJ2OFS_BUTTON( state_.buttons.size() ) )
         {
-          size_t button = (size_t)buffers[i].dwOfs - NIL_DIJ2OFS_BUTTON( 0 );
+          auto button = static_cast<size_t>( buffers[i].dwOfs - NIL_DIJ2OFS_BUTTON( 0 ) );
           state_.buttons[button].pushed = ( buffers[i].dwData & 0x80 ? true : false );
         }
         else if ( (uint16_t)( buffers[i].uAppData >> 16 ) == 0x6E69 )
         {
-          size_t axis = (size_t)( 0x0000FFFF & buffers[i].uAppData );
+          auto axis = static_cast<size_t>( 0x0000FFFF & buffers[i].uAppData );
           state_.axes[axis].absolute = filterAxis( buffers[i].dwData );
         }
         else
@@ -252,8 +252,10 @@ namespace nil {
   DirectInputController::~DirectInputController()
   {
     if ( diDevice_ )
+    {
       diDevice_->Unacquire();
-    SAFE_RELEASE( diDevice_ );
+      diDevice_->Release();
+    }
   }
 
 }

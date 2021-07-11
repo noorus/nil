@@ -19,7 +19,7 @@ namespace nil {
     {
     }
 
-    LedSDK::LedSDK(): ExternalModule(), mSavedOriginal( false )
+    LedSDK::LedSDK(): isOriginalSaved_( false )
     {
       //
     }
@@ -47,7 +47,7 @@ namespace nil {
         return Initialization_Unavailable;
 
       if ( funcs_.pfnLogiLedSaveCurrentLighting( LOGITECH_LED_ALL ) )
-        mSavedOriginal = true;
+        isOriginalSaved_ = true;
 
       isInitialized_ = true;
 
@@ -59,9 +59,9 @@ namespace nil {
       if ( !isInitialized_ )
         return;
 
-      int r = (int)( color.r * 100.0f );
-      int g = (int)( color.g * 100.0f );
-      int b = (int)( color.b * 100.0f );
+      auto r = static_cast<int>( color.r * 100.0f );
+      auto g = static_cast<int>( color.g * 100.0f );
+      auto b = static_cast<int>( color.b * 100.0f );
 
       funcs_.pfnLogiLedSetLighting( LOGITECH_LED_ALL, r, g, b );
     }
@@ -70,7 +70,7 @@ namespace nil {
     {
       if ( module_ )
       {
-        if ( mSavedOriginal )
+        if ( isOriginalSaved_ )
           funcs_.pfnLogiLedRestoreLighting( LOGITECH_LED_ALL );
         if ( isInitialized_ )
           funcs_.pfnLogiLedShutdown();
@@ -78,7 +78,7 @@ namespace nil {
         module_ = nullptr;
       }
       isInitialized_ = false;
-      mSavedOriginal = false;
+      isOriginalSaved_ = false;
     }
 
     LedSDK::~LedSDK()

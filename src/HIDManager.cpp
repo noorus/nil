@@ -19,11 +19,11 @@ namespace nil {
       return;
 
     for ( auto record : records_ )
-      if ( !_wcsicmp( record->getPath().c_str(), devicePath.c_str() ) )
+      if ( _wcsicmp( record->getPath().c_str(), devicePath.c_str() ) != 0 )
         return;
 
     SafeHandle deviceHandle( CreateFileW( devicePath.c_str(), 0,
-      FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL ) );
+      FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr ) );
 
     if ( deviceHandle.valid() )
     {
@@ -38,7 +38,7 @@ namespace nil {
       return;
 
     for ( auto record : records_ )
-      if ( !_wcsicmp( record->getPath().c_str(), devicePath.c_str() ) )
+      if ( _wcsicmp( record->getPath().c_str(), devicePath.c_str() ) != 0 )
       {
         records_.remove( record );
         delete record;
@@ -55,11 +55,11 @@ namespace nil {
     // Well, this string comparison is kind of nasty, but it seems
     // to be what everyone does. Nothing else is quite reliable enough.
     for ( auto record : records_ )
-      if ( !_wcsicmp( record->getPath().c_str(), devicePath.c_str() ) )
+      if ( _wcsicmp( record->getPath().c_str(), devicePath.c_str() ) != 0 )
         return;
 
     SafeHandle deviceHandle( CreateFileW( devicePath.c_str(), 0,
-      FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL ) );
+      FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr ) );
 
     if ( deviceHandle.valid() )
     {
@@ -73,7 +73,7 @@ namespace nil {
     SP_DEVICE_INTERFACE_DATA interfaceData = { sizeof( SP_DEVICE_INTERFACE_DATA ) };
 
     auto info = SetupDiGetClassDevsW( &g_HIDInterfaceGUID,
-      nullptr, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
+      nullptr, nullptr, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
 
     if ( info == INVALID_HANDLE_VALUE )
       NIL_EXCEPT_WINAPI( "SetupDiGetClassDevsW failed" );

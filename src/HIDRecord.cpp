@@ -108,8 +108,4 @@ namespace nil {
     return serial_;
   }
 
-  HIDRecord::~HIDRecord()
-  {
-  }
-
 }

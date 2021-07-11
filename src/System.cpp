@@ -59,10 +59,9 @@ namespace nil {
   System::System( HINSTANCE instance, HWND window, const Cooperation coop,
   SystemListener* listener ): coop_( coop ),
   window_( window ), instance_( instance ), dinput_( nullptr ),
-  eventMonitor_( nullptr ), idPool_( 0 ), isInitializing_( true ),
-  hidManager_( nullptr ), mLogitechGKeys( nullptr ), mLogitechLEDs( nullptr ),
-  listener_( listener ), mMouseIndexPool( 0 ), mKeyboardIndexPool( 0 ),
-  mControllerIndexPool( 0 ), xinput_( nullptr )
+  idPool_( 0 ), isInitializing_( true ),
+  listener_( listener ), mouseIdPool_( 0 ), keyboardIdPool_( 0 ),
+  controllerIdPool_( 0 )
   {
     assert( listener_ );
 
@@ -71,15 +70,15 @@ namespace nil {
       NIL_EXCEPT( "Window handle is invalid" );
 
     // Store accessibility feature states, and tell Windows not to be annoying
-    mInternals.store();
-    mInternals.disableHotKeyHarassment();
+    internals_.store();
+    internals_.disableHotKeyHarassment();
 
     // Init Logitech SDKs where available
-    mLogitechGKeys = new Logitech::GKeySDK();
-    mLogitechLEDs = new Logitech::LedSDK();
+    logitechGkeys_ = make_unique<Logitech::GKeySDK>();
+    logitechLeds_ = make_unique<Logitech::LedSDK>();
 
     // Init XInput subsystem
-    xinput_ = new XInput();
+    xinput_ = make_unique<XInput>();
     if ( xinput_->initialize() != ExternalModule::Initialization_OK )
       NIL_EXCEPT( "Loading XInput failed" );
 
@@ -90,13 +89,13 @@ namespace nil {
       NIL_EXCEPT_DINPUT( hr, "Could not instantiate DirectInput 8" );
 
     // Initialize our event monitor
-    eventMonitor_ = new EventMonitor( instance_, coop_ );
+    eventMonitor_ = make_unique<EventMonitor>( instance_, coop_ );
 
     // Initialize our HID manager
-    hidManager_ = new HIDManager();
+    hidManager_ = make_unique<HIDManager>();
 
     // Register the HID manager and ourselves as PnP event listeners
-    eventMonitor_->registerPnPListener( hidManager_ );
+    eventMonitor_->registerPnPListener( hidManager_.get() );
     eventMonitor_->registerPnPListener( this );
 
     // Register ourselves as a raw event listener
@@ -119,7 +118,7 @@ namespace nil {
 
   bool System::getDefaultMouseButtonSwapping()
   {
-    return mInternals.swapMouseButtons;
+    return internals_.swapMouseButtons;
   }
 
   void System::onPnPPlug( const GUID& deviceClass, const wideString& devicePath )
@@ -178,8 +177,8 @@ namespace nil {
     if ( isInitializing_ || !handle )
       return;
 
-    auto it = mMouseMapping.find( handle );
-    if ( it != mMouseMapping.end() )
+    auto it = mouseMap_.find( handle );
+    if ( it != mouseMap_.end() )
       it->second->onRawInput( input );
   }
 
@@ -189,8 +188,8 @@ namespace nil {
     if ( isInitializing_ || !handle )
       return;
 
-    auto it = mKeyboardMapping.find( handle );
-    if ( it != mKeyboardMapping.end() )
+    auto it = keyboardMap_.find( handle );
+    if ( it != keyboardMap_.end() )
       it->second->onRawInput( input );
   }
 
@@ -213,22 +212,22 @@ namespace nil {
 
   void System::mapMouse( HANDLE handle, RawInputMouse* mouse )
   {
-    mMouseMapping[handle] = mouse;
+    mouseMap_[handle] = mouse;
   }
 
   void System::unmapMouse( HANDLE handle )
   {
-    mMouseMapping.erase( handle );
+    mouseMap_.erase( handle );
   }
 
   void System::mapKeyboard( HANDLE handle, RawInputKeyboard* keyboard )
   {
-    mKeyboardMapping[handle] = keyboard;
+    keyboardMap_[handle] = keyboard;
   }
 
   void System::unmapKeyboard( HANDLE handle )
   {
-    mKeyboardMapping.erase( handle );
+    keyboardMap_.erase( handle );
   }
 
   void System::initializeDevices()
@@ -392,17 +391,17 @@ namespace nil {
 
   int System::getNextMouseIndex()
   {
-    return ++mMouseIndexPool;
+    return ++mouseIdPool_;
   }
 
   int System::getNextKeyboardIndex()
   {
-    return ++mKeyboardIndexPool;
+    return ++keyboardIdPool_;
   }
 
   int System::getNextControllerIndex()
   {
-    return ++mControllerIndexPool;
+    return ++controllerIdPool_;
   }
 
   void System::update()
@@ -419,23 +418,23 @@ namespace nil {
         device->update();
 
     // Run queued G-key events if using the SDK
-    if ( mLogitechGKeys->isInitialized() )
-      mLogitechGKeys->update();
+    if ( logitechGkeys_->isInitialized() )
+      logitechGkeys_->update();
   }
 
   Logitech::GKeySDK* System::getLogitechGKeys()
   {
-    return mLogitechGKeys;
+    return logitechGkeys_.get();
   }
 
   Logitech::LedSDK* System::getLogitechLEDs()
   {
-    return mLogitechLEDs;
+    return logitechLeds_.get();
   }
 
   XInput* System::getXInput()
   {
-    return xinput_;
+    return xinput_.get();
   }
 
   System::~System()
@@ -446,15 +445,11 @@ namespace nil {
       delete device;
     }
 
-    SAFE_DELETE( hidManager_ );
-    SAFE_DELETE( eventMonitor_ );
-    SAFE_RELEASE( dinput_ );
-    SAFE_DELETE( mLogitechLEDs );
-    SAFE_DELETE( mLogitechGKeys );
-    SAFE_DELETE( xinput_ );
+    if ( dinput_ )
+      dinput_->Release();
 
     // Restore accessiblity features
-    mInternals.restore();
+    internals_.restore();
   }
 
 }

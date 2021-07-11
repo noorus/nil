@@ -33,44 +33,44 @@ namespace nil {
 
     if ( getHandler() == Handler_XInput )
     {
-      XInputDevice* xDevice = dynamic_cast<XInputDevice*>( this );
+      auto xDevice = dynamic_cast<XInputDevice*>( this );
       if ( !xDevice )
         NIL_EXCEPT( "Dynamic cast failed for XInputDevice" );
       if ( getType() == Device_Controller )
       {
-        instance_ = new XInputController( xDevice );
-        system_->controllerEnabled( this, (Controller*)instance_ );
+        instance_ = make_unique<XInputController>( xDevice );
+        system_->controllerEnabled( this, dynamic_cast<Controller*>( instance_.get() ) );
       }
       else
         NIL_EXCEPT( "Unsupport device type for XInput; Cannot instantiate device!" );
     }
     else if ( getHandler() == Handler_DirectInput )
     {
-      DirectInputDevice* diDevice = dynamic_cast<DirectInputDevice*>( this );
+      auto diDevice = dynamic_cast<DirectInputDevice*>( this );
       if ( !diDevice )
         NIL_EXCEPT( "Dynamic cast failed for DirectInputDevice" );
       if ( getType() == Device_Controller )
       {
-        instance_ = new DirectInputController( diDevice, system_->coop_ );
-        system_->controllerEnabled( this, (Controller*)instance_ );
+        instance_ = make_unique<DirectInputController>( diDevice, system_->coop_ );
+        system_->controllerEnabled( this, dynamic_cast<Controller*>( instance_.get() ) );
       }
       else
         NIL_EXCEPT( "Unsupported device type for DirectInput; Cannot instantiate device!" );
     }
     else if ( getHandler() == Handler_RawInput )
     {
-      RawInputDevice* rawDevice = dynamic_cast<RawInputDevice*>( this );
+      auto rawDevice = dynamic_cast<RawInputDevice*>( this );
       if ( !rawDevice )
         NIL_EXCEPT( "Dynamic cast failed for RawInputDevice" );
       if ( getType() == Device_Mouse )
       {
-        instance_ = new RawInputMouse( rawDevice, system_->getDefaultMouseButtonSwapping() );
-        system_->mouseEnabled( this, (Mouse*)instance_ );
+        instance_ = make_unique<RawInputMouse>( rawDevice, system_->getDefaultMouseButtonSwapping() );
+        system_->mouseEnabled( this, dynamic_cast<Mouse*>( instance_.get() ) );
       }
       else if ( getType() == Device_Keyboard )
       {
-        instance_ = new RawInputKeyboard( rawDevice );
-        system_->keyboardEnabled( this, (Keyboard*)instance_ );
+        instance_ = make_unique<RawInputKeyboard>( rawDevice );
+        system_->keyboardEnabled( this, dynamic_cast<Keyboard*>( instance_.get() ) );
       }
       else
         NIL_EXCEPT( "Unsupported device type for RawInput; cannot instantiate device!" );
@@ -81,7 +81,7 @@ namespace nil {
 
   DeviceInstance* Device::getInstance()
   {
-    return instance_;
+    return instance_.get();
   }
 
   void Device::update()
@@ -98,20 +98,20 @@ namespace nil {
     switch ( getType() )
     {
       case Device_Controller:
-        system_->controllerDisabled( this, (Controller*)instance_ );
+        system_->controllerDisabled( this, dynamic_cast<Controller*>( instance_.get() ) );
       break;
       case Device_Mouse:
-        system_->mouseDisabled( this, (Mouse*)instance_ );
+        system_->mouseDisabled( this, dynamic_cast<Mouse*>( instance_.get() ) );
       break;
       case Device_Keyboard:
-        system_->keyboardDisabled( this, (Keyboard*)instance_ );
+        system_->keyboardDisabled( this, dynamic_cast<Keyboard*>( instance_.get() ) );
       break;
       default:
         NIL_EXCEPT( "Unimplemented device type" );
       break;
     }
 
-    SAFE_DELETE( instance_ );
+    instance_.reset();
   }
 
   void Device::flagDisconnected()
@@ -174,10 +174,6 @@ namespace nil {
   const Device::Status Device::getStatus() const
   {
     return status_;
-  }
-
-  Device::~Device()
-  {
   }
 
 }

@@ -107,9 +107,9 @@ namespace nil {
       virtual const GUID getInstanceID() const;
   };
 
-  typedef DWORD( WINAPI *fnXInputGetState )( DWORD dwUserIndex, XINPUT_STATE* pState );
-  typedef DWORD( WINAPI *fnXInputSetState )( DWORD dwUserIndex, XINPUT_VIBRATION* pVibration );
-  typedef DWORD( WINAPI *fnXInputGetCapabilities )( DWORD dwUserIndex, DWORD dwFlags, XINPUT_CAPABILITIES* pCapabilities );
+  using fnXInputGetState = DWORD( WINAPI * )( DWORD dwUserIndex, XINPUT_STATE* pState );
+  using fnXInputSetState = DWORD( WINAPI * )( DWORD dwUserIndex, XINPUT_VIBRATION* pVibration );
+  using fnXInputGetCapabilities = DWORD( WINAPI * )( DWORD dwUserIndex, DWORD dwFlags, XINPUT_CAPABILITIES* pCapabilities );
 
   //! \class XInput
   //! XInput dynamic module loader.

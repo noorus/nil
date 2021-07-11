@@ -8,9 +8,8 @@ namespace nil {
 
   struct WinAPIError
   {
-    public:
-      uint32_t code;
-      wideString description;
+    uint32_t code;
+    wideString description;
   };
 
   //! \class Exception
@@ -27,7 +26,7 @@ namespace nil {
         DirectInput //!< DirectInput-specific error
       };
     private:
-      Exception();
+      Exception() = default;
 
       Type type_; //!< Exception type
       utf8String description_; //!< Exception description

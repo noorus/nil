@@ -62,14 +62,14 @@ namespace nil {
   class EventMonitor
   {
     protected:
-      HINSTANCE instance_;  //!< Host application instance handle
-      ATOM class_;  //!< Class registration handle
+      HINSTANCE instance_; //!< Host application instance handle
+      ATOM class_; //!< Class registration handle
       HWND window_; //!< Window handle
-      HDEVNOTIFY notifications_;  //!< Device notifications registration
-      PnPListenerList pnpListeners_;  //!< Our Plug-n-Play listeners
-      RawListenerList rawListeners_;  //!< Our raw listeners
+      HDEVNOTIFY notifications_; //!< Device notifications registration
+      PnPListenerList pnpListeners_; //!< Our Plug-n-Play listeners
+      RawListenerList rawListeners_; //!< Our raw listeners
       void* inputBuffer_; //!< Buffer for input reads
-      unsigned int inputBufferSize_;  //!< Size of input buffer
+      unsigned int inputBufferSize_; //!< Size of input buffer
       const Cooperation coop_; //!< Cooperation mode
     protected:
       //! \b Internal Register myself for event notifications.

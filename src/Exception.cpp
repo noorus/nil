@@ -9,7 +9,7 @@ namespace nil {
     wchar_t* description;
   };
 
-  const int cErrorDescriptionCount = 32; //-V112
+  const int cErrorDescriptionCount = 32;
 
   const DirectInputErrorEntry cErrorDescriptions[cErrorDescriptionCount] =
   {
@@ -47,11 +47,6 @@ namespace nil {
     { (uint32_t)E_POINTER, L"An invalid pointer was passed as a parameter." }
   };
 
-  Exception::Exception()
-  {
-    // Stub
-  }
-
   Exception::Exception( const utf8String& description, Type type ):
   description_( description ), type_( type )
   {
@@ -82,8 +77,8 @@ namespace nil {
         FORMAT_MESSAGE_ALLOCATE_BUFFER |
         FORMAT_MESSAGE_FROM_SYSTEM |
         FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, (DWORD)error.code, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
-        (wchar_t*)&message, 0, NULL );
+        nullptr, (DWORD)error.code, MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
+        (wchar_t*)&message, 0, nullptr );
 
       if ( message )
       {
@@ -96,11 +91,11 @@ namespace nil {
     else if ( type_ == DirectInput )
     {
       error.code = hr;
-      for ( unsigned long i = 0; i < cErrorDescriptionCount; i++ )
+      for ( auto cErrorDescription : cErrorDescriptions )
       {
-        if ( cErrorDescriptions[i].code == error.code )
+        if ( cErrorDescription.code == error.code )
         {
-          error.description = cErrorDescriptions[i].description;
+          error.description = cErrorDescription.description;
           break;
         }
       }

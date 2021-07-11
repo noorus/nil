@@ -6,7 +6,7 @@ namespace nil {
   const wchar_t* cEventMonitorClass = L"NIL_MONITOR";
 
   EventMonitor::EventMonitor( HINSTANCE instance, const Cooperation coop ):
-  instance_( instance ), class_( 0 ), window_( 0 ), notifications_( nullptr ),
+  instance_( instance ), class_( 0 ), window_( nullptr ), notifications_( nullptr ),
   inputBuffer_( nullptr ), coop_( coop ),
   inputBufferSize_( 10240 ) // 10KB default
   {
@@ -21,7 +21,7 @@ namespace nil {
       NIL_EXCEPT_WINAPI( "Window class registration failed" );
 
     window_ = CreateWindowExW(
-      0, (LPCWSTR)class_, nullptr, 0, 0, 0, 0, 0, 0, 0, instance_, this ); //-V542
+      0, (LPCWSTR)class_, nullptr, 0, 0, 0, 0, 0, 0, 0, instance_, this );
     if ( !window_ )
       NIL_EXCEPT_WINAPI( "Window creation failed" );
 
@@ -133,7 +133,7 @@ namespace nil {
     RAWINPUTDEVICE rawDevices[2];
 
     rawDevices[0].dwFlags =
-      ( coop_ == Cooperation_Background )
+      ( coop_ == Cooperation::Background )
       ? RIDEV_DEVNOTIFY | RIDEV_INPUTSINK
       : RIDEV_DEVNOTIFY;
     rawDevices[0].hwndTarget = window_;
@@ -141,7 +141,7 @@ namespace nil {
     rawDevices[0].usUsage = USBDesktopUsage_Mice;
 
     rawDevices[1].dwFlags =
-      ( coop_ == Cooperation_Background )
+      ( coop_ == Cooperation::Background )
       ? RIDEV_DEVNOTIFY | RIDEV_INPUTSINK
       : RIDEV_DEVNOTIFY;
     rawDevices[1].hwndTarget = window_;
@@ -228,12 +228,12 @@ namespace nil {
     RAWINPUTDEVICE rawDevices[2];
 
     rawDevices[0].dwFlags = RIDEV_REMOVE;
-    rawDevices[0].hwndTarget = 0;
+    rawDevices[0].hwndTarget = nullptr;
     rawDevices[0].usUsagePage = USBUsagePage_Desktop;
     rawDevices[0].usUsage = USBDesktopUsage_Mice;
 
     rawDevices[0].dwFlags = RIDEV_REMOVE;
-    rawDevices[0].hwndTarget = 0;
+    rawDevices[0].hwndTarget = nullptr;
     rawDevices[0].usUsagePage = USBUsagePage_Desktop;
     rawDevices[0].usUsage = USBDesktopUsage_Keyboards;
 
@@ -263,7 +263,7 @@ namespace nil {
     if ( window_ )
       DestroyWindow( window_ );
     if ( class_ )
-      UnregisterClassW( (LPCWSTR)class_, instance_ ); //-V542
+      UnregisterClassW( (LPCWSTR)class_, instance_ );
   }
 
 }

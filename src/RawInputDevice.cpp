@@ -9,7 +9,7 @@ namespace nil {
   RawInputDeviceInfo::RawInputDeviceInfo( HANDLE handle ): rawInfo_( nullptr )
   {
     UINT size = 0;
-    if ( GetRawInputDeviceInfoW( handle, RIDI_DEVICEINFO, NULL, &size ) != 0 )
+    if ( GetRawInputDeviceInfoW( handle, RIDI_DEVICEINFO, nullptr, &size ) != 0 )
       NIL_EXCEPT_WINAPI( "GetRawInputDeviceInfoW failed" );
 
     rawInfo_ = (RID_DEVICE_INFO*)malloc( (size_t)size );
@@ -50,7 +50,7 @@ namespace nil {
   rawHandle_( rawHandle ), rawPath_( rawPath )
   {
     SafeHandle deviceHandle( CreateFileW( rawPath_.c_str(), 0,
-      FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL ) );
+      FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr ) );
 
     if ( deviceHandle.valid() )
     {

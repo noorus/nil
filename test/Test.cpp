@@ -66,7 +66,7 @@ public:
 
 DummyKeyboardListener gDummyKeyboardListener;
 
-// Shared controller listener; 
+// Shared controller listener;
 // A controller is any input device that is not a mouse nor a keyboard
 class DummyControllerListener: public nil::ControllerListener {
 public:
@@ -190,18 +190,18 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
     SetConsoleCtrlHandler( consoleHandler, TRUE );
 
     // Init system
-    nil::System* system = new nil::System(
+    auto system = new nil::System(
       GetModuleHandleW( nullptr ),
       GetConsoleWindow(),
       // Using background cooperation mode, because the default console window
       // is actually not owned by our process (it is owned by cmd.exe) and thus
       // we would not receive any mouse & keyboard events in foreground mode.
       // For applications that own their own window foreground mode works fine.
-      nil::Cooperation_Background,
+      nil::Cooperation::Background,
       &gMyListener );
 
     // Init Logitech G-keys subsystem, if available
-    nil::ExternalModule::InitReturn ret = system->getLogitechGKeys()->initialize();
+    auto ret = system->getLogitechGKeys()->initialize();
     if ( ret == nil::ExternalModule::Initialization_OK )
     {
       printf_s( "G-keys initialized\n" );
@@ -226,7 +226,7 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
     int z = 170;
 
     // "60 fps"
-    DWORD timeout = (DWORD)( ( 1.0 / 60.0 ) * 1000.0 );
+    auto timeout = (DWORD)( ( 1.0 / 60.0 ) * 1000.0 );
 
     // Run main loop
     while ( WaitForSingleObject( stopEvent, timeout ) == WAIT_TIMEOUT )

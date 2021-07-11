@@ -84,7 +84,7 @@ namespace nil {
       uint32_t getIdentifier() const;
 
       //! Destructor.
-      ~HIDRecord();
+      ~HIDRecord() = default;
   };
 
   //! \brief A list of HID records.

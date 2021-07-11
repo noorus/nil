@@ -53,12 +53,12 @@ namespace nil {
       utf8String name_; //!< Device name
       Type type_; //!< Device type
       System* system_; //!< My owner
-      DeviceInstance* instance_; //!< My instance, if created
+      unique_ptr<DeviceInstance> instance_; //!< My instance, if created
       bool disconnectFlag_; //!< Whether I am flagged for disconnection or not
       int typedIndex_; //!< This is a device-type-specific index for the device
 
       explicit Device( System* system, DeviceID id, Type type );
-      virtual ~Device();
+      virtual ~Device() = default;
       virtual void update(); //!< Update our instance
       virtual void setStatus( Status status ); //!< Set status
       virtual void saveStatus(); //!< Backup current status
@@ -170,7 +170,7 @@ namespace nil {
       //! \param listener The listener.
       virtual void removeListener( MouseListener* listener );
 
-      virtual void update() = 0;
+      void update() override = 0;
 
       //! Get the Mouse state.
       virtual const MouseState& getState() const;
@@ -235,7 +235,7 @@ namespace nil {
       //! \param listener The listener.
       virtual void removeListener( KeyboardListener* listener );
 
-      virtual void update() = 0;
+      void update() override = 0;
 
       //! Destructor.
       virtual ~Keyboard();
@@ -329,7 +329,7 @@ namespace nil {
       //! Remove a controller input listener.
       virtual void removeListener( ControllerListener* listener );
 
-      virtual void update() = 0;
+      void update() override = 0;
 
       //! Get the Controller type.
       virtual const Type getType() const;

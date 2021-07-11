@@ -18,7 +18,7 @@ namespace nil {
     {
     }
 
-    GKeySDK::GKeySDK(): ExternalModule()
+    GKeySDK::GKeySDK()
     {
       InitializeSRWLock( &lock_ );
     }
@@ -61,7 +61,7 @@ namespace nil {
       return Initialization_OK;
     }
 
-    void GKeySDK::keyCallback( GkeyCode key, const wchar_t* name, void* context ) //-V813
+    void GKeySDK::keyCallback( GkeyCode key, const wchar_t* name, void* context )
     {
       auto sdk = reinterpret_cast<GKeySDK*>( context );
 

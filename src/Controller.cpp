@@ -46,7 +46,7 @@ namespace nil {
 
       // Axes
       for ( size_t i = 0; i < state_.axes.size(); i++ )
-        if ( lastState.axes[i].absolute != state_.axes[i].absolute ) //-V550
+        if ( lastState.axes[i].absolute != state_.axes[i].absolute )
           listener->onControllerAxisMoved( this, state_, i );
 
       // Sliders

@@ -27,13 +27,13 @@ namespace nil {
       unsigned int reserved2      : 16; //!< reserved2
     };
 
-    typedef void (__cdecl *logiGkeyCB)( GkeyCode gkeyCode, const wchar_t* gkeyOrButtonString, void* context );
+    using logiGkeyCB = void (__cdecl *)( GkeyCode gkeyCode, const wchar_t* gkeyOrButtonString, void* context );
 
-    typedef struct
+    struct logiGkeyCBContext
     {
       logiGkeyCB gkeyCallBack;
       void* gkeyContext;
-    } logiGkeyCBContext;
+    };
 
 #pragma pack( pop )
 
@@ -55,10 +55,10 @@ namespace nil {
 
     using GKeyListenerList = list<GKeyListener*>;
 
-    typedef BOOL (*fnLogiGkeyInit)( logiGkeyCBContext* context );
-    typedef wchar_t* (*fnLogiGkeyGetMouseButtonString)( int button );
-    typedef wchar_t* (*fnLogiGkeyGetKeyboardGkeyString)( int key, int mode );
-    typedef void (*fnLogiGkeyShutdown)();
+    using fnLogiGkeyInit = BOOL (*)( logiGkeyCBContext* context );
+    using fnLogiGkeyGetMouseButtonString = wchar_t* (*)( int button );
+    using fnLogiGkeyGetKeyboardGkeyString = wchar_t* (*)( int key, int mode );
+    using fnLogiGkeyShutdown = void (*)();
 
     using GKeyQueue = queue<GkeyCode>;
 
@@ -111,11 +111,11 @@ namespace nil {
     const int LOGITECH_LED_KEYBOARD = 0x0002;
     const int LOGITECH_LED_ALL = LOGITECH_LED_MOUSE | LOGITECH_LED_KEYBOARD;
 
-    typedef BOOL (*fnLogiLedInit)();
-    typedef BOOL (*fnLogiLedSaveCurrentLighting)( int deviceType );
-    typedef BOOL (*fnLogiLedSetLighting)( int deviceType, int redPercentage, int greenPercentage, int bluePercentage );
-    typedef BOOL (*fnLogiLedRestoreLighting)( int deviceType );
-    typedef void (*fnLogiLedShutdown)();
+    using fnLogiLedInit = BOOL (*)();
+    using fnLogiLedSaveCurrentLighting = BOOL (*)( int deviceType );
+    using fnLogiLedSetLighting = BOOL (*)( int deviceType, int redPercentage, int greenPercentage, int bluePercentage );
+    using fnLogiLedRestoreLighting = BOOL (*)( int deviceType );
+    using fnLogiLedShutdown = void (*)();
 
     //! \class LedSDK
     //! Logitech Led SDK module.
@@ -132,7 +132,7 @@ namespace nil {
           Functions();
         } funcs_; //!< Led SDK's import functions
 
-        bool mSavedOriginal; //!< Whether original LED state was saved on init or not
+        bool isOriginalSaved_; //!< Whether original LED state was saved on init or not
       public:
         LedSDK();
 

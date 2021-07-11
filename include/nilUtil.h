@@ -9,24 +9,6 @@ namespace nil {
   //! \addtogroup Utilities
   //! @{
 
-  //! \def SAFE_DELETE(p)
-  //! Safely delete and null-out a pointer to an object.
-# ifndef SAFE_DELETE
-#   define SAFE_DELETE(p) {if(p){delete p;(p)=NULL;}}
-# endif
-
-  //! \def SAFE_RELEASE(p)
-  //! Safely release and null-out a COM object.
-# ifndef SAFE_RELEASE
-#   define SAFE_RELEASE(p) {if(p){p->Release();(p)=NULL;}}
-# endif
-
-  //! \def SAFE_CLOSEHANDLE(p)
-  //! Safely close and invalidate a Windows handle.
-# ifndef SAFE_CLOSEHANDLE
-#   define SAFE_CLOSEHANDLE(p) {if(p!=INVALID_HANDLE_VALUE){CloseHandle(p);(p)=INVALID_HANDLE_VALUE;}}
-# endif
-
 # if defined(NIL_EXCEPT) || defined(NIL_EXCEPT_WINAPI) || defined(NIL_EXCEPT_DINPUT)
 #   error NIL_EXCEPT* macro already defined!
 # else

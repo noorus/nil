@@ -3,7 +3,7 @@
 
 namespace nil {
 
-  ExternalModule::ExternalModule(): module_( NULL ), isInitialized_( false )
+  ExternalModule::ExternalModule(): module_( nullptr ), isInitialized_( false )
   {
   }
 

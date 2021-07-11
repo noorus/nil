@@ -78,7 +78,8 @@ namespace nil {
       xDevice->flagDisconnected();
       return;
     }
-    else if ( ret != ERROR_SUCCESS )
+
+    if ( ret != ERROR_SUCCESS )
       NIL_EXCEPT( "XInputGetState failed" );
 
     if ( xinputState_.dwPacketNumber == lastPacket_ )

@@ -61,24 +61,24 @@ namespace nil {
     friend class RawInputMouse;
     private:
       DeviceID idPool_; //!< Device indexing pool
-      int mMouseIndexPool;  //!< Mouse indexing pool
-      int mKeyboardIndexPool; //!< Keyboard indexing pool
-      int mControllerIndexPool; //!< Controller indexing pool
+      int mouseIdPool_;  //!< Mouse indexing pool
+      int keyboardIdPool_; //!< Keyboard indexing pool
+      int controllerIdPool_; //!< Controller indexing pool
       vector<DeviceID> mXInputIDs;  //!< XInput device ID mapping
       vector<uint32_t> mXInputDeviceIDs;  //!< Tracked list of XInput VIDs & PIDs
       IDirectInput8W* dinput_; //!< Our DirectInput instance
       HINSTANCE instance_;  //!< Host application instance handle
       HWND window_; //!< Host application window handle
-      EventMonitor* eventMonitor_; //!< Our Plug-n-Play & raw input event monitor
+      unique_ptr<EventMonitor> eventMonitor_; //!< Our Plug-n-Play & raw input event monitor
       DeviceList devices_;  //!< List of known devices
-      HIDManager* hidManager_;  //!< Our HID manager
+      unique_ptr<HIDManager> hidManager_;  //!< Our HID manager
       bool isInitializing_; //!< Are we initializing?
-      RawMouseMap mMouseMapping;  //!< Raw mouse events mapping
-      RawKeyboardMap mKeyboardMapping;  //!< Raw keyboard events mapping
-      Logitech::GKeySDK* mLogitechGKeys;  //!< External module for Logitech G-Keys
-      Logitech::LedSDK* mLogitechLEDs;  //!< External module for Logitech LEDs
-      SystemListener* listener_;  //!< Our single event listener
-      XInput* xinput_; //!< XInput module handler
+      RawMouseMap mouseMap_;  //!< Raw mouse events mapping
+      RawKeyboardMap keyboardMap_;  //!< Raw keyboard events mapping
+      unique_ptr<Logitech::GKeySDK> logitechGkeys_;  //!< External module for Logitech G-Keys
+      unique_ptr<Logitech::LedSDK> logitechLeds_;  //!< External module for Logitech LEDs
+      unique_ptr<SystemListener> listener_;  //!< Our single event listener
+      unique_ptr<XInput> xinput_; //!< XInput module handler
       const Cooperation coop_; //!< Cooperation mode
       struct Internals {
         bool swapMouseButtons;
@@ -88,7 +88,7 @@ namespace nil {
         void store();
         void disableHotKeyHarassment();
         void restore();
-      } mInternals;
+      } internals_;
       void initializeDevices();
       void refreshDevices();
       void identifyXInputDevices();
