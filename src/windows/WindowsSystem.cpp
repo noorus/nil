@@ -65,7 +65,7 @@ namespace nil {
   window_( window ), instance_( instance ), dinput_( nullptr ),
   idPool_( 0 ), isInitializing_( true ),
   listener_( listener ), mouseIdPool_( 0 ), keyboardIdPool_( 0 ),
-  controllerIdPool_( 0 )
+  controllerIdPool_( 0 ), xinput_( nullptr )
   {
     assert( listener_ );
 
@@ -78,11 +78,11 @@ namespace nil {
     internals_.disableHotKeyHarassment();
 
     // Init Logitech SDKs where available
-    logitechGkeys_ = make_unique<logitech::GKeySDK>();
-    logitechLeds_ = make_unique<logitech::LedSDK>();
+    logitechGkeys_ = new logitech::GKeySDK();
+    logitechLeds_ = new logitech::LedSDK();
 
     // Init XInput subsystem
-    xinput_ = make_unique<XInput>();
+    xinput_ = new XInput();
     if ( xinput_->initialize() != ExternalModule::Initialization_OK )
       NIL_EXCEPT( "Loading XInput failed" );
 
@@ -93,13 +93,13 @@ namespace nil {
       NIL_EXCEPT_DINPUT( hr, "Could not instantiate DirectInput 8" );
 
     // Initialize our event monitor
-    eventMonitor_ = make_unique<windows::EventMonitor>( instance_, coop_ );
+    eventMonitor_ = new windows::EventMonitor( instance_, coop_ );
 
     // Initialize our HID manager
-    hidManager_ = make_unique<windows::HIDManager>();
+    hidManager_ = new windows::HIDManager();
 
     // Register the HID manager and ourselves as PnP event listeners
-    eventMonitor_->registerPnPListener( hidManager_.get() );
+    eventMonitor_->registerPnPListener( hidManager_ );
     eventMonitor_->registerPnPListener( this );
 
     // Register ourselves as a raw event listener
@@ -127,6 +127,9 @@ namespace nil {
 
   void System::onPnPPlug( const GUID& deviceClass, const wideString& devicePath )
   {
+    UNREFERENCED_PARAMETER( deviceClass );
+    UNREFERENCED_PARAMETER( devicePath );
+
     // Refresh all currently connected devices,
     // since IDirectInput8::FindDevice doesn't do jack shit
     refreshDevices();
@@ -134,6 +137,9 @@ namespace nil {
 
   void System::onPnPUnplug( const GUID& deviceClass, const wideString& devicePath )
   {
+    UNREFERENCED_PARAMETER( deviceClass );
+    UNREFERENCED_PARAMETER( devicePath );
+
     // Refresh all currently connected devices,
     // since IDirectInput8::FindDevice doesn't do jack shit
     refreshDevices();
@@ -178,6 +184,8 @@ namespace nil {
   void System::onRawMouseInput( HANDLE handle,
   const RAWMOUSE& input, const bool sinked )
   {
+    UNREFERENCED_PARAMETER( sinked );
+
     if ( isInitializing_ || !handle )
       return;
 
@@ -189,6 +197,8 @@ namespace nil {
   void System::onRawKeyboardInput( HANDLE handle,
   const RAWKEYBOARD& input, const bool sinked )
   {
+    UNREFERENCED_PARAMETER( sinked );
+
     if ( isInitializing_ || !handle )
       return;
 
@@ -428,17 +438,17 @@ namespace nil {
 
   logitech::GKeySDK* System::getLogitechGKeys()
   {
-    return logitechGkeys_.get();
+    return logitechGkeys_;
   }
 
   logitech::LedSDK* System::getLogitechLEDs()
   {
-    return logitechLeds_.get();
+    return logitechLeds_;
   }
 
   XInput* System::getXInput()
   {
-    return xinput_.get();
+    return xinput_;
   }
 
   System::~System()
@@ -449,8 +459,12 @@ namespace nil {
       delete device;
     }
 
-    if ( dinput_ )
-      dinput_->Release();
+    SAFE_DELETE( hidManager_ );
+    SAFE_DELETE( eventMonitor_ );
+    SAFE_RELEASE( dinput_ );
+    SAFE_DELETE( logitechLeds_ );
+    SAFE_DELETE( logitechGkeys_ );
+    SAFE_DELETE( xinput_ );
 
     // Restore accessiblity features
     internals_.restore();

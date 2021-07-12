@@ -67,6 +67,8 @@ namespace nil {
 
     void GKeySDK::keyCallback( GkeyCode key, const wchar_t* name, void* context )
     {
+      UNREFERENCED_PARAMETER( name );
+
       auto sdk = reinterpret_cast<GKeySDK*>( context );
 
       ScopedSRWLock lock( &sdk->lock_ );

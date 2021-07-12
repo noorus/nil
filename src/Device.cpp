@@ -40,8 +40,8 @@ namespace nil {
         NIL_EXCEPT( "Dynamic cast failed for XInputDevice" );
       if ( getType() == Device_Controller )
       {
-        instance_ = make_unique<XInputController>( xDevice );
-        system_->controllerEnabled( this, dynamic_cast<Controller*>( instance_.get() ) );
+        instance_ = new XInputController( xDevice );
+        system_->controllerEnabled( this, (Controller*)instance_ );
       }
       else
         NIL_EXCEPT( "Unsupport device type for XInput; Cannot instantiate device!" );
@@ -53,8 +53,8 @@ namespace nil {
         NIL_EXCEPT( "Dynamic cast failed for DirectInputDevice" );
       if ( getType() == Device_Controller )
       {
-        instance_ = make_unique<DirectInputController>( diDevice, system_->coop_ );
-        system_->controllerEnabled( this, dynamic_cast<Controller*>( instance_.get() ) );
+        instance_ = new DirectInputController( diDevice, system_->coop_ );
+        system_->controllerEnabled( this, (Controller*)instance_ );
       }
       else
         NIL_EXCEPT( "Unsupported device type for DirectInput; Cannot instantiate device!" );
@@ -66,13 +66,13 @@ namespace nil {
         NIL_EXCEPT( "Dynamic cast failed for RawInputDevice" );
       if ( getType() == Device_Mouse )
       {
-        instance_ = make_unique<RawInputMouse>( rawDevice, system_->getDefaultMouseButtonSwapping() );
-        system_->mouseEnabled( this, dynamic_cast<Mouse*>( instance_.get() ) );
+        instance_ = new RawInputMouse( rawDevice, system_->getDefaultMouseButtonSwapping() );
+        system_->mouseEnabled( this, (Mouse*)instance_ );
       }
       else if ( getType() == Device_Keyboard )
       {
-        instance_ = make_unique<RawInputKeyboard>( rawDevice );
-        system_->keyboardEnabled( this, dynamic_cast<Keyboard*>( instance_.get() ) );
+        instance_ = new RawInputKeyboard( rawDevice );
+        system_->keyboardEnabled( this, (Keyboard*)instance_ );
       }
       else
         NIL_EXCEPT( "Unsupported device type for RawInput; cannot instantiate device!" );
@@ -83,7 +83,7 @@ namespace nil {
 
   DeviceInstance* Device::getInstance()
   {
-    return instance_.get();
+    return instance_;
   }
 
   void Device::update()
@@ -100,20 +100,20 @@ namespace nil {
     switch ( getType() )
     {
       case Device_Controller:
-        system_->controllerDisabled( this, dynamic_cast<Controller*>( instance_.get() ) );
+        system_->controllerDisabled( this, (Controller*)instance_ );
       break;
       case Device_Mouse:
-        system_->mouseDisabled( this, dynamic_cast<Mouse*>( instance_.get() ) );
+        system_->mouseDisabled( this, (Mouse*)instance_ );
       break;
       case Device_Keyboard:
-        system_->keyboardDisabled( this, dynamic_cast<Keyboard*>( instance_.get() ) );
+        system_->keyboardDisabled( this, (Keyboard*)instance_ );
       break;
       default:
         NIL_EXCEPT( "Unimplemented device type" );
       break;
     }
 
-    instance_.reset();
+    SAFE_DELETE( instance_ );
   }
 
   void Device::flagDisconnected()

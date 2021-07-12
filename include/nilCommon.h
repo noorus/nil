@@ -52,7 +52,7 @@ namespace nil {
       utf8String name_; //!< Device name
       Type type_; //!< Device type
       System* system_; //!< My owner
-      unique_ptr<DeviceInstance> instance_; //!< My instance, if created
+      DeviceInstance* instance_; //!< My instance, if created
       bool disconnectFlag_; //!< Whether I am flagged for disconnection or not
       int typedIndex_; //!< This is a device-type-specific index for the device
 

@@ -54,8 +54,10 @@ namespace nil {
     }
 
     void HIDManager::processDevice( SP_DEVICE_INTERFACE_DATA& interfaceData,
-      SP_DEVINFO_DATA& deviceData, const wideString& devicePath )
+    SP_DEVINFO_DATA& deviceData, const wideString& devicePath )
     {
+      UNREFERENCED_PARAMETER( deviceData );
+
       if ( interfaceData.InterfaceClassGuid != g_HIDInterfaceGUID )
         return;
 

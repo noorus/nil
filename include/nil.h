@@ -74,16 +74,16 @@ namespace nil {
       IDirectInput8W* dinput_; //!< Our DirectInput instance
       HINSTANCE instance_;  //!< Host application instance handle
       HWND window_; //!< Host application window handle
-      unique_ptr<windows::EventMonitor> eventMonitor_; //!< Our Plug-n-Play & raw input event monitor
+      windows::EventMonitor* eventMonitor_; //!< Our Plug-n-Play & raw input event monitor
       DeviceList devices_;  //!< List of known devices
-      unique_ptr<windows::HIDManager> hidManager_;  //!< Our HID manager
+      windows::HIDManager* hidManager_;  //!< Our HID manager
       bool isInitializing_; //!< Are we initializing?
       RawMouseMap mouseMap_;  //!< Raw mouse events mapping
       RawKeyboardMap keyboardMap_;  //!< Raw keyboard events mapping
-      unique_ptr<logitech::GKeySDK> logitechGkeys_;  //!< External module for Logitech G-Keys
-      unique_ptr<logitech::LedSDK> logitechLeds_;  //!< External module for Logitech LEDs
-      unique_ptr<SystemListener> listener_;  //!< Our single event listener
-      unique_ptr<XInput> xinput_; //!< XInput module handler
+      logitech::GKeySDK* logitechGkeys_;  //!< External module for Logitech G-Keys
+      logitech::LedSDK* logitechLeds_;  //!< External module for Logitech LEDs
+      SystemListener* listener_;  //!< Our single event listener
+      XInput* xinput_; //!< XInput module handler
       const Cooperation coop_; //!< Cooperation mode
       struct Internals {
         bool swapMouseButtons;
