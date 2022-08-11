@@ -7,8 +7,8 @@
 
 namespace nil {
 
-  RawInputKeyboard::RawInputKeyboard( RawInputDevice* device ):
-  Keyboard( device->getSystem(), device )
+  RawInputKeyboard::RawInputKeyboard( RawInputDevicePtr device ):
+  Keyboard( device->getSystem()->ptr(), device )
   {
     device->getSystem()->mapKeyboard( device->getRawHandle(), this );
   }
@@ -102,7 +102,7 @@ namespace nil {
     if ( flags & RI_KEY_BREAK )
     {
       pressedKeys_.remove( virtualKey );
-      for ( auto listener : listeners_ )
+      for ( auto& listener : listeners_ )
         listener->onKeyReleased( this, virtualKey );
     }
     else
@@ -116,13 +116,13 @@ namespace nil {
         }
       if ( isPressed )
       {
-        for ( auto listener : listeners_ )
+        for ( auto& listener : listeners_ )
           listener->onKeyRepeat( this, virtualKey );
       }
       else
       {
         pressedKeys_.push_back( virtualKey );
-        for ( auto listener : listeners_ )
+        for ( auto& listener : listeners_ )
           listener->onKeyPressed( this, virtualKey );
       }
     }
@@ -143,7 +143,7 @@ namespace nil {
 
   RawInputKeyboard::~RawInputKeyboard()
   {
-    auto rawDevice = static_cast<RawInputDevice*>( device_ );
+    auto rawDevice = dynamic_pointer_cast<RawInputDevice>( device_ );
     rawDevice->getSystem()->unmapKeyboard( rawDevice->getRawHandle() );
   }
 

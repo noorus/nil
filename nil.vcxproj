@@ -176,7 +176,6 @@
     <ClInclude Include="include\nilWindows.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Components.cpp" />
     <ClCompile Include="src\Controller.cpp" />
     <ClCompile Include="src\Device.cpp" />
     <ClCompile Include="src\DeviceInstance.cpp" />

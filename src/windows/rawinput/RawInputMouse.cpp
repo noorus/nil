@@ -10,19 +10,19 @@ namespace nil {
 # define NIL_RAW_TEST_MOUSE_BUTTON_DOWN(flag,x) if ( input.usButtonFlags & flag ) \
   { \
   state_.buttons[x].pushed = true; \
-  for ( auto listener : listeners_ ) \
+  for ( auto& listener : listeners_ ) \
     listener->onMouseButtonPressed( this, state_, x ); \
 }
 
 # define NIL_RAW_TEST_MOUSE_BUTTON_UP(flag,x) if ( input.usButtonFlags & flag ) \
   { \
   state_.buttons[x].pushed = false; \
-  for ( auto listener : listeners_ ) \
+  for ( auto& listener : listeners_ ) \
     listener->onMouseButtonReleased( this, state_, x ); \
 }
 
-  RawInputMouse::RawInputMouse( RawInputDevice* rawDevice, const bool swapButtons ):
-  Mouse( rawDevice->getSystem(), rawDevice, swapButtons )
+  RawInputMouse::RawInputMouse( RawInputDevicePtr rawDevice, const bool swapButtons ):
+  Mouse( rawDevice->getSystem()->ptr(), rawDevice, swapButtons )
   {
     rawDevice->getSystem()->mapMouse( rawDevice->getRawHandle(), this );
 
@@ -66,7 +66,7 @@ namespace nil {
     if ( state_.movement.relative.x != 0
       || state_.movement.relative.y != 0 )
     {
-      for ( auto listener : listeners_ )
+      for ( auto& listener : listeners_ )
         listener->onMouseMoved( this, state_ );
     }
 
@@ -109,7 +109,7 @@ namespace nil {
     if ( input.usButtonFlags & RI_MOUSE_WHEEL )
     {
       state_.wheel.relative = (short)input.usButtonData;
-      for ( auto listener : listeners_ )
+      for ( auto& listener : listeners_ )
         listener->onMouseWheelMoved( this, state_ );
     }
   }
@@ -121,7 +121,7 @@ namespace nil {
 
   RawInputMouse::~RawInputMouse()
   {
-    auto rawDevice = static_cast<RawInputDevice*>( device_ );
+    auto rawDevice = dynamic_pointer_cast<RawInputDevice>( device_ );
 
     rawDevice->getSystem()->unmapMouse( rawDevice->getRawHandle() );
   }

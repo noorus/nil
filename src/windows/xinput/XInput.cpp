@@ -8,15 +8,6 @@
 
 namespace nil {
 
-  XInput::Functions::Functions(): pfnXInputGetState( nullptr ),
-  pfnXInputSetState( nullptr ), pfnXInputGetCapabilities( nullptr )
-  {
-  }
-
-  XInput::XInput(): version_( Version_None )
-  {
-  }
-
   XInput::InitReturn XInput::initialize()
   {
     module_ = LoadLibraryW( L"xinput1_4.dll" );

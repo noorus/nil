@@ -24,7 +24,7 @@ namespace nil {
 
   // Mouse class
 
-  Mouse::Mouse( System* system, Device* device, const bool swapButtons ):
+  Mouse::Mouse( SystemPtr system, DevicePtr device, const bool swapButtons ):
   DeviceInstance( system, device ), swapButtons_( swapButtons )
   {
   }

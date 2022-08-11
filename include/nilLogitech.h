@@ -21,12 +21,12 @@ namespace nil {
 
     struct GkeyCode
     {
-      unsigned int keyIdx         : 8;  //!< index of the G key or mouse button, for example, 6 for G6 or Button 6
-      unsigned int keyDown        : 1;  //!< key up or down, 1 is down, 0 is up
-      unsigned int mState         : 2;  //!< mState (1, 2 or 3 for M1, M2 and M3)
-      unsigned int mouse          : 1;  //!< indicate if the Event comes from a mouse, 1 is yes, 0 is no.
-      unsigned int reserved1      : 4;  //!< reserved1
-      unsigned int reserved2      : 16; //!< reserved2
+      unsigned int keyIdx    : 8; //!< index of the G key or mouse button, for example, 6 for G6 or Button 6
+      unsigned int keyDown   : 1; //!< key up or down, 1 is down, 0 is up
+      unsigned int mState    : 2; //!< mState (1, 2 or 3 for M1, M2 and M3)
+      unsigned int mouse     : 1; //!< indicate if the Event comes from a mouse, 1 is yes, 0 is no.
+      unsigned int reserved1 : 4; //!< reserved1
+      unsigned int reserved2 : 16; //!< reserved2
     };
 
     using logiGkeyCB = void (__cdecl *)( GkeyCode gkeyCode, const wchar_t* gkeyOrButtonString, void* context );
@@ -45,14 +45,13 @@ namespace nil {
     //! \class GKeyListener
     //! A G-Key listener base class.
     //! Derive your own G-Key input listener from this class.
-    class GKeyListener
-    {
-      public:
-        //! G-Key press event.
-        virtual void onGKeyPressed( GKey key ) = 0;
+    class GKeyListener {
+    public:
+      //! G-Key press event.
+      virtual void onGKeyPressed( GKey key ) = 0;
 
-        //! G-Key release event.
-        virtual void onGKeyReleased( GKey key ) = 0;
+      //! G-Key release event.
+      virtual void onGKeyReleased( GKey key ) = 0;
     };
 
     using GKeyListenerList = list<GKeyListener*>;
@@ -67,42 +66,41 @@ namespace nil {
     //! \class GKeySDK
     //! Logitech G-Key SDK module.
     //! \sa ExternalModule
-    class GKeySDK: public ExternalModule
-    {
-      private:
-        struct Functions {
-          fnLogiGkeyInit pfnLogiGkeyInit;
-          fnLogiGkeyGetMouseButtonString pfnLogiGkeyGetMouseButtonString;
-          fnLogiGkeyGetKeyboardGkeyString pfnLogiGkeyGetKeyboardGkeyString;
-          fnLogiGkeyShutdown pfnLogiGkeyShutdown;
-          Functions();
-        } funcs_; //!< G-Key SDK's import functions
+    class GKeySDK: public ExternalModule {
+    private:
+      struct Functions {
+        fnLogiGkeyInit pfnLogiGkeyInit;
+        fnLogiGkeyGetMouseButtonString pfnLogiGkeyGetMouseButtonString;
+        fnLogiGkeyGetKeyboardGkeyString pfnLogiGkeyGetKeyboardGkeyString;
+        fnLogiGkeyShutdown pfnLogiGkeyShutdown;
+        Functions();
+      } funcs_; //!< G-Key SDK's import functions
 
-        logiGkeyCBContext context_; //!< The context
-        SRWLOCK lock_;  //!< The lock
-        GKeyQueue queue_; //!< The queue
-        GKeyListenerList listeners_;  //!< The listeners
+      logiGkeyCBContext context_; //!< The context
+      SRWLOCK lock_; //!< The lock
+      GKeyQueue queue_; //!< The queue
+      GKeyListenerList listeners_; //!< The listeners
 
-        static void __cdecl keyCallback( GkeyCode key, const wchar_t* name, void* context );
-      public:
-        GKeySDK();
+      static void __cdecl keyCallback( GkeyCode key, const wchar_t* name, void* context );
+    public:
+      GKeySDK();
 
-        //! Try to initialize the G-Key SDK module.
-        InitReturn initialize() override;
+      //! Try to initialize the G-Key SDK module.
+      InitReturn initialize() override;
 
-        //! Add a G-Key event listener.
-        void addListener( GKeyListener* listener );
+      //! Add a G-Key event listener.
+      void addListener( GKeyListener* listener );
 
-        //! Remove a G-Key event listener.
-        void removeListener( GKeyListener* listener );
+      //! Remove a G-Key event listener.
+      void removeListener( GKeyListener* listener );
 
-        //! Update the GKeySDK.
-        void update();
+      //! Update the GKeySDK.
+      void update();
 
-        //! Shut down the G-Key SDK module.
-        void shutdown() override;
+      //! Shut down the G-Key SDK module.
+      void shutdown() override;
 
-        virtual ~GKeySDK();
+      virtual ~GKeySDK();
     };
 
     // Logitech LED SDK (1.01.005.1) implementation
@@ -122,32 +120,31 @@ namespace nil {
     //! \class LedSDK
     //! Logitech Led SDK module.
     //! \sa ExternalModule
-    class LedSDK: public ExternalModule
-    {
-      private:
-        struct Functions {
-          fnLogiLedInit pfnLogiLedInit;
-          fnLogiLedSaveCurrentLighting pfnLogiLedSaveCurrentLighting;
-          fnLogiLedSetLighting pfnLogiLedSetLighting;
-          fnLogiLedRestoreLighting pfnLogiLedRestoreLighting;
-          fnLogiLedShutdown pfnLogiLedShutdown;
-          Functions();
-        } funcs_; //!< Led SDK's import functions
+    class LedSDK: public ExternalModule {
+    private:
+      struct Functions {
+        fnLogiLedInit pfnLogiLedInit;
+        fnLogiLedSaveCurrentLighting pfnLogiLedSaveCurrentLighting;
+        fnLogiLedSetLighting pfnLogiLedSetLighting;
+        fnLogiLedRestoreLighting pfnLogiLedRestoreLighting;
+        fnLogiLedShutdown pfnLogiLedShutdown;
+        Functions();
+      } funcs_; //!< Led SDK's import functions
 
-        bool isOriginalSaved_; //!< Whether original LED state was saved on init or not
-      public:
-        LedSDK();
+      bool isOriginalSaved_; //!< Whether original LED state was saved on init or not
+    public:
+      LedSDK();
 
-        //! Try to initialize the Led SDK module.
-        InitReturn initialize() override;
+      //! Try to initialize the Led SDK module.
+      InitReturn initialize() override;
 
-        //! Set LED lighting to given color value on supported hardware.
-        void setLighting( const Color& color );
+      //! Set LED lighting to given color value on supported hardware.
+      void setLighting( const Color& color );
 
-        //! Shut down the Led SDK module.
-        void shutdown() override;
+      //! Shut down the Led SDK module.
+      void shutdown() override;
 
-        virtual ~LedSDK();
+      virtual ~LedSDK();
     };
 
     //! @}

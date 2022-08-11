@@ -30,8 +30,8 @@ namespace nil {
   };
 #endif
 
-  XInputController::XInputController( XInputDevice* device ):
-  Controller( device->getSystem(), device ), lastPacket_( 0 )
+  XInputController::XInputController( XInputDevicePtr device ):
+  Controller( device->getSystem()->ptr(), device )
   {
     for ( int i = 0; i < cMaxXInputTypes; i++ )
       if ( cXInputTypes[i].first == device->getCapabilities().SubType )
@@ -74,7 +74,7 @@ namespace nil {
 
   void XInputController::update()
   {
-    auto xDevice = dynamic_cast<XInputDevice*>( device_ );
+    auto xDevice = dynamic_pointer_cast<XInputDevice>( device_ );
 
     DWORD ret = system_->getXInput()->funcs_.pfnXInputGetState( xDevice->getXInputID(), &xinputState_ );
     if ( ret == ERROR_DEVICE_NOT_CONNECTED )

@@ -187,10 +187,12 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
 #endif
     // Create quit event & set handler
     stopEvent = CreateEventW( 0, FALSE, FALSE, 0 );
+    if ( !stopEvent )
+      return EXIT_FAILURE;
     SetConsoleCtrlHandler( consoleHandler, TRUE );
 
     // Init system
-    auto system = new nil::System(
+    auto system = nil::System::create(
       GetModuleHandleW( nullptr ),
       GetConsoleWindow(),
       // Using background cooperation mode, because the default console window
@@ -199,6 +201,9 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
       // For applications that own their own window foreground mode works fine.
       nil::Cooperation::Background,
       &gMyListener );
+
+    // Initialize
+    system->initialize();
 
     // Init Logitech G-keys subsystem, if available
     auto ret = system->getLogitechGKeys()->initialize();
@@ -217,7 +222,7 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
       printf_s( "LEDs initialization failed with 0x%X\n", ret );
 
     // Enable all initially connected devices
-    for ( auto device : system->getDevices() )
+    for ( auto& device : system->getDevices() )
       device->enable();
 
     // Color cycling helpers
@@ -251,8 +256,6 @@ int wmain( int argc, wchar_t* argv[], wchar_t* envp[] )
     // Done, shut down
     SetConsoleCtrlHandler( nullptr, FALSE );
     CloseHandle( stopEvent );
-
-    delete system;
 #ifndef _DEBUG
   }
   catch ( nil::Exception& e )

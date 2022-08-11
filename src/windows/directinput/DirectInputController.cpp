@@ -19,10 +19,9 @@ namespace nil {
 
   const unsigned long cJoystickEvents = 64;
 
-  DirectInputController::DirectInputController( DirectInputDevice* device,
+  DirectInputController::DirectInputController( DirectInputDevicePtr device,
   const Cooperation coop ):
-  Controller( device->getSystem(), device ), diDevice_( nullptr ),
-  axisEnum_( 0 ), coop_( coop )
+  Controller( device->getSystem()->ptr(), device ), coop_( coop )
   {
     HRESULT hr = device->getSystem()->dinput_->CreateDevice(
       device->getInstanceID(), &diDevice_, nullptr );

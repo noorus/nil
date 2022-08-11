@@ -39,8 +39,10 @@ namespace nil {
       virtual void onPnPUnplug( const GUID& deviceClass, const wideString& devicePath ) = 0;
     };
 
+    using PnPListenerPtr = PnPListener*;
+
     //! A list of Plug-and-Play event listeners.
-    using PnPListenerList = list<PnPListener*>;
+    using PnPListenerList = list<PnPListenerPtr>;
 
     //! \class RawListener
     //! Raw input event listener base class.
@@ -59,21 +61,23 @@ namespace nil {
       virtual void onRawRemoval( HANDLE handle ) = 0;
     };
 
+    using RawListenerPtr = RawListener*;
+
     //! A list of raw input device listeners.
-    using RawListenerList = list<RawListener*>;
+    using RawListenerList = list<RawListenerPtr>;
 
     //! \class EventMonitor
     //! Monitors for Plug-n-Play (USB) and Raw device events.
     class EventMonitor {
     protected:
       HINSTANCE instance_; //!< Host application instance handle
-      ATOM class_; //!< Class registration handle
-      HWND window_; //!< Window handle
-      HDEVNOTIFY notifications_; //!< Device notifications registration
+      ATOM class_ = 0; //!< Class registration handle
+      HWND window_ = nullptr; //!< Window handle
+      HDEVNOTIFY notifications_ = nullptr; //!< Device notifications registration
       PnPListenerList pnpListeners_; //!< Our Plug-n-Play listeners
       RawListenerList rawListeners_; //!< Our raw listeners
-      void* inputBuffer_; //!< Buffer for input reads
-      unsigned int inputBufferSize_; //!< Size of input buffer
+      void *inputBuffer_ = nullptr; //!< Buffer for input reads
+      unsigned int inputBufferSize_ = 10240; //!< Size of input buffer
       const Cooperation coop_; //!< Cooperation mode
     protected:
       //! \b Internal Register myself for event notifications.
@@ -106,16 +110,16 @@ namespace nil {
       EventMonitor( HINSTANCE instance, const Cooperation coop );
 
       //! Register a listener for Plug-n-Play events.
-      void registerPnPListener( PnPListener* listener );
+      void registerPnPListener( PnPListenerPtr listener );
 
       //! Unregister a listener from Plug-n-Play events.
-      void unregisterPnPListener( PnPListener* listener );
+      void unregisterPnPListener( PnPListenerPtr listener );
 
       //! Register a listener for raw input events.
-      void registerRawListener( RawListener* listener );
+      void registerRawListener( RawListenerPtr listener );
 
       //! Unregister a listener from raw input events.
-      void unregisterRawListener( RawListener* listener );
+      void unregisterRawListener( RawListenerPtr listener );
 
       //! Update the EventMonitor, triggering new events.
       void update();
@@ -142,9 +146,9 @@ namespace nil {
       utf8String name_; //!< Device name
       utf8String manufacturer_; //!< Device manufacturer
       utf8String serial_; //!< Device serial number
-      bool available_; //!< Is this device actually available?
-      bool isXInput_; //!< Am I an XInput device?
-      bool isRDP_; //!< Am I a Remote Desktop device?
+      bool available_ = false; //!< Is this device actually available?
+      bool isXInput_ = false; //!< Am I an XInput device?
+      bool isRDP_ = false; //!< Am I a Remote Desktop device?
 
       void identify(); //!< \b Internal Figure out what I am
     public:
@@ -195,8 +199,10 @@ namespace nil {
       ~HIDRecord() = default;
     };
 
+    using HIDRecordPtr = shared_ptr<HIDRecord>;
+
     //! \brief A list of HID records.
-    using HIDRecordList = list<HIDRecord*>;
+    using HIDRecordList = list<HIDRecordPtr>;
 
     //! \class HIDManager
     //! Manages a list of connected Human Interface Devices.

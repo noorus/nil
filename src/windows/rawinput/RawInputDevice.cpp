@@ -47,7 +47,7 @@ namespace nil {
 
   // RawInputDevice class
 
-  RawInputDevice::RawInputDevice( System* system, DeviceID id,
+  RawInputDevice::RawInputDevice( SystemPtr system, DeviceID id,
   HANDLE rawHandle, wideString& rawPath ):
   RawInputDeviceInfo( rawHandle ),
   Device( system, id, rawInfoResolveType() ),
@@ -63,6 +63,7 @@ namespace nil {
 
       if ( HidD_GetProductString( deviceHandle, &buffer, 256 ) )
       {
+        buffer[255] = '\0';
         // Only replace auto-generated name if fetched one isn't empty
         utf8String tmpName = util::cleanupName( util::wideToUtf8( buffer ) );
         if ( !tmpName.empty() )

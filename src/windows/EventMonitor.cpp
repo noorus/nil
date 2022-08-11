@@ -13,8 +13,7 @@ namespace nil {
     const wchar_t* cEventMonitorClass = L"NIL_MONITOR";
 
     EventMonitor::EventMonitor( HINSTANCE instance, const Cooperation coop ):
-    instance_( instance ), class_( 0 ), window_( nullptr ), notifications_( nullptr ),
-    inputBuffer_( nullptr ), inputBufferSize_( 10240 ), coop_( coop )
+    instance_( instance ), coop_( coop )
     {
       WNDCLASSEXW wx = {
         .cbSize = sizeof( WNDCLASSEXW ),
@@ -39,43 +38,43 @@ namespace nil {
       registerNotifications();
     }
 
-    void EventMonitor::registerPnPListener( PnPListener* listener )
+    void EventMonitor::registerPnPListener( PnPListenerPtr listener )
     {
       pnpListeners_.push_back( listener );
     }
 
-    void EventMonitor::unregisterPnPListener( PnPListener* listener )
+    void EventMonitor::unregisterPnPListener( PnPListenerPtr listener )
     {
       pnpListeners_.remove( listener );
     }
 
-    void EventMonitor::registerRawListener( RawListener* listener )
+    void EventMonitor::registerRawListener( RawListenerPtr listener )
     {
       rawListeners_.push_back( listener );
     }
 
-    void EventMonitor::unregisterRawListener( RawListener* listener )
+    void EventMonitor::unregisterRawListener( RawListenerPtr listener )
     {
       rawListeners_.remove( listener );
     }
 
     void EventMonitor::handleInterfaceArrival( const GUID& deviceClass,
-      const wideString& devicePath )
+    const wideString& devicePath )
     {
-      for ( auto listener : pnpListeners_ )
+      for ( auto& listener : pnpListeners_ )
         listener->onPnPPlug( deviceClass, devicePath );
     }
 
     void EventMonitor::handleInterfaceRemoval( const GUID& deviceClass,
-      const wideString& devicePath )
+    const wideString& devicePath )
     {
-      for ( auto listener : pnpListeners_ )
+      for ( auto& listener : pnpListeners_ )
         listener->onPnPUnplug( deviceClass, devicePath );
     }
 
     void EventMonitor::handleRawArrival( HANDLE handle )
     {
-      for ( auto listener : rawListeners_ )
+      for ( auto& listener : rawListeners_ )
         listener->onRawArrival( handle );
     }
 
@@ -107,18 +106,19 @@ namespace nil {
       // Ping our listeners
       if ( raw->header.dwType == RIM_TYPEMOUSE )
       {
-        for ( auto listener : rawListeners_ )
+        for ( auto& listener : rawListeners_ )
           listener->onRawMouseInput( raw->header.hDevice, raw->data.mouse, sinked );
-      } else if ( raw->header.dwType == RIM_TYPEKEYBOARD )
+      }
+      else if ( raw->header.dwType == RIM_TYPEKEYBOARD )
       {
-        for ( auto listener : rawListeners_ )
+        for ( auto& listener : rawListeners_ )
           listener->onRawKeyboardInput( raw->header.hDevice, raw->data.keyboard, sinked );
       }
     }
 
     void EventMonitor::handleRawRemoval( HANDLE handle )
     {
-      for ( auto listener : rawListeners_ )
+      for ( auto& listener : rawListeners_ )
         listener->onRawRemoval( handle );
     }
 
@@ -186,7 +186,8 @@ namespace nil {
             if ( wParam == DBT_DEVICEARRIVAL )
             {
               me->handleInterfaceArrival( broadcast->dbcc_classguid, broadcast->dbcc_name );
-            } else if ( wParam == DBT_DEVICEREMOVECOMPLETE )
+            }
+            else if ( wParam == DBT_DEVICEREMOVECOMPLETE )
             {
               me->handleInterfaceRemoval( broadcast->dbcc_classguid, broadcast->dbcc_name );
             }
@@ -197,7 +198,8 @@ namespace nil {
           if ( wParam == GIDC_ARRIVAL )
           {
             me->handleRawArrival( (HANDLE)lParam );
-          } else if ( wParam == GIDC_REMOVAL )
+          }
+          else if ( wParam == GIDC_REMOVAL )
           {
             me->handleRawRemoval( (HANDLE)lParam );
           }
@@ -207,7 +209,8 @@ namespace nil {
           if ( GET_RAWINPUT_CODE_WPARAM( wParam ) == RIM_INPUT )
           {
             me->handleRawInput( (HRAWINPUT)lParam, false );
-          } else if ( GET_RAWINPUT_CODE_WPARAM( wParam ) == RIM_INPUTSINK )
+          }
+          else if ( GET_RAWINPUT_CODE_WPARAM( wParam ) == RIM_INPUTSINK )
           {
             me->handleRawInput( (HRAWINPUT)lParam, true );
           }
@@ -235,10 +238,10 @@ namespace nil {
       rawDevices[0].usUsagePage = USBUsagePage_Desktop;
       rawDevices[0].usUsage = USBDesktopUsage_Mice;
 
-      rawDevices[0].dwFlags = RIDEV_REMOVE;
-      rawDevices[0].hwndTarget = nullptr;
-      rawDevices[0].usUsagePage = USBUsagePage_Desktop;
-      rawDevices[0].usUsage = USBDesktopUsage_Keyboards;
+      rawDevices[1].dwFlags = RIDEV_REMOVE;
+      rawDevices[1].hwndTarget = nullptr;
+      rawDevices[1].usUsagePage = USBUsagePage_Desktop;
+      rawDevices[1].usUsage = USBDesktopUsage_Keyboards;
 
       RegisterRawInputDevices( rawDevices, 2, sizeof( RAWINPUTDEVICE ) );
 

@@ -51,6 +51,10 @@ namespace nil {
   using std::make_shared;
   using std::make_unique;
 
+  class System;
+
+  using SystemPtr = shared_ptr<System>;
+
   //! \struct Color
   //! A color value.
   struct Color
@@ -93,9 +97,9 @@ namespace nil {
   //! Three-dimensional integer vector.
   struct Vector3i
   {
-    int32_t x;  //!< X-axis value
-    int32_t y;  //!< Y-axis value
-    int32_t z;  //!< Z-axis value
+    int32_t x; //!< X-axis value
+    int32_t y; //!< Y-axis value
+    int32_t z; //!< Z-axis value
 
     inline Vector3i(): x( 0 ), y( 0 ), z( 0 ) {}
 

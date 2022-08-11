@@ -131,7 +131,7 @@ namespace nil {
     else if ( type_ == DirectInput )
     {
       error.code = hr;
-      for ( auto dinputError : c_dinputErrors )
+      for ( const auto& dinputError : c_dinputErrors )
       {
         if ( dinputError.code == error.code )
         {

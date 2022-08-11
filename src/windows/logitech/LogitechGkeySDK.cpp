@@ -80,7 +80,7 @@ namespace nil {
 
       while ( !queue_.empty() )
       {
-        for ( auto listener : listeners_ )
+        for ( auto& listener : listeners_ )
         {
           if ( queue_.front().keyDown )
             listener->onGKeyPressed( queue_.front().keyIdx );

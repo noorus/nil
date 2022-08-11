@@ -14,22 +14,22 @@ namespace nil {
 
   void ControllerState::reset()
   {
-    for ( auto button : buttons )
+    for ( auto& button : buttons )
       button.pushed = false;
 
-    for ( auto axis : axes )
+    for ( auto& axis : axes )
       axis.absolute = NIL_REAL_ZERO;
 
-    for ( auto slider : sliders )
+    for ( auto& slider : sliders )
       slider.absolute = Vector2f::ZERO;
 
-    for ( auto pov : povs )
+    for ( auto& pov : povs )
       pov.direction = POV::Centered;
   }
 
   // Controller class
 
-  Controller::Controller( System* system, Device* device ):
+  Controller::Controller( SystemPtr system, DevicePtr device ):
   DeviceInstance( system, device ), type_( Controller_Unknown )
   {
   }
@@ -37,7 +37,7 @@ namespace nil {
   void Controller::fireChanges( const ControllerState& lastState )
   {
     // Notify all our listeners
-    for ( auto listener : listeners_ )
+    for ( auto& listener : listeners_ )
     {
       // Buttons
       for ( size_t i = 0; i < state_.buttons.size(); i++ )

@@ -36,9 +36,8 @@ namespace nil {
 
 #endif
 
-  XInputDevice::XInputDevice( System* system, DeviceID id, int xinputID ):
-  Device( system, id, Device_Controller ), xinputId_( xinputID ),
-  identified_( false )
+  XInputDevice::XInputDevice( SystemPtr system, DeviceID id, int xinputID ):
+  Device( system, id, Device_Controller ), xinputId_( xinputID )
   {
     memset( &caps_, NULL, sizeof( XINPUT_CAPABILITIES ) );
     name_ = cXInputDefaultName;

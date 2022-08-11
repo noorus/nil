@@ -5,9 +5,8 @@
 
 namespace nil {
 
-  Device::Device( System* system, DeviceID id, Type type ):
-  type_( type ), system_( system ), id_( id ), status_( Status_Pending ),
-  savedStatus_( Status_Pending ), instance_( nullptr ), disconnectFlag_( false )
+  Device::Device( SystemPtr system, DeviceID id, Type type ):
+  type_( type ), system_( system ), id_( id )
   {
     // Get our type-specific index
     switch ( type_ )
@@ -34,44 +33,44 @@ namespace nil {
 
     if ( getHandler() == Handler_XInput )
     {
-      auto xDevice = dynamic_cast<XInputDevice*>( this );
+      auto xDevice = dynamic_pointer_cast<XInputDevice>( ptr() );
       if ( !xDevice )
         NIL_EXCEPT( "Dynamic cast failed for XInputDevice" );
       if ( getType() == Device_Controller )
       {
-        instance_ = new XInputController( xDevice );
-        system_->controllerEnabled( this, (Controller*)instance_ );
+        instance_ = make_shared<XInputController>( xDevice )->ptr();
+        system_->controllerEnabled( ptr(), dynamic_pointer_cast<Controller>( instance_->ptr() ) );
       }
       else
         NIL_EXCEPT( "Unsupport device type for XInput; Cannot instantiate device!" );
     }
     else if ( getHandler() == Handler_DirectInput )
     {
-      auto diDevice = dynamic_cast<DirectInputDevice*>( this );
+      auto diDevice = dynamic_pointer_cast<DirectInputDevice>( ptr() );
       if ( !diDevice )
         NIL_EXCEPT( "Dynamic cast failed for DirectInputDevice" );
       if ( getType() == Device_Controller )
       {
-        instance_ = new DirectInputController( diDevice, system_->coop_ );
-        system_->controllerEnabled( this, (Controller*)instance_ );
+        instance_ = make_shared<DirectInputController>( diDevice, system_->coop_ )->ptr();
+        system_->controllerEnabled( ptr(), dynamic_pointer_cast<Controller>( instance_->ptr() ) );
       }
       else
         NIL_EXCEPT( "Unsupported device type for DirectInput; Cannot instantiate device!" );
     }
     else if ( getHandler() == Handler_RawInput )
     {
-      auto rawDevice = dynamic_cast<RawInputDevice*>( this );
+      auto rawDevice = dynamic_pointer_cast<RawInputDevice>( ptr() );
       if ( !rawDevice )
         NIL_EXCEPT( "Dynamic cast failed for RawInputDevice" );
       if ( getType() == Device_Mouse )
       {
-        instance_ = new RawInputMouse( rawDevice, system_->getDefaultMouseButtonSwapping() );
-        system_->mouseEnabled( this, (Mouse*)instance_ );
+        instance_ = make_shared<RawInputMouse>( rawDevice, system_->getDefaultMouseButtonSwapping() )->ptr();
+        system_->mouseEnabled( ptr(), dynamic_pointer_cast<Mouse>( instance_->ptr() ) );
       }
       else if ( getType() == Device_Keyboard )
       {
-        instance_ = new RawInputKeyboard( rawDevice );
-        system_->keyboardEnabled( this, (Keyboard*)instance_ );
+        instance_ = make_shared<RawInputKeyboard>( rawDevice )->ptr();
+        system_->keyboardEnabled( ptr(), dynamic_pointer_cast<Keyboard>( instance_->ptr() ) );
       }
       else
         NIL_EXCEPT( "Unsupported device type for RawInput; cannot instantiate device!" );
@@ -82,7 +81,7 @@ namespace nil {
 
   DeviceInstance* Device::getInstance()
   {
-    return instance_;
+    return instance_.get();
   }
 
   void Device::update()
@@ -99,20 +98,20 @@ namespace nil {
     switch ( getType() )
     {
       case Device_Controller:
-        system_->controllerDisabled( this, (Controller*)instance_ );
+        system_->controllerDisabled( ptr(), dynamic_pointer_cast<Controller>( instance_->ptr() ) );
       break;
       case Device_Mouse:
-        system_->mouseDisabled( this, (Mouse*)instance_ );
+        system_->mouseDisabled( ptr(), dynamic_pointer_cast<Mouse>( instance_->ptr() ) );
       break;
       case Device_Keyboard:
-        system_->keyboardDisabled( this, (Keyboard*)instance_ );
+        system_->keyboardDisabled( ptr(), dynamic_pointer_cast<Keyboard>( instance_->ptr() ) );
       break;
       default:
         NIL_EXCEPT( "Unimplemented device type" );
       break;
     }
 
-    SAFE_DELETE( instance_ );
+    instance_.reset();
   }
 
   void Device::flagDisconnected()
@@ -139,7 +138,7 @@ namespace nil {
 
   System* Device::getSystem()
   {
-    return system_;
+    return system_.get();
   }
 
   DeviceID Device::getID() const

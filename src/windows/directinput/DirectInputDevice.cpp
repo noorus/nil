@@ -26,7 +26,7 @@ namespace nil {
     }
   }
 
-  DirectInputDevice::DirectInputDevice( System* system, DeviceID id,
+  DirectInputDevice::DirectInputDevice( SystemPtr system, DeviceID id,
   LPCDIDEVICEINSTANCEW instance ):
   Device( system, id, resolveDIDeviceType( instance->dwDevType ) ),
   pid_( instance->guidProduct ),

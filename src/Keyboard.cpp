@@ -5,7 +5,7 @@
 
 namespace nil {
 
-  Keyboard::Keyboard( System* system, Device* device ):
+  Keyboard::Keyboard( SystemPtr system, DevicePtr device ):
   DeviceInstance( system, device )
   {
     //

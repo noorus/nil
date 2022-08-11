@@ -60,15 +60,28 @@ namespace nil {
     SystemParametersInfoW( SPI_SETFILTERKEYS, sizeof( FILTERKEYS ), &storedFilterKeys, 0 );
   }
 
-  System::System( HINSTANCE instance, HWND window, const Cooperation coop, SystemListener* listener )
-      : idPool_( 0 ), mouseIdPool_( 0 ), keyboardIdPool_( 0 ),
-        controllerIdPool_( 0 ), dinput_( nullptr ), instance_( instance ), window_( window ),
-        isInitializing_( true ),
-        listener_( listener ), xinput_( nullptr ), coop_( coop )
+  System::System( HINSTANCE instance, HWND window, const Cooperation coop, SystemListener* listener ): 
+  instance_( instance ), window_( window ), listener_( listener ), coop_( coop )
   {
     assert( listener_ );
+  }
 
-    // Validate the passes window handle
+  //! Factory function. Use this to construct your instance.
+  //! \param  instance  Handle of the host instance.
+  //! \param  window    Handle of the host window.
+  //! \param  coop      Cooperation mode.
+  //! \param  listener  Listener for system events.
+  SystemPtr System::create( HINSTANCE instance, HWND window, const Cooperation coop, SystemListener* listener )
+  {
+    return SystemPtr( new System( instance, window, coop, listener ) );
+  }
+
+  void System::initialize()
+  {
+    if ( !isInitializing_ )
+      return;
+
+    // Validate the passed window handle
     if ( !IsWindow( window_ ) )
       NIL_EXCEPT( "Window handle is invalid" );
 
@@ -77,28 +90,27 @@ namespace nil {
     internals_.disableHotKeyHarassment();
 
     // Init Logitech SDKs where available
-    logitechGkeys_ = new logitech::GKeySDK();
-    logitechLeds_ = new logitech::LedSDK();
+    logitechGkeys_ = make_unique<logitech::GKeySDK>();
+    logitechLeds_ = make_unique<logitech::LedSDK>();
 
     // Init XInput subsystem
-    xinput_ = new XInput();
+    xinput_ = make_unique<XInput>();
     if ( xinput_->initialize() != ExternalModule::Initialization_OK )
       NIL_EXCEPT( "Loading XInput failed" );
 
     // Create DirectInput instance
-    auto hr = DirectInput8Create( instance_, DIRECTINPUT_VERSION,
-      IID_IDirectInput8W, (LPVOID*)&dinput_, nullptr );
+    auto hr = DirectInput8Create( instance_, DIRECTINPUT_VERSION, IID_IDirectInput8W, (LPVOID*)&dinput_, nullptr );
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, "Could not instantiate DirectInput 8" );
 
     // Initialize our event monitor
-    eventMonitor_ = new windows::EventMonitor( instance_, coop_ );
+    eventMonitor_ = make_unique<windows::EventMonitor>( instance_, coop_ );
 
     // Initialize our HID manager
-    hidManager_ = new windows::HIDManager();
+    hidManager_ = make_unique<windows::HIDManager>();
 
     // Register the HID manager and ourselves as PnP event listeners
-    eventMonitor_->registerPnPListener( hidManager_ );
+    eventMonitor_->registerPnPListener( hidManager_.get() );
     eventMonitor_->registerPnPListener( this );
 
     // Register ourselves as a raw event listener
@@ -129,8 +141,7 @@ namespace nil {
     UNREFERENCED_PARAMETER( deviceClass );
     UNREFERENCED_PARAMETER( devicePath );
 
-    // Refresh all currently connected devices,
-    // since IDirectInput8::FindDevice doesn't do jack shit
+    // IDirectInput8::FindDevice does nothing, so just force a full refresh
     refreshDevices();
   }
 
@@ -139,8 +150,7 @@ namespace nil {
     UNREFERENCED_PARAMETER( deviceClass );
     UNREFERENCED_PARAMETER( devicePath );
 
-    // Refresh all currently connected devices,
-    // since IDirectInput8::FindDevice doesn't do jack shit
+    // IDirectInput8::FindDevice does nothing, so just force a full refresh
     refreshDevices();
   }
 
@@ -156,12 +166,12 @@ namespace nil {
     GetRawInputDeviceInfoW( handle, RIDI_DEVICENAME, &rawPath[0], &pathLength );
     rawPath.resize( rawPath.length() - 1 );
 
-    for ( auto device : devices_ )
+    for ( auto& device : devices_ )
     {
       if ( device->getHandler() != Device::Handler_RawInput )
         continue;
 
-      auto rawDevice = static_cast<RawInputDevice*>( device );
+      auto rawDevice = dynamic_pointer_cast<RawInputDevice>( device );
 
       if ( _wcsicmp( rawDevice->getRawPath().c_str(), rawPath.c_str() ) == 0 )
       {
@@ -170,7 +180,7 @@ namespace nil {
       }
     }
 
-    auto device = new RawInputDevice( this, getNextID(), handle, rawPath );
+    auto device = make_shared<RawInputDevice>( ptr(), getNextID(), handle, rawPath )->ptr();
 
     if ( isInitializing() )
       device->setStatus( Device::Status_Connected );
@@ -208,12 +218,12 @@ namespace nil {
 
   void System::onRawRemoval( HANDLE handle )
   {
-    for ( auto device : devices_ )
+    for ( auto& device : devices_ )
     {
       if ( device->getHandler() != Device::Handler_RawInput )
         continue;
 
-      auto rawDevice = static_cast<RawInputDevice*>( device );
+      auto rawDevice = dynamic_pointer_cast<RawInputDevice>( device );
 
       if ( rawDevice->getRawHandle() == handle )
       {
@@ -249,7 +259,7 @@ namespace nil {
     for ( int i = 0; i < XUSER_MAX_COUNT; i++ )
     {
       xinputIds_[i] = getNextID();
-      auto device = new XInputDevice( this, xinputIds_[i], i );
+      auto device = make_shared<XInputDevice>( ptr(), xinputIds_[i], i )->ptr();
       devices_.push_back( device );
     }
   }
@@ -258,7 +268,7 @@ namespace nil {
   {
     identifyXInputDevices();
 
-    for ( Device* device : devices_ )
+    for ( auto& device : devices_ )
       if ( device->getHandler() == Device::Handler_DirectInput )
       {
         device->saveStatus();
@@ -270,18 +280,18 @@ namespace nil {
     if ( FAILED( hr ) )
       NIL_EXCEPT_DINPUT( hr, "Could not enumerate DirectInput devices!" );
 
-    for ( Device* device : devices_ )
+    for ( auto& device : devices_ )
       if ( device->getHandler() == Device::Handler_DirectInput
         && device->getSavedStatus() == Device::Status_Connected
         && device->getStatus() == Device::Status_Pending )
         deviceDisconnect( device );
 
     XINPUT_STATE state;
-    for ( Device* device : devices_ )
+    for ( auto& device : devices_ )
     {
       if ( device->getHandler() == Device::Handler_XInput )
       {
-        auto xDevice = static_cast<XInputDevice*>( device );
+        auto xDevice = dynamic_pointer_cast<XInputDevice>( device );
         auto status = xinput_->funcs_.pfnXInputGetState( xDevice->getXInputID(), &state );
         if ( status == ERROR_DEVICE_NOT_CONNECTED )
         {
@@ -308,16 +318,16 @@ namespace nil {
   {
     auto system = reinterpret_cast<System*>( referer );
 
-    for ( auto identifier : system->xinputDeviceIds_ )
+    for ( auto& identifier : system->xinputDeviceIds_ )
       if ( instance->guidProduct.Data1 == identifier )
         return DIENUM_CONTINUE;
 
-    for ( auto device : system->devices_ )
+    for ( auto& device : system->devices_ )
     {
       if ( device->getHandler() != Device::Handler_DirectInput )
         continue;
 
-      auto diDevice = static_cast<DirectInputDevice*>( device );
+      auto diDevice = static_cast<DirectInputDevice*>( device.get() );
 
       if ( diDevice->getInstanceID() == instance->guidInstance )
       {
@@ -330,7 +340,7 @@ namespace nil {
       }
     }
 
-    Device* device = new DirectInputDevice( system, system->getNextID(), instance );
+    auto device = make_shared<DirectInputDevice>( system->ptr(), system->getNextID(), instance )->ptr();
 
     if ( system->isInitializing() )
       device->setStatus( Device::Status_Connected );
@@ -342,52 +352,52 @@ namespace nil {
     return DIENUM_CONTINUE;
   }
 
-  void System::deviceConnect( Device* device )
+  void System::deviceConnect( DevicePtr device )
   {
     device->onConnect();
-    listener_->onDeviceConnected( device );
+    listener_->onDeviceConnected( device.get() );
   }
 
-  void System::deviceDisconnect( Device* device )
+  void System::deviceDisconnect( DevicePtr device )
   {
     device->onDisconnect();
-    listener_->onDeviceDisconnected( device );
+    listener_->onDeviceDisconnected( device.get() );
   }
 
-  void System::mouseEnabled( Device* device, Mouse* instance )
+  void System::mouseEnabled( DevicePtr device, MousePtr instance )
   {
-    listener_->onMouseEnabled( device, instance );
+    listener_->onMouseEnabled( device.get(), instance.get() );
   }
 
-  void System::mouseDisabled( Device* device, Mouse* instance )
+  void System::mouseDisabled( DevicePtr device, MousePtr instance )
   {
-    listener_->onMouseDisabled( device, instance );
+    listener_->onMouseDisabled( device.get(), instance.get() );
   }
 
-  void System::keyboardEnabled( Device* device, Keyboard* instance )
+  void System::keyboardEnabled( DevicePtr device, KeyboardPtr instance )
   {
-    listener_->onKeyboardEnabled( device, instance );
+    listener_->onKeyboardEnabled( device.get(), instance.get() );
   }
 
-  void System::keyboardDisabled( Device* device, Keyboard* instance )
+  void System::keyboardDisabled( DevicePtr device, KeyboardPtr instance )
   {
-    listener_->onKeyboardDisabled( device, instance );
+    listener_->onKeyboardDisabled( device.get(), instance.get() );
   }
 
-  void System::controllerEnabled( Device* device, Controller* instance )
+  void System::controllerEnabled( DevicePtr device, ControllerPtr instance )
   {
-    listener_->onControllerEnabled( device, instance );
+    listener_->onControllerEnabled( device.get(), instance.get() );
   }
 
-  void System::controllerDisabled( Device* device, Controller* instance )
+  void System::controllerDisabled( DevicePtr device, ControllerPtr instance )
   {
-    listener_->onControllerDisabled( device, instance );
+    listener_->onControllerDisabled( device.get(), instance.get() );
   }
 
   void System::identifyXInputDevices()
   {
     xinputDeviceIds_.clear();
-    for ( auto hidRecord : hidManager_->getRecords() )
+    for ( auto& hidRecord : hidManager_->getRecords() )
       if ( hidRecord->isXInput() )
         xinputDeviceIds_.push_back( hidRecord->getIdentifier() );
   }
@@ -424,7 +434,7 @@ namespace nil {
 
     // Make sure that we disconnect failed devices,
     // and update the rest
-    for ( Device* device : devices_ )
+    for ( auto& device : devices_ )
       if ( device->isDisconnectFlagged() )
         deviceDisconnect( device );
       else
@@ -437,33 +447,25 @@ namespace nil {
 
   logitech::GKeySDK* System::getLogitechGKeys()
   {
-    return logitechGkeys_;
+    return logitechGkeys_.get();
   }
 
   logitech::LedSDK* System::getLogitechLEDs()
   {
-    return logitechLeds_;
+    return logitechLeds_.get();
   }
 
   XInput* System::getXInput()
   {
-    return xinput_;
+    return xinput_.get();
   }
 
   System::~System()
   {
-    for ( Device* device : devices_ )
-    {
+    for ( auto& device : devices_ )
       device->disable();
-      delete device;
-    }
 
-    SAFE_DELETE( hidManager_ );
-    SAFE_DELETE( eventMonitor_ );
     SAFE_RELEASE( dinput_ );
-    SAFE_DELETE( logitechLeds_ );
-    SAFE_DELETE( logitechGkeys_ );
-    SAFE_DELETE( xinput_ );
 
     // Restore accessiblity features
     internals_.restore();
