@@ -57,7 +57,7 @@ namespace nil {
     identified_ = true;
   }
 
-  const DeviceID XInputDevice::getStaticID() const
+  DeviceID XInputDevice::getStaticID() const
   {
     // Static ID for XInput devices:
     // 4 bits of handler ID, 28 bits of XInput controller ID (1-4)
@@ -87,12 +87,12 @@ namespace nil {
     Device::setStatus( status );
   }
 
-  const Device::Handler XInputDevice::getHandler() const
+  Device::Handler XInputDevice::getHandler() const
   {
     return Device::Handler_XInput;
   }
 
-  const int XInputDevice::getXInputID() const
+  int XInputDevice::getXInputID() const
   {
     return xinputId_;
   }

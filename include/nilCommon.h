@@ -45,13 +45,14 @@ namespace nil {
         Status_Pending, //!< Pending refresh
         Status_Connected //!< Up-to-date and available
       };
+
     protected:
+      Type type_; //!< Device type
+      System* system_; //!< My owner
       DeviceID id_; //!< Unique identifier, only valid per session
       Status status_; //!< Current status
       Status savedStatus_; //!< Status backup when updating
       utf8String name_; //!< Device name
-      Type type_; //!< Device type
-      System* system_; //!< My owner
       DeviceInstance* instance_; //!< My instance, if created
       bool disconnectFlag_; //!< Whether I am flagged for disconnection or not
       int typedIndex_; //!< This is a device-type-specific index for the device
@@ -61,7 +62,7 @@ namespace nil {
       virtual void update(); //!< Update our instance
       virtual void setStatus( Status status ); //!< Set status
       virtual void saveStatus(); //!< Backup current status
-      virtual const Status getSavedStatus(); //!< Get backed up status
+      virtual Status getSavedStatus(); //!< Get backed up status
       virtual void onDisconnect(); //!< On unplugged or otherwise disabled
       virtual void onConnect(); //!< On plugged or otherwise enabled
       virtual void flagDisconnected(); //!< Flag as disconnected for deletion on next update
@@ -69,14 +70,14 @@ namespace nil {
       virtual void enable(); //!< Enable the device, creating a DeviceInstance
       virtual void disable(); //!< Disable the device, destroying it's DeviceInstance
       virtual DeviceInstance* getInstance(); //!< Get my instance, if available
-      virtual const DeviceID getID() const; //!< Get session-specific identifier
-      virtual const DeviceID getStaticID() const = 0; //!< Get static identifier
-      virtual const Handler getHandler() const = 0; //!< Get my handler
-      virtual const Type getType() const; //!< Get my type
-      virtual const Status getStatus() const; //!< Get my status
+      virtual DeviceID getID() const; //!< Get session-specific identifier
+      virtual DeviceID getStaticID() const = 0; //!< Get static identifier
+      virtual Handler getHandler() const = 0; //!< Get my handler
+      virtual Type getType() const; //!< Get my type
+      virtual Status getStatus() const; //!< Get my status
       virtual const utf8String& getName() const; //!< Get my name
       virtual System* getSystem(); //!< Get my owning system
-      virtual const bool isDisconnectFlagged() const; //!< Am I flagged for disconnection?
+      virtual bool isDisconnectFlagged() const; //!< Am I flagged for disconnection?
   };
 
   //! A list of devices.
@@ -331,7 +332,7 @@ namespace nil {
       void update() override = 0;
 
       //! Get the Controller type.
-      virtual const Type getType() const;
+      virtual Type getType() const;
 
       //! Get the Controller state.
       virtual const ControllerState& getState() const;

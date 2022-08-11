@@ -34,3 +34,4 @@ doc/
 lib/
 *.db
 *.VC.db*
+.vs/

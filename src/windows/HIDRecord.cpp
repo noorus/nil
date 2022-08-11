@@ -10,9 +10,9 @@ namespace nil {
   namespace windows {
 
     HIDRecord::HIDRecord( const wideString& path, HANDLE handle ):
-      path_( path ), isXInput_( false ), isRDP_( false ), available_( false )
+    path_( path ), available_( false ), isXInput_( false ), isRDP_( false )
     {
-      HIDD_ATTRIBUTES attributes = { sizeof( HIDD_ATTRIBUTES ) };
+      HIDD_ATTRIBUTES attributes = { .Size = sizeof( HIDD_ATTRIBUTES ) };
 
       if ( HidD_GetAttributes( handle, &attributes ) )
       {

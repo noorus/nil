@@ -9,7 +9,7 @@ Should work fine on Windows 8, possibly on Windows 7, with few modifications.
 
 ### Building
 
-NIL is compiled with C++17, and by default builds as a statically linked library under Visual Studio 2019.  
+NIL is compiled with C++20, and by default builds as a statically linked library under Visual Studio 2022.  
 It uses certain APIs from the Windows Driver Kit. WDK is nowadays included in the Windows SDK.
 
 ### Features

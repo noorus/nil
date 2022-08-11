@@ -12,7 +12,7 @@ namespace nil {
   }
 
   Exception::Exception( const utf8String& description, const utf8String& source, Type type ):
-  description_( description ), source_( source ), type_( type )
+  description_( description ), type_( type ), source_( source )
   {
     handleAdditional();
   }
@@ -58,7 +58,7 @@ namespace nil {
   struct DirectInputErrorEntry {
   public:
     uint32_t code;
-    wchar_t* description;
+    const wchar_t* description;
   };
 
   const int c_dinputErrorCount = 32;
@@ -100,7 +100,7 @@ namespace nil {
   };
 
   Exception::Exception( const utf8String& description, const utf8String& source, HRESULT hr, Type type ):
-  description_( description ), source_( source ), type_( type )
+  description_( description ), type_( type ), source_( source )
   {
     handleAdditional( hr );
   }

@@ -79,7 +79,8 @@ namespace nil {
 
     void HIDManager::initialize()
     {
-      SP_DEVICE_INTERFACE_DATA interfaceData = { sizeof( SP_DEVICE_INTERFACE_DATA ) };
+      SP_DEVICE_INTERFACE_DATA interfaceData = {
+        .cbSize = sizeof( SP_DEVICE_INTERFACE_DATA ) };
 
       auto info = SetupDiGetClassDevsW( &g_HIDInterfaceGUID,
         nullptr, nullptr, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
@@ -100,7 +101,7 @@ namespace nil {
           NIL_EXCEPT( "Memory allocation failed" );
         detailData->cbSize = sizeof( SP_INTERFACE_DEVICE_DETAIL_DATA_W );
 
-        SP_DEVINFO_DATA deviceData = { sizeof( SP_DEVINFO_DATA ) };
+        SP_DEVINFO_DATA deviceData = { .cbSize = sizeof( SP_DEVINFO_DATA ) };
 
         if ( SetupDiGetDeviceInterfaceDetailW( info, &interfaceData,
           detailData, length, nullptr, &deviceData ) )

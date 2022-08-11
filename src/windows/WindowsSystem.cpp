@@ -60,12 +60,11 @@ namespace nil {
     SystemParametersInfoW( SPI_SETFILTERKEYS, sizeof( FILTERKEYS ), &storedFilterKeys, 0 );
   }
 
-  System::System( HINSTANCE instance, HWND window, const Cooperation coop,
-  SystemListener* listener ): coop_( coop ),
-  window_( window ), instance_( instance ), dinput_( nullptr ),
-  idPool_( 0 ), isInitializing_( true ),
-  listener_( listener ), mouseIdPool_( 0 ), keyboardIdPool_( 0 ),
-  controllerIdPool_( 0 ), xinput_( nullptr )
+  System::System( HINSTANCE instance, HWND window, const Cooperation coop, SystemListener* listener )
+      : idPool_( 0 ), mouseIdPool_( 0 ), keyboardIdPool_( 0 ),
+        controllerIdPool_( 0 ), dinput_( nullptr ), instance_( instance ), window_( window ),
+        isInitializing_( true ),
+        listener_( listener ), xinput_( nullptr ), coop_( coop )
   {
     assert( listener_ );
 
@@ -398,7 +397,7 @@ namespace nil {
     return devices_;
   }
 
-  const bool System::isInitializing() const
+  bool System::isInitializing() const
   {
     return isInitializing_;
   }

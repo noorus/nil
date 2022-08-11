@@ -13,22 +13,22 @@ namespace nil {
     const wchar_t* cEventMonitorClass = L"NIL_MONITOR";
 
     EventMonitor::EventMonitor( HINSTANCE instance, const Cooperation coop ):
-      instance_( instance ), class_( 0 ), window_( nullptr ), notifications_( nullptr ),
-      inputBuffer_( nullptr ), coop_( coop ),
-      inputBufferSize_( 10240 ) // 10KB default
+    instance_( instance ), class_( 0 ), window_( nullptr ), notifications_( nullptr ),
+    inputBuffer_( nullptr ), inputBufferSize_( 10240 ), coop_( coop )
     {
-      WNDCLASSEXW wx = { 0 };
-      wx.cbSize = sizeof( WNDCLASSEXW );
-      wx.lpfnWndProc = wndProc;
-      wx.hInstance = instance_;
-      wx.lpszClassName = cEventMonitorClass;
+      WNDCLASSEXW wx = {
+        .cbSize = sizeof( WNDCLASSEXW ),
+        .style = 0,
+        .lpfnWndProc = wndProc,
+        .hInstance = instance_,
+        .lpszClassName = cEventMonitorClass };
 
       class_ = RegisterClassExW( &wx );
       if ( !class_ )
         NIL_EXCEPT_WINAPI( "Window class registration failed" );
 
       window_ = CreateWindowExW(
-        0, (LPCWSTR)class_, nullptr, 0, 0, 0, 0, 0, 0, 0, instance_, this );
+        0, reinterpret_cast<LPCWSTR>( class_ ), nullptr, 0, 0, 0, 0, 0, 0, 0, instance_, this );
       if ( !window_ )
         NIL_EXCEPT_WINAPI( "Window creation failed" );
 
@@ -266,7 +266,7 @@ namespace nil {
       if ( window_ )
         DestroyWindow( window_ );
       if ( class_ )
-        UnregisterClassW( (LPCWSTR)class_, instance_ );
+        UnregisterClassW( reinterpret_cast<LPCWSTR>( class_ ), instance_ );
     }
 
   }

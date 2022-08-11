@@ -6,8 +6,6 @@
 
 #ifdef NIL_PLATFORM_WINDOWS
 
-# define NIL_LOAD_SDK_FUNC(x) funcs_.pfn##x##=(fn##x##)GetProcAddress(module_,#x)
-
 namespace nil {
 
   namespace logitech {
@@ -43,10 +41,10 @@ namespace nil {
       if ( !module_ )
         return Initialization_ModuleNotFound;
 
-      NIL_LOAD_SDK_FUNC( LogiGkeyInit );
-      NIL_LOAD_SDK_FUNC( LogiGkeyGetMouseButtonString );
-      NIL_LOAD_SDK_FUNC( LogiGkeyGetKeyboardGkeyString );
-      NIL_LOAD_SDK_FUNC( LogiGkeyShutdown );
+      funcs_.pfnLogiGkeyInit = (fnLogiGkeyInit)GetProcAddress( module_, "LogiGkeyInit" );
+      funcs_.pfnLogiGkeyGetMouseButtonString = (fnLogiGkeyGetMouseButtonString)GetProcAddress( module_, "LogiGkeyGetMouseButtonString" );
+      funcs_.pfnLogiGkeyGetKeyboardGkeyString = (fnLogiGkeyGetKeyboardGkeyString)GetProcAddress( module_, "LogiGkeyGetKeyboardGkeyString" );
+      funcs_.pfnLogiGkeyShutdown = (fnLogiGkeyShutdown)GetProcAddress( module_, "LogiGkeyShutdown" );
 
       if ( !funcs_.pfnLogiGkeyInit
         || !funcs_.pfnLogiGkeyGetMouseButtonString

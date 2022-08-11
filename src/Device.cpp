@@ -5,10 +5,9 @@
 
 namespace nil {
 
-  Device::Device( System* system, DeviceID id, Type type ): system_( system ),
-  id_( id ), type_( type ), status_( Status_Pending ),
-  savedStatus_( Status_Pending ), instance_( nullptr ),
-  disconnectFlag_( false )
+  Device::Device( System* system, DeviceID id, Type type ):
+  type_( type ), system_( system ), id_( id ), status_( Status_Pending ),
+  savedStatus_( Status_Pending ), instance_( nullptr ), disconnectFlag_( false )
   {
     // Get our type-specific index
     switch ( type_ )
@@ -121,7 +120,7 @@ namespace nil {
     disconnectFlag_ = true;
   }
 
-  const bool Device::isDisconnectFlagged() const
+  bool Device::isDisconnectFlagged() const
   {
     return disconnectFlag_;
   }
@@ -143,7 +142,7 @@ namespace nil {
     return system_;
   }
 
-  const DeviceID Device::getID() const
+  DeviceID Device::getID() const
   {
     return id_;
   }
@@ -153,7 +152,7 @@ namespace nil {
     savedStatus_ = status_;
   }
 
-  const Device::Status Device::getSavedStatus()
+  Device::Status Device::getSavedStatus()
   {
     return savedStatus_;
   }
@@ -163,7 +162,7 @@ namespace nil {
     return name_;
   }
 
-  const Device::Type Device::getType() const
+  Device::Type Device::getType() const
   {
     return type_;
   }
@@ -173,7 +172,7 @@ namespace nil {
     status_ = status;
   }
 
-  const Device::Status Device::getStatus() const
+  Device::Status Device::getStatus() const
   {
     return status_;
   }

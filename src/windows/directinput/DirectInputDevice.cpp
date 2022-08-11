@@ -38,12 +38,12 @@ namespace nil {
       name_ = tmpName;
   }
 
-  const Device::Handler DirectInputDevice::getHandler() const
+  Device::Handler DirectInputDevice::getHandler() const
   {
     return Device::Handler_DirectInput;
   }
 
-  const DeviceID DirectInputDevice::getStaticID() const
+  DeviceID DirectInputDevice::getStaticID() const
   {
     // Static ID for DirectInput devices:
     // 4 bits of handler ID, 28 bits of unique id (hashed instance GUID)

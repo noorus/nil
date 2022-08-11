@@ -30,8 +30,8 @@ namespace nil {
     private:
       Exception() = default;
 
-      Type type_; //!< Exception type
       utf8String description_; //!< Exception description
+      Type type_; //!< Exception type
       utf8String source_; //!< Exception source
       mutable utf8String fullDescription_; //!< Full, extended description
       variant<WinAPIError> additional_; //!< \b Internal Additional exception data

@@ -227,7 +227,7 @@ namespace nil {
       const HIDRecordList& getRecords() const;
 
       //! Destructor.
-      ~HIDManager();
+      virtual ~HIDManager();
     };
 
   }

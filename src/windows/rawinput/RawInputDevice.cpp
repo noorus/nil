@@ -24,7 +24,7 @@ namespace nil {
       NIL_EXCEPT_WINAPI( "GetRawInputDeviceInfoW failed" );
   }
 
-  const Device::Type RawInputDeviceInfo::rawInfoResolveType() const
+  Device::Type RawInputDeviceInfo::rawInfoResolveType() const
   {
     switch ( rawInfo_->dwType )
     {
@@ -75,12 +75,12 @@ namespace nil {
   {
   }
 
-  const Device::Handler RawInputDevice::getHandler() const
+  Device::Handler RawInputDevice::getHandler() const
   {
     return Device::Handler_RawInput;
   }
 
-  const DeviceID RawInputDevice::getStaticID() const
+  DeviceID RawInputDevice::getStaticID() const
   {
     // Static ID for RawInput devices:
     // 4 bits of handler ID, 28 bits of unique id (hashed raw path)
@@ -93,7 +93,7 @@ namespace nil {
     return ( ( id >> 4 ) | ( ( Handler_RawInput + 1 ) << 28 ) );
   }
 
-  const HANDLE RawInputDevice::getRawHandle() const
+  HANDLE RawInputDevice::getRawHandle() const
   {
     return rawHandle_;
   }

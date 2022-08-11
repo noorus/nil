@@ -158,7 +158,7 @@ namespace nil {
 
       //! Query if this System is initializing.
       //! \return true if initializing, false if not.
-      const bool isInitializing() const;
+      bool isInitializing() const;
 
       //! Destructor.
       ~System();

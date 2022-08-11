@@ -102,7 +102,7 @@ namespace nil {
         //! Shut down the G-Key SDK module.
         void shutdown() override;
 
-        ~GKeySDK();
+        virtual ~GKeySDK();
     };
 
     // Logitech LED SDK (1.01.005.1) implementation
@@ -147,7 +147,7 @@ namespace nil {
         //! Shut down the Led SDK module.
         void shutdown() override;
 
-        ~LedSDK();
+        virtual ~LedSDK();
     };
 
     //! @}

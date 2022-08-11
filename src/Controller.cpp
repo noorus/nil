@@ -73,7 +73,7 @@ namespace nil {
     listeners_.remove( listener );
   }
 
-  const Controller::Type Controller::getType() const
+  Controller::Type Controller::getType() const
   {
     return type_;
   }

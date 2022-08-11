@@ -50,7 +50,7 @@ namespace nil {
   {
   protected:
     RID_DEVICE_INFO* rawInfo_;
-    const Device::Type rawInfoResolveType() const;
+    Device::Type rawInfoResolveType() const;
   public:
     RawInputDeviceInfo( HANDLE handle );
     ~RawInputDeviceInfo();
@@ -70,11 +70,11 @@ namespace nil {
       RawInputDevice( System* system, DeviceID id, HANDLE rawHandle, wideString& rawPath );
     public:
       virtual ~RawInputDevice();
-      const Handler getHandler() const override;
-      const DeviceID getStaticID() const override;
+      Handler getHandler() const override;
+      DeviceID getStaticID() const override;
 
       //! Get the RawInput device handle.
-      virtual const HANDLE getRawHandle() const;
+      virtual HANDLE getRawHandle() const;
 
       //! Get the RawInput device path.
       virtual const wideString& getRawPath() const;
@@ -96,8 +96,8 @@ namespace nil {
       DirectInputDevice( System* system, DeviceID id,
         LPCDIDEVICEINSTANCEW instance );
     public:
-      const Handler getHandler() const override;
-      const DeviceID getStaticID() const override;
+      Handler getHandler() const override;
+      DeviceID getStaticID() const override;
 
       //! Get the DirectInput product ID.
       virtual const GUID getProductID() const;
@@ -130,7 +130,7 @@ namespace nil {
     XInput();
     InitReturn initialize() override;
     void shutdown() override;
-    ~XInput();
+    virtual ~XInput();
   };
 
   //! \class XInputDevice
@@ -150,11 +150,11 @@ namespace nil {
       void onDisconnect() override;
       void onConnect() override;
     public:
-      const Handler getHandler() const override;
-      const DeviceID getStaticID() const override;
+      Handler getHandler() const override;
+      DeviceID getStaticID() const override;
 
       //! Get the XInput device ID.
-      virtual const int getXInputID() const;
+      virtual int getXInputID() const;
 
       //! Get the XInput device capabilities.
       virtual const XINPUT_CAPABILITIES& getCapabilities() const; //!< Get XInput caps

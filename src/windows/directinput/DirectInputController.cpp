@@ -219,33 +219,23 @@ namespace nil {
         }
         else
         {
-          switch ( buffers[i].dwOfs )
-          {
-            case NIL_DIJ2OFS_SLIDER0( 0 ):
-              state_.sliders[0].absolute.x = filterAxis( buffers[i].dwData );
-            break;
-            case NIL_DIJ2OFS_SLIDER0( 1 ):
-              state_.sliders[0].absolute.y = filterAxis( buffers[i].dwData );
-            break;
-            case NIL_DIJ2OFS_SLIDER1( 0 ):
-              state_.sliders[1].absolute.x = filterAxis( buffers[i].dwData );
-            break;
-            case NIL_DIJ2OFS_SLIDER1( 1 ):
-              state_.sliders[1].absolute.y = filterAxis( buffers[i].dwData );
-            break;
-            case NIL_DIJ2OFS_SLIDER2( 0 ):
-              state_.sliders[2].absolute.x = filterAxis( buffers[i].dwData );
-            break;
-            case NIL_DIJ2OFS_SLIDER2( 1 ):
-              state_.sliders[2].absolute.y = filterAxis( buffers[i].dwData );
-            break;
-            case NIL_DIJ2OFS_SLIDER3( 0 ):
-              state_.sliders[3].absolute.x = filterAxis( buffers[i].dwData );
-            break;
-            case NIL_DIJ2OFS_SLIDER3( 1 ):
-              state_.sliders[3].absolute.y = filterAxis( buffers[i].dwData );
-            break;
-          }
+          auto offset = buffers[i].dwOfs;
+          if ( offset == NIL_DIJ2OFS_SLIDER0( 0 ) )
+            state_.sliders[0].absolute.x = filterAxis( buffers[i].dwData );
+          else if ( offset == NIL_DIJ2OFS_SLIDER0( 1 ) )
+            state_.sliders[0].absolute.y = filterAxis( buffers[i].dwData );
+          else if ( offset == NIL_DIJ2OFS_SLIDER1( 0 ) )
+            state_.sliders[1].absolute.x = filterAxis( buffers[i].dwData );
+          else if ( offset == NIL_DIJ2OFS_SLIDER1( 1 ) )
+            state_.sliders[1].absolute.y = filterAxis( buffers[i].dwData );
+          else if ( offset == NIL_DIJ2OFS_SLIDER2( 0 ) )
+            state_.sliders[2].absolute.x = filterAxis( buffers[i].dwData );
+          else if ( offset == NIL_DIJ2OFS_SLIDER2( 1 ) )
+            state_.sliders[2].absolute.y = filterAxis( buffers[i].dwData );
+          else if ( offset == NIL_DIJ2OFS_SLIDER3( 0 ) )
+            state_.sliders[3].absolute.x = filterAxis( buffers[i].dwData );
+          else if ( offset == NIL_DIJ2OFS_SLIDER3( 1 ) )
+            state_.sliders[3].absolute.y = filterAxis( buffers[i].dwData );
         }
       }
     }

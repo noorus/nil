@@ -6,8 +6,6 @@
 
 #ifdef NIL_PLATFORM_WINDOWS
 
-# define NIL_LOAD_EXTERNAL_FUNC(x) funcs_.pfn##x##=(fn##x##)GetProcAddress(module_,#x)
-
 namespace nil {
 
   XInput::Functions::Functions(): pfnXInputGetState( nullptr ),
@@ -39,9 +37,9 @@ namespace nil {
       }
     }
 
-    NIL_LOAD_EXTERNAL_FUNC( XInputGetState );
-    NIL_LOAD_EXTERNAL_FUNC( XInputSetState );
-    NIL_LOAD_EXTERNAL_FUNC( XInputGetCapabilities );
+    funcs_.pfnXInputGetState = (fnXInputGetState)GetProcAddress( module_, "XInputGetState" );
+    funcs_.pfnXInputSetState = (fnXInputSetState)GetProcAddress( module_, "XInputSetState" );
+    funcs_.pfnXInputGetCapabilities = (fnXInputGetCapabilities)GetProcAddress( module_, "XInputGetCapabilities" );
 
     if ( !funcs_.pfnXInputGetState
       || !funcs_.pfnXInputSetState

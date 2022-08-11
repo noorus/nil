@@ -34,11 +34,11 @@ namespace nil {
       if ( !module_ )
         return Initialization_ModuleNotFound;
 
-      NIL_LOAD_SDK_FUNC( LogiLedInit );
-      NIL_LOAD_SDK_FUNC( LogiLedSaveCurrentLighting );
-      NIL_LOAD_SDK_FUNC( LogiLedSetLighting );
-      NIL_LOAD_SDK_FUNC( LogiLedRestoreLighting );
-      NIL_LOAD_SDK_FUNC( LogiLedShutdown );
+      funcs_.pfnLogiLedInit = (fnLogiLedInit)GetProcAddress( module_, "LogiLedInit" );
+      funcs_.pfnLogiLedSaveCurrentLighting = (fnLogiLedSaveCurrentLighting)GetProcAddress( module_, "LogiLedSaveCurrentLighting" );
+      funcs_.pfnLogiLedSetLighting = (fnLogiLedSetLighting)GetProcAddress( module_, "LogiLedSetLighting" );
+      funcs_.pfnLogiLedRestoreLighting = (fnLogiLedRestoreLighting)GetProcAddress( module_, "LogiLedRestoreLighting" );
+      funcs_.pfnLogiLedShutdown = (fnLogiLedShutdown)GetProcAddress( module_, "LogiLedShutdown" );
 
       if ( !funcs_.pfnLogiLedInit
         || !funcs_.pfnLogiLedSaveCurrentLighting
