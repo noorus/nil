@@ -1,25 +1,30 @@
 Nice Input Library
 ==================
-NIL is a gaming input library written in C++. It is somewhat battle-tested, but currently implemented for Windows only.
+NIL is a gaming input library written in C++.  
+It is somewhat battle-tested, but currently implemented for Windows only.
 
 ### Platform
 
-Tested against Windows 10 and newer. Previous generation (before 2019) was tested against Windows Vista.  
-Should work fine on Windows 8, possibly on Windows 7, with few modifications.
+Current version tested on Windows 10 and newer. Previous generation (before 2019) was tested against Windows Vista.  
+Should work fine on Windows 8, possibly on Windows 7, with few modifications if any.
 
 ### Building
 
-NIL is compiled with C++20, and by default builds as a statically linked library under Visual Studio 2022.  
-It uses certain APIs from the Windows Driver Kit. WDK is nowadays included in the Windows SDK.
+1. Open NIL.sln
+2. Press Build
+
+By default NIL builds as a statically linked library under Visual Studio 2022.  
+Clang-CL should also work fine, probably others, as long as some C++20 features are supported.  
+NIL has **No dependencies**, except for the Windows SDK & Driver Kit.  
 
 ### Features
 
 * Full multi-keyboard and multi-mice support. Every connected input device has a unique ID.
-* Plug-and-Play device runtime addition & removal support.
+* Plug-and-Play device runtime connection & disconnection detection.
 * Singlethreaded, buffered and listener-based.
 * Uses [Raw Input](http://msdn.microsoft.com/en-us/library/windows/desktop/ms645543%28v=vs.85%29.aspx) for mice & keyboards, [XInput](http://msdn.microsoft.com/en-us/library/windows/desktop/hh405053%28v=vs.85%29.aspx) for XBOX and emulated controllers, and [DirectInput](http://msdn.microsoft.com/en-us/library/windows/desktop/ee416842%28v=vs.85%29.aspx) for old-school gamepads.
 * Optional support for [Logitech G-keys](https://logitech-en-amr.custhelp.com/app/answers/detail/a_id/21506), which are extra buttons on some Logitech Gaming keyboards.
-* NO force feedback support. Not categorically against them, but not going to spend time on it.
+* No force feedback support. Too cumbersome to implement in a smartly abstracted way. If you're feeling up to the task, however, pull requests are welcome.
 
 ### Pitfalls
 
