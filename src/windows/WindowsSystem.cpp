@@ -2,7 +2,6 @@
 
 #include "nil.h"
 #include "nilUtil.h"
-#include "nilLogitech.h"
 
 #ifdef NIL_PLATFORM_WINDOWS
 
@@ -88,10 +87,6 @@ namespace nil {
     // Store accessibility feature states, and tell Windows not to be annoying
     internals_.store();
     internals_.disableHotKeyHarassment();
-
-    // Init Logitech SDKs where available
-    logitechGkeys_ = make_unique<logitech::GKeySDK>();
-    logitechLeds_ = make_unique<logitech::LedSDK>();
 
     // Init XInput subsystem
     xinput_ = make_unique<XInput>();
@@ -445,20 +440,6 @@ namespace nil {
         deviceDisconnect( device );
       else
         device->update();
-
-    // Run queued G-key events if using the SDK
-    if ( logitechGkeys_->isInitialized() )
-      logitechGkeys_->update();
-  }
-
-  logitech::GKeySDK* System::getLogitechGKeys()
-  {
-    return logitechGkeys_.get();
-  }
-
-  logitech::LedSDK* System::getLogitechLEDs()
-  {
-    return logitechLeds_.get();
   }
 
   XInput* System::getXInput()

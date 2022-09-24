@@ -25,9 +25,6 @@
     <Filter Include="Source Files\Windows\XInput">
       <UniqueIdentifier>{f3c7ac48-8052-4e9a-b485-b868f0bfaf8d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Windows\Logitech">
-      <UniqueIdentifier>{16818199-86f5-4caf-8e26-a59c38038a49}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\nil.h">
@@ -43,9 +40,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\nilException.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\nilLogitech.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\nilComponents.h">
@@ -91,12 +85,6 @@
     </ClCompile>
     <ClCompile Include="src\windows\directinput\DirectInputDevice.cpp">
       <Filter>Source Files\Windows\DirectInput</Filter>
-    </ClCompile>
-    <ClCompile Include="src\windows\logitech\LogitechGkeySDK.cpp">
-      <Filter>Source Files\Windows\Logitech</Filter>
-    </ClCompile>
-    <ClCompile Include="src\windows\logitech\LogitechLedSDK.cpp">
-      <Filter>Source Files\Windows\Logitech</Filter>
     </ClCompile>
     <ClCompile Include="src\windows\rawinput\RawInputDevice.cpp">
       <Filter>Source Files\Windows\RawInput</Filter>

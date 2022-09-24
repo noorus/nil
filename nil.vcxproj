@@ -169,7 +169,6 @@
     <ClInclude Include="include\nilComponents.h" />
     <ClInclude Include="include\nilConfig.h" />
     <ClInclude Include="include\nilException.h" />
-    <ClInclude Include="include\nilLogitech.h" />
     <ClInclude Include="include\nilWindowsPNP.h" />
     <ClInclude Include="include\nilTypes.h" />
     <ClInclude Include="include\nilUtil.h" />
@@ -189,8 +188,6 @@
     <ClCompile Include="src\windows\EventMonitor.cpp" />
     <ClCompile Include="src\windows\HIDManager.cpp" />
     <ClCompile Include="src\windows\HIDRecord.cpp" />
-    <ClCompile Include="src\windows\logitech\LogitechGkeySDK.cpp" />
-    <ClCompile Include="src\windows\logitech\LogitechLedSDK.cpp" />
     <ClCompile Include="src\windows\rawinput\RawInputDevice.cpp" />
     <ClCompile Include="src\windows\rawinput\RawInputKeyboard.cpp" />
     <ClCompile Include="src\windows\rawinput\RawInputMouse.cpp" />

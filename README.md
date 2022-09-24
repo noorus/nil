@@ -24,7 +24,6 @@ NIL has **No dependencies**, except for the Windows SDK & Driver Kit.
 * Plug-and-Play device runtime connection & disconnection detection.
 * Singlethreaded, buffered and listener-based.
 * Uses [Raw Input](http://msdn.microsoft.com/en-us/library/windows/desktop/ms645543%28v=vs.85%29.aspx) for mice & keyboards, [XInput](http://msdn.microsoft.com/en-us/library/windows/desktop/hh405053%28v=vs.85%29.aspx) for XBOX and emulated controllers, and [DirectInput](http://msdn.microsoft.com/en-us/library/windows/desktop/ee416842%28v=vs.85%29.aspx) for old-school gamepads.
-* Optional support for [Logitech G-keys](https://logitech-en-amr.custhelp.com/app/answers/detail/a_id/21506), which are extra buttons on some Logitech Gaming keyboards.
 * No force feedback support. Too cumbersome to implement in a smartly abstracted way. If you're feeling up to the task, however, pull requests are welcome.
 
 ### Pitfalls

@@ -9,7 +9,6 @@
 #ifdef NIL_PLATFORM_WINDOWS
 # include "nilWindows.h"
 # include "nilWindowsPNP.h"
-# include "nilLogitech.h"
 #endif
 
 namespace nil {
@@ -78,8 +77,6 @@ namespace nil {
     bool isInitializing_ = true; //!< Are we initializing?
     RawMouseMap mouseMap_; //!< Raw mouse events mapping
     RawKeyboardMap keyboardMap_; //!< Raw keyboard events mapping
-    unique_ptr<logitech::GKeySDK> logitechGkeys_; //!< External module for Logitech G-Keys
-    unique_ptr<logitech::LedSDK> logitechLeds_; //!< External module for Logitech LEDs
     SystemListener* listener_; //!< Our single event listener
     unique_ptr<XInput> xinput_; //!< XInput module handler
     const Cooperation coop_; //!< Cooperation mode
@@ -152,14 +149,6 @@ namespace nil {
     //! Get currently known devices.
     //! \return The devices.
     DeviceList& getDevices();
-
-    //! Get Logitech G-Key SDK, if available.
-    //! \return null if it fails, else the Logitech G-Keys SDK object.
-    logitech::GKeySDK* getLogitechGKeys();
-
-    //! Get Logitech LED SDK, if available.
-    //! \return null if it fails, else the Logitech LED SDK object.
-    logitech::LedSDK* getLogitechLEDs();
 
     XInput* getXInput();
 
