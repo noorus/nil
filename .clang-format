@@ -8,7 +8,7 @@ UseTab: Never
 Language: Cpp
 
 BreakBeforeBraces: Custom
-BraceWrapping:
+BraceWrapping:   
   AfterClass:      true
   AfterControlStatement: true
   AfterEnum:       true
