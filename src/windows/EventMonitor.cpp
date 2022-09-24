@@ -31,9 +31,8 @@ namespace nil {
       if ( !window_ )
         NIL_EXCEPT_WINAPI( "Window creation failed" );
 
-      inputBuffer_ = malloc( (size_t)inputBufferSize_ );
-      if ( !inputBuffer_ )
-        NIL_EXCEPT( "Couldn't allocate input read buffer" );
+      // Initial read buffer size, should avoid reallocations
+      inputBuffer_.resize( 1024 * 10, 0 );
 
       registerNotifications();
     }
@@ -82,26 +81,17 @@ namespace nil {
     {
       unsigned int dataSize = 0;
 
-      // TODO:LOW We could probably get away with just one GetRawInputData call?
-      if ( GetRawInputData( input, RID_INPUT, nullptr, &dataSize, sizeof( RAWINPUTHEADER ) ) == (UINT)-1 )
-        return;
-
-      if ( !dataSize )
+      if ( GetRawInputData( input, RID_INPUT, nullptr, &dataSize, sizeof( RAWINPUTHEADER ) ) == (UINT)-1 || !dataSize )
         return;
 
       // Resize our input buffer if packet size exceeds previous cap
-      if ( dataSize > inputBufferSize_ )
-      {
-        inputBufferSize_ = dataSize;
-        inputBuffer_ = ( inputBuffer_ ? realloc( inputBuffer_, (size_t)dataSize ) : malloc( (size_t)dataSize ) );
-        if ( !inputBuffer_ )
-          NIL_EXCEPT( "Couldn't reallocate input read buffer" );
-      }
+      if ( dataSize > inputBuffer_.size() )
+        inputBuffer_.resize( dataSize, 0 );
 
-      if ( GetRawInputData( input, RID_INPUT, inputBuffer_, &dataSize, sizeof( RAWINPUTHEADER ) ) == (UINT)-1 )
+      if ( GetRawInputData( input, RID_INPUT, inputBuffer_.data(), &dataSize, sizeof( RAWINPUTHEADER ) ) == (UINT)-1 )
         return;
 
-      auto raw = (const RAWINPUT*)inputBuffer_;
+      auto raw = reinterpret_cast<const RAWINPUT*>( inputBuffer_.data() );
 
       // Ping our listeners
       if ( raw->header.dwType == RIM_TYPEMOUSE )
@@ -122,6 +112,13 @@ namespace nil {
         listener->onRawRemoval( handle );
     }
 
+    const set<uint16_t> c_wantedUsages = {
+      USBDesktopUsage_Mice,
+      USBDesktopUsage_Joysticks,
+      USBDesktopUsage_Gamepads,
+      USBDesktopUsage_Keyboards,
+      USBDesktopUsage_MultiAxes };
+
     void EventMonitor::registerNotifications()
     {
       DEV_BROADCAST_DEVICEINTERFACE filter;
@@ -136,25 +133,22 @@ namespace nil {
       if ( !notifications_ )
         NIL_EXCEPT_WINAPI( "Couldn't register for device interface notifications" );
 
-      RAWINPUTDEVICE rawDevices[2];
+      uint32_t flags = ( coop_ == Cooperation::Background )
+        ? ( RIDEV_DEVNOTIFY | RIDEV_INPUTSINK )
+        : ( RIDEV_DEVNOTIFY );
 
-      rawDevices[0].dwFlags =
-        ( coop_ == Cooperation::Background )
-        ? RIDEV_DEVNOTIFY | RIDEV_INPUTSINK
-        : RIDEV_DEVNOTIFY;
-      rawDevices[0].hwndTarget = window_;
-      rawDevices[0].usUsagePage = USBUsagePage_Desktop;
-      rawDevices[0].usUsage = USBDesktopUsage_Mice;
+      int i = 0;
+      vector<RAWINPUTDEVICE> rawDevices( c_wantedUsages.size() );
+      for ( auto& usage : c_wantedUsages )
+      {
+        rawDevices.data()[i].dwFlags = flags;
+        rawDevices.data()[i].hwndTarget = window_;
+        rawDevices.data()[i].usUsagePage = USBUsagePage_Desktop;
+        rawDevices.data()[i].usUsage = usage;
+        i++;
+      }
 
-      rawDevices[1].dwFlags =
-        ( coop_ == Cooperation::Background )
-        ? RIDEV_DEVNOTIFY | RIDEV_INPUTSINK
-        : RIDEV_DEVNOTIFY;
-      rawDevices[1].hwndTarget = window_;
-      rawDevices[1].usUsagePage = USBUsagePage_Desktop;
-      rawDevices[1].usUsage = USBDesktopUsage_Keyboards;
-
-      if ( !RegisterRawInputDevices( rawDevices, 2, sizeof( RAWINPUTDEVICE ) ) )
+      if ( !RegisterRawInputDevices( rawDevices.data(), static_cast<UINT>( rawDevices.size() ), sizeof( RAWINPUTDEVICE ) ) )
         NIL_EXCEPT_WINAPI( "Couldn't register for raw input notifications" );
     }
 
@@ -231,19 +225,18 @@ namespace nil {
 
     void EventMonitor::unregisterNotifications()
     {
-      RAWINPUTDEVICE rawDevices[2];
+      int i = 0;
+      vector<RAWINPUTDEVICE> rawDevices( c_wantedUsages.size() );
+      for ( auto& usage : c_wantedUsages )
+      {
+        rawDevices.data()[i].dwFlags = RIDEV_REMOVE;
+        rawDevices.data()[i].hwndTarget = nullptr;
+        rawDevices.data()[i].usUsagePage = USBUsagePage_Desktop;
+        rawDevices.data()[i].usUsage = usage;
+        i++;
+      }
 
-      rawDevices[0].dwFlags = RIDEV_REMOVE;
-      rawDevices[0].hwndTarget = nullptr;
-      rawDevices[0].usUsagePage = USBUsagePage_Desktop;
-      rawDevices[0].usUsage = USBDesktopUsage_Mice;
-
-      rawDevices[1].dwFlags = RIDEV_REMOVE;
-      rawDevices[1].hwndTarget = nullptr;
-      rawDevices[1].usUsagePage = USBUsagePage_Desktop;
-      rawDevices[1].usUsage = USBDesktopUsage_Keyboards;
-
-      RegisterRawInputDevices( rawDevices, 2, sizeof( RAWINPUTDEVICE ) );
+      RegisterRawInputDevices( rawDevices.data(), static_cast<UINT>( rawDevices.size() ), sizeof( RAWINPUTDEVICE ) );
 
       if ( notifications_ )
       {
@@ -255,17 +248,13 @@ namespace nil {
     void EventMonitor::update()
     {
       MSG msg;
-      // Run all queued messages
       while ( PeekMessageW( &msg, window_, 0, 0, PM_REMOVE ) > 0 )
-      {
         DispatchMessageW( &msg );
-      }
     }
 
     EventMonitor::~EventMonitor()
     {
       unregisterNotifications();
-      free( inputBuffer_ );
       if ( window_ )
         DestroyWindow( window_ );
       if ( class_ )

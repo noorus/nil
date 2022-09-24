@@ -47,11 +47,14 @@ namespace nil {
 
   class RawInputDeviceInfo {
   protected:
-    RID_DEVICE_INFO* rawInfo_;
+    vector<uint8_t> rawDeviceInfo_;
     Device::Type rawInfoResolveType() const;
   public:
     RawInputDeviceInfo( HANDLE handle );
-    ~RawInputDeviceInfo();
+    virtual ~RawInputDeviceInfo();
+
+    //! Get the RawInput device information structure.
+    virtual const RID_DEVICE_INFO* getRawInfo() const;
   };
 
   //! \class RawInputDevice
@@ -76,9 +79,6 @@ namespace nil {
 
     //! Get the RawInput device path.
     virtual const wideString& getRawPath() const;
-
-    //! Get the RawInput device information structure.
-    virtual const RID_DEVICE_INFO* getRawInfo() const;
   };
 
   using RawInputDevicePtr = shared_ptr<RawInputDevice>;
@@ -222,6 +222,32 @@ namespace nil {
   };
 
   using RawInputKeyboardPtr = shared_ptr<RawInputKeyboard>;
+
+  //! @}
+
+  //! \addtogroup Controller
+  //! @{
+
+  //! \class RawInputController
+  //! Keyboard implemented by Raw Input API.
+  //! \sa Controller
+  class RawInputController : public Keyboard, public std::enable_shared_from_this<RawInputController> {
+  friend class System;
+  private:
+  public:
+    //! Constructor.
+    //! \param device The device.
+    RawInputController( RawInputDevicePtr device );
+
+    void update() override;
+
+    shared_ptr<DeviceInstance> ptr() override { return dynamic_pointer_cast<DeviceInstance>( shared_from_this() ); }
+
+    //! Destructor.
+    virtual ~RawInputController();
+  };
+
+  using RawInputControllerPtr = shared_ptr<RawInputController>;
 
   //! @}
 

@@ -25,7 +25,10 @@ namespace nil {
     //! See USB HID Usage Tables version 1.1, page 27
     enum USBDesktopUsage {
       USBDesktopUsage_Mice = 0x02,
-      USBDesktopUsage_Keyboards = 0x06
+      USBDesktopUsage_Joysticks = 0x04,
+      USBDesktopUsage_Gamepads = 0x05,
+      USBDesktopUsage_Keyboards = 0x06,
+      USBDesktopUsage_MultiAxes = 0x08
     };
 
     //! \class PnPListener
@@ -76,8 +79,7 @@ namespace nil {
       HDEVNOTIFY notifications_ = nullptr; //!< Device notifications registration
       PnPListenerList pnpListeners_; //!< Our Plug-n-Play listeners
       RawListenerList rawListeners_; //!< Our raw listeners
-      void *inputBuffer_ = nullptr; //!< Buffer for input reads
-      unsigned int inputBufferSize_ = 10240; //!< Size of input buffer
+      vector<uint8_t> inputBuffer_; //!< Buffer for input reads
       const Cooperation coop_; //!< Cooperation mode
     protected:
       //! \b Internal Register myself for event notifications.
@@ -130,7 +132,10 @@ namespace nil {
     //! Known USB vendor IDs that might be useful.
     enum USBKnownVendor: uint16_t {
       USBVendor_Microsoft = 0x045E, //!< Microsoft
-      USBVendor_Logitech = 0x046D //!< Logitech
+      USBVendor_Logitech = 0x046D, //!< Logitech
+      USBVendor_Sony = 0x054C, //!< Sony
+      USBVendor_Razer = 0x1532, //!< Razer
+      USBVendor_Nacon = 0x146B //!< Nacon
     };
 
     //! \class HIDRecord

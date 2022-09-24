@@ -166,6 +166,8 @@ namespace nil {
     GetRawInputDeviceInfoW( handle, RIDI_DEVICENAME, &rawPath[0], &pathLength );
     rawPath.resize( rawPath.length() - 1 );
 
+    // wprintf_s( L"Raw arrival: %s\r\n", rawPath.c_str() );
+
     for ( auto& device : devices_ )
     {
       if ( device->getHandler() != Device::Handler_RawInput )
@@ -268,6 +270,8 @@ namespace nil {
   {
     identifyXInputDevices();
 
+    // DirectInput
+
     for ( auto& device : devices_ )
       if ( device->getHandler() == Device::Handler_DirectInput )
       {
@@ -285,6 +289,8 @@ namespace nil {
         && device->getSavedStatus() == Device::Status_Connected
         && device->getStatus() == Device::Status_Pending )
         deviceDisconnect( device );
+
+    // XInput
 
     XINPUT_STATE state;
     for ( auto& device : devices_ )

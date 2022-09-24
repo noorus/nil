@@ -28,6 +28,7 @@ namespace nil {
 #   define NIL_EXCEPT_DINPUT(hr,description) {throw nil::Exception(description,__FUNCTION__,hr,nil::Exception::DirectInput);}
 # endif
 
+  // Initial known value is hardcoded here, but it gets replaced by what HidD_GetHidGuid returns later
   static GUID g_HIDInterfaceGUID = { 0x4D1E55B2, 0xF16F, 0x11CF, { 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } };
 
   //! \class SafeHandle

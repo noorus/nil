@@ -37,6 +37,8 @@ namespace nil {
           manufacturer_ = util::cleanupName( util::wideToUtf8( buffer ) );
         if ( HidD_GetSerialNumberString( handle, &buffer, 256 ) )
           serial_ = util::wideToUtf8( buffer );
+
+        // wprintf_s( L"HIDRecord: vid 0x%04X pid 0x%04X prodstr %s manustr %s serial %s\r\n", usbVid_, usbPid_, name_.c_str(), manufacturer_.c_str(), serial_.c_str() );
       }
 
       identify();

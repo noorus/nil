@@ -28,7 +28,8 @@ namespace nil {
     {
       Handler_DirectInput = 0, //!< Implemented by DirectInput
       Handler_XInput, //!< Implemented by XInput
-      Handler_RawInput //!< Implemented by Raw Input API
+      Handler_RawInput, //!< Implemented by Raw Input API
+      Handler_HID //!< Implemented by direct HID
     };
     //! Device types.
     enum Type: int

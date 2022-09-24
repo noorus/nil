@@ -12,6 +12,7 @@ namespace nil {
 
     HIDManager::HIDManager()
     {
+      HidD_GetHidGuid( &g_HIDInterfaceGUID );
       initialize();
     }
 
@@ -95,20 +96,15 @@ namespace nil {
         if ( GetLastError() != ERROR_INSUFFICIENT_BUFFER )
           NIL_EXCEPT_WINAPI( "SetupDiGetDeviceInterfaceDetailW failed" );
 
-        auto detailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA_W)malloc( (size_t)length );
-        if ( !detailData )
-          NIL_EXCEPT( "Memory allocation failed" );
+        vector<uint8_t> detailBuffer( length, 0 );
+        auto detailData = reinterpret_cast<PSP_DEVICE_INTERFACE_DETAIL_DATA_W>( detailBuffer.data() );
         detailData->cbSize = sizeof( SP_INTERFACE_DEVICE_DETAIL_DATA_W );
 
         SP_DEVINFO_DATA deviceData = { .cbSize = sizeof( SP_DEVINFO_DATA ) };
 
         if ( SetupDiGetDeviceInterfaceDetailW( info, &interfaceData,
           detailData, length, nullptr, &deviceData ) )
-        {
           processDevice( interfaceData, deviceData, detailData->DevicePath );
-        }
-
-        free( detailData );
       }
 
       SetupDiDestroyDeviceInfoList( info );

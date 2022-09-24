@@ -72,6 +72,9 @@ namespace nil {
         instance_ = make_shared<RawInputKeyboard>( rawDevice )->ptr();
         system_->keyboardEnabled( ptr(), dynamic_pointer_cast<Keyboard>( instance_->ptr() ) );
       }
+      else if ( getType() == Device_Controller )
+      {
+      }
       else
         NIL_EXCEPT( "Unsupported device type for RawInput; cannot instantiate device!" );
     }

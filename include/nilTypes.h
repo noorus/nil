@@ -11,6 +11,7 @@
 #include <sstream>
 #include <queue>
 #include <variant>
+#include <set>
 
 namespace nil {
 
@@ -50,6 +51,7 @@ namespace nil {
   using std::variant;
   using std::make_shared;
   using std::make_unique;
+  using std::set;
 
   class System;
 

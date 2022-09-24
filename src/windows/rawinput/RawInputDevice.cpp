@@ -10,23 +10,26 @@ namespace nil {
 
   // RawInputDeviceInfo class
 
-  RawInputDeviceInfo::RawInputDeviceInfo( HANDLE handle ): rawInfo_( nullptr )
+  RawInputDeviceInfo::RawInputDeviceInfo( HANDLE handle )
   {
     UINT size = 0;
     if ( GetRawInputDeviceInfoW( handle, RIDI_DEVICEINFO, nullptr, &size ) != 0 )
       NIL_EXCEPT_WINAPI( "GetRawInputDeviceInfoW failed" );
 
-    rawInfo_ = (RID_DEVICE_INFO*)malloc( (size_t)size );
-    if ( !rawInfo_ )
-      NIL_EXCEPT( "Memory allocation failed" );
+    rawDeviceInfo_.resize( size, 0 );
 
-    if ( !GetRawInputDeviceInfoW( handle, RIDI_DEVICEINFO, rawInfo_, &size ) )
+    if ( !GetRawInputDeviceInfoW( handle, RIDI_DEVICEINFO, rawDeviceInfo_.data(), &size ) )
       NIL_EXCEPT_WINAPI( "GetRawInputDeviceInfoW failed" );
+  }
+
+  const RID_DEVICE_INFO* RawInputDeviceInfo::getRawInfo() const
+  {
+    return reinterpret_cast<const RID_DEVICE_INFO*>( rawDeviceInfo_.data() );
   }
 
   Device::Type RawInputDeviceInfo::rawInfoResolveType() const
   {
-    switch ( rawInfo_->dwType )
+    switch ( getRawInfo()->dwType )
     {
       case RIM_TYPEMOUSE:
         return Device::Device_Mouse;
@@ -42,7 +45,6 @@ namespace nil {
 
   RawInputDeviceInfo::~RawInputDeviceInfo()
   {
-    free( rawInfo_ );
   }
 
   // RawInputDevice class
@@ -102,11 +104,6 @@ namespace nil {
   const wideString& RawInputDevice::getRawPath() const
   {
     return rawPath_;
-  }
-
-  const RID_DEVICE_INFO* RawInputDevice::getRawInfo() const
-  {
-    return rawInfo_;
   }
 
 }
