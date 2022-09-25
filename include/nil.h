@@ -74,7 +74,7 @@ namespace nil {
     unique_ptr<windows::EventMonitor> eventMonitor_; //!< Our Plug-n-Play & raw input event monitor
     DeviceList devices_; //!< List of known devices
     unique_ptr<windows::HIDManager> hidManager_; //!< Our HID manager
-    bool isInitializing_ = true; //!< Are we initializing?
+    bool initializing_ = true; //!< Are we initializing?
     RawMouseMap mouseMap_; //!< Raw mouse events mapping
     RawKeyboardMap keyboardMap_; //!< Raw keyboard events mapping
     SystemListener* listener_; //!< Our single event listener
@@ -86,7 +86,7 @@ namespace nil {
       TOGGLEKEYS storedToggleKeys;
       FILTERKEYS storedFilterKeys;
       void store();
-      void disableHotKeyHarassment();
+      void disableHotkeyHelpers();
       void restore();
     } internals_;
     void initializeDevices();

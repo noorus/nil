@@ -44,7 +44,6 @@ namespace nil {
 
   Mouse::~Mouse()
   {
-    //
   }
 
 }

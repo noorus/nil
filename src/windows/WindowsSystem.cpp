@@ -21,11 +21,11 @@ namespace nil {
     SystemParametersInfoW( SPI_GETFILTERKEYS, sizeof( FILTERKEYS ), &storedFilterKeys, 0 );
   }
 
-  void System::Internals::disableHotKeyHarassment()
+  void System::Internals::disableHotkeyHelpers()
   {
     // Don't touch stickykeys/togglekeys/filterkeys if they're being used,
     // but if they aren't, make sure Windows doesn't harass the user about
-    // maybe enabling them.
+    // maybe enabling them while we're running.
 
     auto stickyKeys = storedStickyKeys;
     if ( ( stickyKeys.dwFlags & SKF_STICKYKEYSON ) == 0 )
@@ -77,7 +77,7 @@ namespace nil {
 
   void System::initialize()
   {
-    if ( !isInitializing_ )
+    if ( !initializing_ )
       return;
 
     // Validate the passed window handle
@@ -86,7 +86,7 @@ namespace nil {
 
     // Store accessibility feature states, and tell Windows not to be annoying
     internals_.store();
-    internals_.disableHotKeyHarassment();
+    internals_.disableHotkeyHelpers();
 
     // Init XInput subsystem
     xinput_ = make_unique<XInput>();
@@ -118,7 +118,7 @@ namespace nil {
     // Update the monitor once, to receive initial Raw devices
     eventMonitor_->update();
 
-    isInitializing_ = false;
+    initializing_ = false;
   }
 
   DeviceID System::getNextID()
@@ -192,7 +192,7 @@ namespace nil {
   {
     UNREFERENCED_PARAMETER( sinked );
 
-    if ( isInitializing_ || !handle )
+    if ( initializing_ || !handle )
       return;
 
     auto it = mouseMap_.find( handle );
@@ -205,7 +205,7 @@ namespace nil {
   {
     UNREFERENCED_PARAMETER( sinked );
 
-    if ( isInitializing_ || !handle )
+    if ( initializing_ || !handle )
       return;
 
     auto it = keyboardMap_.find( handle );
@@ -412,7 +412,7 @@ namespace nil {
 
   bool System::isInitializing() const
   {
-    return isInitializing_;
+    return initializing_;
   }
 
   int System::getNextMouseIndex()

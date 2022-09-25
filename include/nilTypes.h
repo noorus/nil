@@ -35,7 +35,6 @@ namespace nil {
 
   using utf8String = std::string; //!< UTF-8 string type.
   using wideString = std::wstring; //!< Wide string type.
-  using std::basic_string;
 
   enum class Cooperation {
     Foreground,
@@ -46,6 +45,7 @@ namespace nil {
   using std::list;
   using std::queue;
   using std::vector;
+  using std::basic_string;
   using std::stringstream;
   using std::wstringstream;
   using std::unique_ptr;

@@ -46,17 +46,12 @@ namespace nil {
 
     if ( input.usFlags & MOUSE_MOVE_ABSOLUTE )
     {
-      // Calculate the relative change ourselves, if something actually
-      // does pass absolute coordinates to us
       Vector2i newPosition( input.lLastX, input.lLastY );
       state_.movement.relative = newPosition - lastPosition_;
       lastPosition_ = newPosition;
     }
     else
     {
-      // Apparently even the default Windows 7 mouse driver doesn't
-      // bother setting MOUSE_MOVE_RELATIVE, so we don't check for that.
-      // But relative movement is still the default in all observed cases.
       state_.movement.relative.x = input.lLastX;
       state_.movement.relative.y = input.lLastY;
     }
@@ -67,9 +62,6 @@ namespace nil {
       for ( auto& listener : listeners_ )
         listener->onMouseMoved( this, state_ );
     }
-
-    // This is butt-ugly, but at least it's semantically correct.
-    // Also, the raw input API does not support more than 5 buttons.
 
     if ( !state_.buttons.empty() )
     {
@@ -103,7 +95,6 @@ namespace nil {
       NIL_RAW_TEST_MOUSE_BUTTON_UP( RI_MOUSE_BUTTON_5_UP, 4 );
     }
 
-    // At least the wheel delta is simple and reliable
     if ( input.usButtonFlags & RI_MOUSE_WHEEL )
     {
       state_.wheel.relative = (short)input.usButtonData;
@@ -120,7 +111,6 @@ namespace nil {
   RawInputMouse::~RawInputMouse()
   {
     auto rawDevice = dynamic_pointer_cast<RawInputDevice>( device_ );
-
     rawDevice->getSystem()->unmapMouse( rawDevice->getRawHandle() );
   }
 

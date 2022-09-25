@@ -125,7 +125,6 @@ namespace nil {
 
     HIDManager::~HIDManager()
     {
-      records_.clear();
     }
 
   }

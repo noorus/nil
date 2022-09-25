@@ -85,7 +85,6 @@ namespace nil {
 
   Controller::~Controller()
   {
-    //
   }
 
 }

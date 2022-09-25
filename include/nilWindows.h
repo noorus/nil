@@ -24,7 +24,7 @@ namespace nil {
   class ExternalModule {
   protected:
     HMODULE module_; //!< The module handle
-    bool isInitialized_; //!< Whether the module is initialized
+    bool initialized_; //!< Whether the module is initialized
   public:
     ExternalModule();
 
@@ -209,7 +209,7 @@ namespace nil {
   class RawInputKeyboard: public Keyboard, public std::enable_shared_from_this<RawInputKeyboard> {
   friend class System;
   private:
-    list<VirtualKeyCode> pressedKeys_; //!< List of keys that are currently pressed
+    set<VirtualKeyCode> pressedKeys_; //!< Set of keys that are currently pressed
 
     //! My raw input callback.
     virtual void onRawInput( const RAWKEYBOARD& input );

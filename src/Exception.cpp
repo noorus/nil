@@ -55,16 +55,7 @@ namespace nil {
 
 #ifdef NIL_PLATFORM_WINDOWS
 
-  struct DirectInputErrorEntry {
-  public:
-    uint32_t code;
-    const wchar_t* description;
-  };
-
-  const int c_dinputErrorCount = 32;
-
-  const DirectInputErrorEntry c_dinputErrors[c_dinputErrorCount] =
-  {
+  const map<uint32_t, wideString> c_dinputErrors = {
     { (uint32_t)DIERR_ACQUIRED, L"The operation cannot be performed while the device is acquired." },
     { (uint32_t)DIERR_ALREADYINITIALIZED, L"The object is already initialized." },
     { (uint32_t)DIERR_BADDRIVERVER, L"The object could not be created due to an incompatible driver." },
@@ -131,14 +122,10 @@ namespace nil {
     else if ( type_ == DirectInput )
     {
       error.code = hr;
-      for ( const auto& dinputError : c_dinputErrors )
-      {
-        if ( dinputError.code == error.code )
-        {
-          error.description = dinputError.description;
-          break;
-        }
-      }
+
+      if ( c_dinputErrors.find( error.code ) != c_dinputErrors.end() )
+        error.description = c_dinputErrors.at( error.code );
+
       additional_ = error;
     }
   }

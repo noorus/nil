@@ -141,7 +141,8 @@ namespace nil {
       vector<RAWINPUTDEVICE> rawDevices( c_wantedUsages.size() );
       for ( auto& usage : c_wantedUsages )
       {
-        rawDevices.data()[i].dwFlags = flags;
+        bool isMiceKbd = ( usage == USBDesktopUsage_Mice || usage == USBDesktopUsage_Keyboards );
+        rawDevices.data()[i].dwFlags = ( flags | ( isMiceKbd ? RIDEV_NOLEGACY : 0 ) );
         rawDevices.data()[i].hwndTarget = window_;
         rawDevices.data()[i].usUsagePage = USBUsagePage_Desktop;
         rawDevices.data()[i].usUsage = usage;

@@ -18,7 +18,6 @@ namespace nil {
 
   DeviceInstance::~DeviceInstance()
   {
-    //
   }
 
 }

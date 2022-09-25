@@ -101,27 +101,20 @@ namespace nil {
 
     if ( flags & RI_KEY_BREAK )
     {
-      pressedKeys_.remove( virtualKey );
+      pressedKeys_.erase( virtualKey );
       for ( auto& listener : listeners_ )
         listener->onKeyReleased( this, virtualKey );
     }
     else
     {
-      bool isPressed = false;
-      for ( auto pressed : pressedKeys_ )
-        if ( pressed == virtualKey )
-        {
-          isPressed = true;
-          break;
-        }
-      if ( isPressed )
+      if ( pressedKeys_.find( virtualKey ) != pressedKeys_.end() )
       {
         for ( auto& listener : listeners_ )
           listener->onKeyRepeat( this, virtualKey );
       }
       else
       {
-        pressedKeys_.push_back( virtualKey );
+        pressedKeys_.insert( virtualKey );
         for ( auto& listener : listeners_ )
           listener->onKeyPressed( this, virtualKey );
       }

@@ -8,7 +8,6 @@ namespace nil {
   Keyboard::Keyboard( SystemPtr system, DevicePtr device ):
   DeviceInstance( system, device )
   {
-    //
   }
 
   void Keyboard::addListener( KeyboardListener* listener )
@@ -23,7 +22,6 @@ namespace nil {
 
   Keyboard::~Keyboard()
   {
-    //
   }
 
 }

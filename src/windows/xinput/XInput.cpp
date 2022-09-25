@@ -37,7 +37,7 @@ namespace nil {
       || !funcs_.pfnXInputGetCapabilities )
       return Initialization_MissingExports;
 
-    isInitialized_ = true;
+    initialized_ = true;
 
     return Initialization_OK;
   }
@@ -49,7 +49,7 @@ namespace nil {
       FreeLibrary( module_ );
       module_ = nullptr;
     }
-    isInitialized_ = false;
+    initialized_ = false;
   }
 
   XInput::~XInput()

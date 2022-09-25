@@ -39,7 +39,7 @@ namespace nil {
       if ( val > -deadzone )
         return NIL_REAL_ZERO;
       val += deadzone;
-      Real ret = (Real)val / (Real)( 32767 - deadzone );
+      auto ret = static_cast<Real>( val ) / static_cast<Real>( 32767 - deadzone );
       return ( ret < NIL_REAL_MINUSONE ? NIL_REAL_MINUSONE : ret );
     }
     if ( val > 0 )
@@ -47,7 +47,7 @@ namespace nil {
       if ( val < deadzone )
         return NIL_REAL_ZERO;
       val -= deadzone;
-      Real ret = (Real)val / (Real)( 32767 - deadzone );
+      auto ret = static_cast<Real>( val ) / static_cast<Real>( 32767 - deadzone );
       return ( ret > NIL_REAL_ONE ? NIL_REAL_ONE : ret );
     }
     return NIL_REAL_ZERO;
@@ -58,7 +58,7 @@ namespace nil {
     if ( val < XINPUT_GAMEPAD_TRIGGER_THRESHOLD )
       return NIL_REAL_ZERO;
     val -= XINPUT_GAMEPAD_TRIGGER_THRESHOLD;
-    Real ret = (Real)val / (Real)( 255 - XINPUT_GAMEPAD_TRIGGER_THRESHOLD );
+    auto ret = static_cast<Real>( val ) / static_cast<Real>( 255 - XINPUT_GAMEPAD_TRIGGER_THRESHOLD );
     return ( ret > NIL_REAL_ONE ? NIL_REAL_ONE : ret );
   }
 
@@ -114,7 +114,6 @@ namespace nil {
 
   XInputController::~XInputController()
   {
-    //
   }
 
 }
