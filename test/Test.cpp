@@ -4,6 +4,8 @@
 
 HANDLE stopEvent = nullptr;
 
+// #define NIL_TESTAPP_IGNORE_MOUSE
+
 // Shared mouse listener
 class DummyMouseListener: public nil::MouseListener {
 public:
@@ -13,15 +15,21 @@ public:
   }
   void onMouseButtonPressed( nil::Mouse* mouse, const nil::MouseState& state, size_t button ) override
   {
-    printf_s( "Mouse button pressed: %d (%s)\n", (int)button, mouse->getDevice()->getName().c_str() );
+#   ifndef NIL_TESTAPP_IGNORE_MOUSE
+      printf_s( "Mouse button pressed: %d (%s)\n", (int)button, mouse->getDevice()->getName().c_str() );
+    #endif
   }
   void onMouseButtonReleased( nil::Mouse* mouse, const nil::MouseState& state, size_t button ) override
   {
-    printf_s( "Mouse button released: %d (%s)\n", (int)button, mouse->getDevice()->getName().c_str() );
+#   ifndef NIL_TESTAPP_IGNORE_MOUSE
+      printf_s( "Mouse button released: %d (%s)\n", (int)button, mouse->getDevice()->getName().c_str() );
+#   endif
   }
   void onMouseWheelMoved( nil::Mouse* mouse, const nil::MouseState& state ) override
   {
-    printf_s( "Mouse wheel moved: %d (%s)\n", state.wheel.relative, mouse->getDevice()->getName().c_str() );
+    #ifndef NIL_TESTAPP_IGNORE_MOUSE
+      printf_s( "Mouse wheel moved: %d (%s)\n", state.wheel.relative, mouse->getDevice()->getName().c_str() );
+#   endif
   }
 };
 

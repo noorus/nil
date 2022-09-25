@@ -8,34 +8,24 @@
 
 namespace nil {
 
-#if(_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-  const long cMaxXInputTypes = 11;
-  static std::pair<int,Controller::Type> cXInputTypes[cMaxXInputTypes] = {
-    std::make_pair( XINPUT_DEVSUBTYPE_UNKNOWN, Controller::Controller_Unknown ),
-    std::make_pair( XINPUT_DEVSUBTYPE_GAMEPAD, Controller::Controller_Gamepad ),
-    std::make_pair( XINPUT_DEVSUBTYPE_WHEEL, Controller::Controller_Driving ),
-    std::make_pair( XINPUT_DEVSUBTYPE_ARCADE_STICK, Controller::Controller_Joystick ),
-    std::make_pair( XINPUT_DEVSUBTYPE_FLIGHT_STICK, Controller::Controller_Flight ),
-    std::make_pair( XINPUT_DEVSUBTYPE_DANCE_PAD, Controller::Controller_DancePad ),
-    std::make_pair( XINPUT_DEVSUBTYPE_GUITAR, Controller::Controller_Guitar ),
-    std::make_pair( XINPUT_DEVSUBTYPE_GUITAR_ALTERNATE, Controller::Controller_Guitar ),
-    std::make_pair( XINPUT_DEVSUBTYPE_GUITAR_BASS, Controller::Controller_Bass ),
-    std::make_pair( XINPUT_DEVSUBTYPE_DRUM_KIT, Controller::Controller_Drumkit ),
-    std::make_pair( XINPUT_DEVSUBTYPE_ARCADE_PAD, Controller::Controller_ArcadePad )
+  const map<int, Controller::Type> c_xinputControllerTypeMap = {
+    { XINPUT_DEVSUBTYPE_UNKNOWN, Controller::Controller_Unknown },
+    { XINPUT_DEVSUBTYPE_GAMEPAD, Controller::Controller_Gamepad },
+    { XINPUT_DEVSUBTYPE_WHEEL, Controller::Controller_Driving },
+    { XINPUT_DEVSUBTYPE_ARCADE_STICK, Controller::Controller_Joystick },
+    { XINPUT_DEVSUBTYPE_FLIGHT_STICK, Controller::Controller_Flight },
+    { XINPUT_DEVSUBTYPE_DANCE_PAD, Controller::Controller_DancePad },
+    { XINPUT_DEVSUBTYPE_GUITAR, Controller::Controller_Guitar },
+    { XINPUT_DEVSUBTYPE_GUITAR_ALTERNATE, Controller::Controller_Guitar },
+    { XINPUT_DEVSUBTYPE_GUITAR_BASS, Controller::Controller_Bass },
+    { XINPUT_DEVSUBTYPE_DRUM_KIT, Controller::Controller_Drumkit },
+    { XINPUT_DEVSUBTYPE_ARCADE_PAD, Controller::Controller_ArcadePad }
   };
-#else
-  const long cMaxXInputTypes = 1;
-  static std::pair<int,Controller::Type> cXInputTypes[cMaxXInputTypes] = {
-    std::make_pair( XINPUT_DEVSUBTYPE_GAMEPAD, Controller::Controller_Gamepad )
-  };
-#endif
 
   XInputController::XInputController( XInputDevicePtr device ):
   Controller( device->getSystem()->ptr(), device )
   {
-    for ( int i = 0; i < cMaxXInputTypes; i++ )
-      if ( cXInputTypes[i].first == device->getCapabilities().SubType )
-        type_ = cXInputTypes[i].second;
+    type_ = c_xinputControllerTypeMap.at( device->getCapabilities().SubType );
 
     state_.povs.resize( 1 );
     state_.buttons.resize( 10 );

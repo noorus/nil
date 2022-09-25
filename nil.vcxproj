@@ -179,13 +179,13 @@
     <ClCompile Include="src\Device.cpp" />
     <ClCompile Include="src\DeviceInstance.cpp" />
     <ClCompile Include="src\Exception.cpp" />
-    <ClCompile Include="src\ExternalModule.cpp" />
     <ClCompile Include="src\Keyboard.cpp" />
     <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\Types.cpp" />
     <ClCompile Include="src\windows\directinput\DirectInputController.cpp" />
     <ClCompile Include="src\windows\directinput\DirectInputDevice.cpp" />
     <ClCompile Include="src\windows\EventMonitor.cpp" />
+    <ClCompile Include="src\windows\ExternalModule.cpp" />
     <ClCompile Include="src\windows\HIDManager.cpp" />
     <ClCompile Include="src\windows\HIDRecord.cpp" />
     <ClCompile Include="src\windows\rawinput\RawInputDevice.cpp" />

@@ -5,6 +5,7 @@
 #include "nilComponents.h"
 #include "nilException.h"
 #include "nilCommon.h"
+#include "nilWindowsPNP.h"
 
 namespace nil {
 
@@ -66,8 +67,9 @@ namespace nil {
   private:
     HANDLE rawHandle_; //!< The internal raw input device handle
     wideString rawPath_; //!< The full input device raw path
+    windows::HIDRecordPtr hidRecord_; //!< The associated HID record entry
   public:
-    RawInputDevice( SystemPtr system, DeviceID id, HANDLE rawHandle, wideString& rawPath );
+    RawInputDevice( SystemPtr system, DeviceID id, HANDLE rawHandle, wideString& rawPath, windows::HIDRecordPtr hid );
     virtual ~RawInputDevice();
 
     Handler getHandler() const override;
@@ -79,6 +81,9 @@ namespace nil {
 
     //! Get the RawInput device path.
     virtual const wideString& getRawPath() const;
+
+    //! Get the associated HID record entry.
+    windows::HIDRecordPtr getHIDReccord() const;
   };
 
   using RawInputDevicePtr = shared_ptr<RawInputDevice>;

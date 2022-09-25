@@ -3,6 +3,7 @@
 #include "nil.h"
 #include "nilWindowsPNP.h"
 #include "nilUtil.h"
+#include <hidclass.h>
 
 #ifdef NIL_PLATFORM_WINDOWS
 
@@ -27,7 +28,7 @@ namespace nil {
         return;
 
       for ( auto& record : records_ )
-        if ( _wcsicmp( record->getPath().c_str(), devicePath.c_str() ) == 0 )
+        if ( util::compareDevicePaths( record->getPath(), devicePath ) )
           return;
 
       SafeHandle deviceHandle( CreateFileW( devicePath.c_str(), 0,
@@ -46,11 +47,20 @@ namespace nil {
         return;
 
       for ( auto& record : records_ )
-        if ( _wcsicmp( record->getPath().c_str(), devicePath.c_str() ) == 0 )
+        if ( util::compareDevicePaths( record->getPath(), devicePath ) )
         {
           records_.remove( record );
           return;
         }
+    }
+
+    HIDRecordPtr HIDManager::getRecordByPath( const wideString& devicePath )
+    {
+      for ( auto& record : records_ )
+        if ( util::compareDevicePaths( record->getPath(), devicePath ) )
+          return record;
+
+      return HIDRecordPtr();
     }
 
     void HIDManager::processDevice( SP_DEVICE_INTERFACE_DATA& interfaceData,
@@ -64,7 +74,7 @@ namespace nil {
       // Well, this string comparison is kind of nasty, but it seems
       // to be what everyone does. Nothing else is quite reliable enough.
       for ( auto& record : records_ )
-        if ( _wcsicmp( record->getPath().c_str(), devicePath.c_str() ) == 0 )
+        if ( util::compareDevicePaths( record->getPath(), devicePath ) )
           return;
 
       SafeHandle deviceHandle( CreateFileW( devicePath.c_str(), 0,
@@ -79,32 +89,35 @@ namespace nil {
 
     void HIDManager::initialize()
     {
-      SP_DEVICE_INTERFACE_DATA interfaceData = {
-        .cbSize = sizeof( SP_DEVICE_INTERFACE_DATA ) };
-
       auto info = SetupDiGetClassDevsW( &g_HIDInterfaceGUID,
         nullptr, nullptr, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
 
       if ( info == INVALID_HANDLE_VALUE )
         NIL_EXCEPT_WINAPI( "SetupDiGetClassDevsW failed" );
 
-      for ( unsigned long i = 0; SetupDiEnumDeviceInterfaces( info, nullptr, &g_HIDInterfaceGUID, i, &interfaceData ); i++ )
+      SP_DEVINFO_DATA deviceData {
+        .cbSize = sizeof( SP_DEVINFO_DATA ) };
+
+      for ( unsigned long dev = 0; SetupDiEnumDeviceInfo( info, dev, &deviceData ); ++dev )
       {
-        unsigned long length = 0;
-        SetupDiGetDeviceInterfaceDetailW( info, &interfaceData, nullptr, 0, &length, nullptr );
+        SP_DEVICE_INTERFACE_DATA interfaceData = {
+          .cbSize = sizeof( SP_DEVICE_INTERFACE_DATA ) };
 
-        if ( GetLastError() != ERROR_INSUFFICIENT_BUFFER )
-          NIL_EXCEPT_WINAPI( "SetupDiGetDeviceInterfaceDetailW failed" );
+        for ( unsigned long ifi = 0; SetupDiEnumDeviceInterfaces( info, &deviceData, &g_HIDInterfaceGUID, ifi, &interfaceData ); ++ifi )
+        {
+          unsigned long length = 0;
+          SetupDiGetDeviceInterfaceDetailW( info, &interfaceData, nullptr, 0, &length, nullptr );
 
-        vector<uint8_t> detailBuffer( length, 0 );
-        auto detailData = reinterpret_cast<PSP_DEVICE_INTERFACE_DETAIL_DATA_W>( detailBuffer.data() );
-        detailData->cbSize = sizeof( SP_INTERFACE_DEVICE_DETAIL_DATA_W );
+          if ( GetLastError() != ERROR_INSUFFICIENT_BUFFER || !length )
+            NIL_EXCEPT_WINAPI( "No buffer size returned from SetupDiGetDeviceInterfaceDetailW" );
 
-        SP_DEVINFO_DATA deviceData = { .cbSize = sizeof( SP_DEVINFO_DATA ) };
+          vector<uint8_t> detailBuffer( length, 0 );
+          auto detailData = reinterpret_cast<SP_DEVICE_INTERFACE_DETAIL_DATA_W*>( detailBuffer.data() );
+          detailData->cbSize = sizeof( SP_INTERFACE_DEVICE_DETAIL_DATA_W );
 
-        if ( SetupDiGetDeviceInterfaceDetailW( info, &interfaceData,
-          detailData, length, nullptr, &deviceData ) )
-          processDevice( interfaceData, deviceData, detailData->DevicePath );
+          if ( SetupDiGetDeviceInterfaceDetailW( info, &interfaceData, detailData, length, nullptr, &deviceData ) )
+            processDevice( interfaceData, deviceData, detailData->DevicePath );
+        }
       }
 
       SetupDiDestroyDeviceInfoList( info );

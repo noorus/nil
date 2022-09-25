@@ -9,6 +9,45 @@ namespace nil {
 
   namespace windows {
 
+    const vector<KnownDeviceRecord> c_predefinedControllers = {
+      { USBVendor_Sony, 0x05C4, KnownDevice_DualShock4, "DualShock 4", 18 },
+      { USBVendor_Sony, 0x09CC, KnownDevice_DualShock4, "DualShock 4", 18 },
+      { USBVendor_Sony, 0x0CE6, KnownDevice_DualSense, "DualSense", 9 }
+    };
+
+    const map<uint16_t, utf8String> c_vendorNameMap = {
+      { USBVendor_Microsoft, "Microsoft" },
+      { USBVendor_Logitech, "Logitech" },
+      { USBVendor_Sony, "Sony" },
+      { USBVendor_Razer, "Razer" },
+      { USBVendor_Nacon, "Nacon" }
+    };
+
+    const map<HIDConnectionType, utf8String> c_hidConnectionTypeNameMap = {
+      { HIDConnection_Unknown, "Unknown" },
+      { HIDConnection_USB, "USB" },
+      { HIDConnection_Bluetooth, "Bluetooth" }
+    };
+
+    inline const KnownDeviceRecord* resolveKnownDevice( uint16_t vid, uint16_t pid )
+    {
+      for ( const auto& predef : c_predefinedControllers )
+      {
+        if ( vid == predef.vid && pid == predef.pid )
+          return &predef;
+      }
+
+      return nullptr;
+    }
+
+    template <class T>
+    unsigned long bufSizeBytes( const vector<T>& container )
+    {
+      return static_cast<unsigned long>( container.size() * sizeof( T ) );
+    }
+
+    thread_local static vector<wchar_t> s_wideBuffer( 256, L'\0' );
+
     HIDRecord::HIDRecord( const wideString& path, HANDLE handle ):
     path_( path )
     {
@@ -28,17 +67,43 @@ namespace nil {
 
         if ( HidP_GetCaps( preparsedData, &caps_ ) != HIDP_STATUS_SUCCESS )
           NIL_EXCEPT( "HidP_GetCaps failed" );
+
         HidD_FreePreparsedData( preparsedData );
 
-        wchar_t buffer[256] = { 0 };
-        if ( HidD_GetProductString( handle, &buffer, 256 ) )
-          name_ = util::cleanupName( util::wideToUtf8( buffer ) );
-        if ( HidD_GetManufacturerString( handle, &buffer, 256 ) )
-          manufacturer_ = util::cleanupName( util::wideToUtf8( buffer ) );
-        if ( HidD_GetSerialNumberString( handle, &buffer, 256 ) )
-          serial_ = util::wideToUtf8( buffer );
+        if ( HidD_GetProductString( handle, s_wideBuffer.data(), bufSizeBytes( s_wideBuffer ) ) )
+          name_ = util::cleanupName( util::wideToUtf8( s_wideBuffer.data() ) );
 
-        // wprintf_s( L"HIDRecord: vid 0x%04X pid 0x%04X prodstr %s manustr %s serial %s\r\n", usbVid_, usbPid_, name_.c_str(), manufacturer_.c_str(), serial_.c_str() );
+        if ( HidD_GetManufacturerString( handle, s_wideBuffer.data(), bufSizeBytes( s_wideBuffer ) ) )
+          manufacturer_ = util::cleanupName( util::wideToUtf8( s_wideBuffer.data() ) );
+
+        if ( HidD_GetSerialNumberString( handle, s_wideBuffer.data(), bufSizeBytes( s_wideBuffer ) ) )
+          serial_ = util::wideToUtf8( s_wideBuffer.data() );
+
+        knownDevice_ = resolveKnownDevice( usbVid_, usbPid_ );
+
+        if ( knownDevice_ )
+        {
+          manufacturer_ = c_vendorNameMap.at( knownDevice_->vid );
+          name_ = knownDevice_->name;
+          if ( serial_.empty() && knownDevice_->reportID_Serial && connectionType() == HIDConnection_USB )
+          {
+            vector<uint8_t> buffer( caps_.FeatureReportByteLength, 0 );
+            buffer[0] = knownDevice_->reportID_Serial;
+            if ( HidD_GetFeature( handle, buffer.data(), static_cast<unsigned long>( buffer.size() ) ) )
+            {
+              swprintf_s( s_wideBuffer.data(), s_wideBuffer.size(), L"%02X%02X%02X%02X%02X%02X",
+                buffer[6], buffer[5], buffer[4], buffer[3], buffer[2], buffer[1] );
+              serial_ = util::wideToUtf8( s_wideBuffer.data() );
+            }
+          }
+        }
+        else
+        {
+          if ( manufacturer_.empty() && c_vendorNameMap.find( usbVid_ ) != c_vendorNameMap.end() )
+            manufacturer_ = c_vendorNameMap.at( usbVid_ );
+        }
+
+        // wprintf_s( L"HIDRecord: vid 0x%04X pid 0x%04X %S %S serial %S (%S)\r\n", usbVid_, usbPid_, manufacturer_.c_str(), name_.c_str(), serial_.c_str(), c_hidConnectionTypeNameMap.at( connectionType() ).c_str() );
       }
 
       identify();
@@ -56,6 +121,33 @@ namespace nil {
       }
     }
 
+    HIDConnectionType HIDRecord::connectionType() const
+    {
+      if ( caps_.InputReportByteLength == 64 )
+        return HIDConnection_USB;
+      if ( caps_.InputReportByteLength == 78 )
+        return HIDConnection_Bluetooth;
+      return HIDConnection_Unknown;
+    }
+
+    utf8String HIDRecord::makePrettyName( const utf8String& raw, int typedIndex ) const
+    {
+      vector<utf8String> parts;
+
+      if ( !manufacturer_.empty() )
+        parts.push_back( manufacturer_ );
+
+      parts.push_back( name_.empty() ? raw : name_ );
+
+      if ( knownDevice_ )
+      {
+        parts.push_back( std::to_string( typedIndex ) );
+        parts.push_back( c_hidConnectionTypeNameMap.at( connectionType() ) );
+      }
+
+      return util::stringJoin( parts, utf8String( " " ) );
+    }
+
     bool HIDRecord::isAvailable() const
     {
       return available_;
@@ -69,16 +161,6 @@ namespace nil {
     bool HIDRecord::isRDP() const
     {
       return isRDP_;
-    }
-
-    bool HIDRecord::isMicrosoft() const
-    {
-      return ( usbVid_ == USBVendor_Microsoft );
-    }
-
-    bool HIDRecord::isLogitech() const
-    {
-      return ( usbVid_ == USBVendor_Logitech );
     }
 
     uint32_t HIDRecord::getIdentifier() const

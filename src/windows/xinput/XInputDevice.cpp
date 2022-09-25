@@ -8,39 +8,27 @@
 
 namespace nil {
 
-  const utf8String cXInputDefaultName = "XInput Controller";
+  const utf8String c_xinputDefaultName = "XInput Controller";
 
-#if(_WIN32_WINNT >= _WIN32_WINNT_WIN8)
-
-  const long cMaxXInputModels = 11;
-  static std::pair<int,utf8String> cXInputModels[cMaxXInputModels] = {
-    std::make_pair( XINPUT_DEVSUBTYPE_UNKNOWN, cXInputDefaultName ),
-    std::make_pair( XINPUT_DEVSUBTYPE_GAMEPAD, "XBOX 360 Gamepad" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_WHEEL, "XBOX 360 Racing Wheel" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_ARCADE_STICK, "XBOX 360 Arcade Stick" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_FLIGHT_STICK, "XBOX 360 Flight Stick" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_DANCE_PAD, "XBOX 360 Dance Pad" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_GUITAR, "XBOX 360 Guitar" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_GUITAR_ALTERNATE, "XBOX 360 Alternate Guitar" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_GUITAR_BASS, "XBOX 360 Bass Guitar" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_DRUM_KIT, "XBOX 360 Drum Kit" ),
-    std::make_pair( XINPUT_DEVSUBTYPE_ARCADE_PAD, "XBOX 360 Arcade Pad" )
+  const map<int, utf8String> c_xinputModelNameMap = {
+    { XINPUT_DEVSUBTYPE_UNKNOWN, c_xinputDefaultName },
+    { XINPUT_DEVSUBTYPE_GAMEPAD, "XBOX 360 Gamepad" },
+    { XINPUT_DEVSUBTYPE_WHEEL, "XBOX 360 Racing Wheel" },
+    { XINPUT_DEVSUBTYPE_ARCADE_STICK, "XBOX 360 Arcade Stick" },
+    { XINPUT_DEVSUBTYPE_FLIGHT_STICK, "XBOX 360 Flight Stick" },
+    { XINPUT_DEVSUBTYPE_DANCE_PAD, "XBOX 360 Dance Pad" },
+    { XINPUT_DEVSUBTYPE_GUITAR, "XBOX 360 Guitar" },
+    { XINPUT_DEVSUBTYPE_GUITAR_ALTERNATE, "XBOX 360 Alternate Guitar" },
+    { XINPUT_DEVSUBTYPE_GUITAR_BASS, "XBOX 360 Bass Guitar" },
+    { XINPUT_DEVSUBTYPE_DRUM_KIT, "XBOX 360 Drum Kit" },
+    { XINPUT_DEVSUBTYPE_ARCADE_PAD, "XBOX 360 Arcade Pad" }
   };
-
-#else
-
-  const long cMaxXInputModels = 1;
-  static std::pair<int,utf8String> cXInputModels[cMaxXInputModels] = {
-    std::make_pair( XINPUT_DEVSUBTYPE_GAMEPAD, "XBOX 360 Gamepad" )
-  };
-
-#endif
 
   XInputDevice::XInputDevice( SystemPtr system, DeviceID id, int xinputID ):
   Device( system, id, Device_Controller ), xinputId_( xinputID )
   {
     memset( &caps_, NULL, sizeof( XINPUT_CAPABILITIES ) );
-    name_ = cXInputDefaultName;
+    name_ = c_xinputDefaultName;
   }
 
   void XInputDevice::identify()
@@ -48,10 +36,9 @@ namespace nil {
     if ( system_->getXInput()->funcs_.pfnXInputGetCapabilities( xinputId_, 0, &caps_ ) != ERROR_SUCCESS )
       return;
 
-    for ( int i = 0; i < cMaxXInputModels; i++ ) {
-      if ( cXInputModels[i].first == caps_.SubType )
-        name_ = cXInputModels[i].second;
-    }
+    auto it = c_xinputModelNameMap.find( caps_.SubType );
+    if ( it != c_xinputModelNameMap.end() )
+      name_ = it->second;
 
     identified_ = true;
   }

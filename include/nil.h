@@ -67,7 +67,7 @@ namespace nil {
     int keyboardIdPool_ = 0; //!< Keyboard indexing pool
     int controllerIdPool_ = 0; //!< Controller indexing pool
     vector<DeviceID> xinputIds_; //!< XInput device ID mapping
-    vector<uint32_t> xinputDeviceIds_; //!< Tracked list of XInput VIDs & PIDs
+    set<uint32_t> specialHandlingDeviceIDs_; //!< Device VID/PID identifiers that will be ignored by DirectInput
     IDirectInput8W* dinput_ = nullptr; //!< Our DirectInput instance
     HINSTANCE instance_; //!< Host application instance handle
     HWND window_; //!< Host application window handle
@@ -91,7 +91,7 @@ namespace nil {
     } internals_;
     void initializeDevices();
     void refreshDevices();
-    void identifyXInputDevices();
+    void identifySpecialHandlingDevices();
     DeviceID getNextID();
     int getNextMouseIndex();
     int getNextKeyboardIndex();

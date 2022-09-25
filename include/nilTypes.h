@@ -12,6 +12,8 @@
 #include <queue>
 #include <variant>
 #include <set>
+#include <algorithm>
+#include <numeric>
 
 namespace nil {
 
@@ -33,6 +35,7 @@ namespace nil {
 
   using utf8String = std::string; //!< UTF-8 string type.
   using wideString = std::wstring; //!< Wide string type.
+  using std::basic_string;
 
   enum class Cooperation {
     Foreground,

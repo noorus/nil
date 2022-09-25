@@ -135,7 +135,31 @@ namespace nil {
       USBVendor_Logitech = 0x046D, //!< Logitech
       USBVendor_Sony = 0x054C, //!< Sony
       USBVendor_Razer = 0x1532, //!< Razer
-      USBVendor_Nacon = 0x146B //!< Nacon
+      USBVendor_Nacon = 0x146B, //!< Nacon
+      USBVendor_HyperX = 0x0951 //!< Kingston/HyperX
+    };
+
+    enum KnownDeviceType
+    {
+      KnownDevice_Unknown = 0,
+      KnownDevice_DualShock4,
+      KnownDevice_DualSense
+    };
+
+    struct KnownDeviceRecord
+    {
+      USBKnownVendor vid;
+      uint16_t pid;
+      KnownDeviceType type;
+      utf8String name;
+      uint8_t reportID_Serial;
+    };
+
+    enum HIDConnectionType
+    {
+      HIDConnection_Unknown = 0,
+      HIDConnection_USB,
+      HIDConnection_Bluetooth
     };
 
     //! \class HIDRecord
@@ -151,9 +175,12 @@ namespace nil {
       utf8String name_; //!< Device name
       utf8String manufacturer_; //!< Device manufacturer
       utf8String serial_; //!< Device serial number
+
       bool available_ = false; //!< Is this device actually available?
       bool isXInput_ = false; //!< Am I an XInput device?
       bool isRDP_ = false; //!< Am I a Remote Desktop device?
+
+      const KnownDeviceRecord* knownDevice_ = nullptr;
 
       void identify(); //!< \b Internal Figure out what I am
     public:
@@ -161,6 +188,8 @@ namespace nil {
       //! \param  path   Full system path to the device.
       //! \param  handle Device handle.
       HIDRecord( const wideString& path, HANDLE handle );
+
+      HIDConnectionType connectionType() const;
 
       //! Am I available for usage?
       bool isAvailable() const;
@@ -170,12 +199,6 @@ namespace nil {
 
       //! Am I an XInput device?
       bool isXInput() const;
-
-      //! Am I a Microsoft device?
-      bool isMicrosoft() const;
-
-      //! Am I a Logitech device?
-      bool isLogitech() const;
 
       //! Get full device path.
       const wideString& getPath() const;
@@ -190,6 +213,10 @@ namespace nil {
       //! Get serial number.
       //! Can be empty.
       const utf8String& getSerialNumber() const;
+
+      //! Format a pretty display name.
+      //! Called by RawInputDevice.
+      utf8String makePrettyName( const utf8String& raw, int typedIndex ) const;
 
       //! Get USB usage page ID.
       uint16_t getUsagePage() const;
@@ -236,6 +263,8 @@ namespace nil {
 
       //! Get the list of active HID records.
       const HIDRecordList& getRecords() const;
+
+      HIDRecordPtr getRecordByPath( const wideString& devicePath );
 
       //! Destructor.
       virtual ~HIDManager();

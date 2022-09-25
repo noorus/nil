@@ -77,9 +77,6 @@
     <ClCompile Include="src\Types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ExternalModule.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\windows\directinput\DirectInputController.cpp">
       <Filter>Source Files\Windows\DirectInput</Filter>
     </ClCompile>
@@ -114,6 +111,9 @@
       <Filter>Source Files\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\windows\WindowsSystem.cpp">
+      <Filter>Source Files\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windows\ExternalModule.cpp">
       <Filter>Source Files\Windows</Filter>
     </ClCompile>
   </ItemGroup>

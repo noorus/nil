@@ -138,7 +138,7 @@ namespace nil {
     {
       trim( name );
       if ( name.compare( "?" ) != 0 )
-        return utf8String();
+        return "";
       return name;
     }
 
@@ -166,6 +166,50 @@ namespace nil {
       return utf8String( &conversion[0] );
     }
 
+    template <typename T>
+    inline void searchAndReplace( T& str, const T& search, const T& replace )
+    {
+      auto pos = str.find( search );
+      while ( pos != T::npos )
+      {
+        str.replace( pos, search.size(), replace );
+        pos = str.find( search, pos + replace.size() );
+      }
+    }
+
+    template <typename T>
+    inline void stringSplit( const basic_string<T>& str, vector<basic_string<T>>& sink, T delimiter )
+    {
+      size_t start = 0, end = 0;
+      while ( ( end = str.find( delimiter, start ) ) != basic_string<T>::npos )
+      {
+        sink.push_back( str.substr( start, end - start ) );
+        start = end + 1;
+      }
+      sink.push_back( str.substr( start ) );
+    }
+
+    template <typename T>
+    inline basic_string<T> stringJoin( const vector<basic_string<T>>& parts, const basic_string<T>& delimiter )
+    {
+      return parts.empty() ? basic_string<T>() : std::accumulate(
+        ++parts.begin(), parts.end(), *parts.begin(),
+        [&delimiter]( const auto& a, const auto& b ) { return ( a + delimiter + b ); } );
+    }
+
+    template <typename T>
+    inline void stringDeleteBetween( basic_string<T>& str, T in, T out )
+    {
+      while ( str.find( in ) != basic_string<T>::npos && str.find( out ) != basic_string<T>::npos )
+      {
+        auto op = str.find( in );
+        auto cl = str.find( out, op );
+        if ( op == basic_string<T>::npos || cl == basic_string<T>::npos )
+          break;
+        str.erase( op, cl - op + 1 );
+      }
+    }
+
     //! Auto-generate a name for a nameless device.
     inline utf8String generateName( Device::Type deviceType, int index ) throw()
     {
@@ -183,6 +227,21 @@ namespace nil {
         break;
       }
       return name;
+    }
+
+    inline bool compareDevicePaths( wideString a, wideString b )
+    {
+      stringDeleteBetween( a, L'{', L'}' );
+      stringDeleteBetween( b, L'{', L'}' );
+
+      std::transform( a.begin(), a.end(), a.begin(), ::towlower );
+      std::transform( b.begin(), b.end(), b.begin(), ::towlower );
+
+      constexpr auto mustStartWith = LR"(\\?\hid)";
+      if ( a.substr( 0, 7 ) != mustStartWith || b.substr( 0, 7 ) != mustStartWith )
+        return false;
+
+      return ( a.find( b ) != wideString::npos || b.find( a ) != wideString::npos );
     }
 
 #endif

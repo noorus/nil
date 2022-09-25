@@ -49,11 +49,9 @@ namespace nil {
 
   // RawInputDevice class
 
-  RawInputDevice::RawInputDevice( SystemPtr system, DeviceID id,
-  HANDLE rawHandle, wideString& rawPath ):
-  RawInputDeviceInfo( rawHandle ),
-  Device( system, id, rawInfoResolveType() ),
-  rawHandle_( rawHandle ), rawPath_( rawPath )
+  RawInputDevice::RawInputDevice( SystemPtr system, DeviceID id, HANDLE rawHandle, wideString& rawPath,
+  windows::HIDRecordPtr hid ): RawInputDeviceInfo( rawHandle ), Device( system, id, rawInfoResolveType() ),
+  rawHandle_( rawHandle ), rawPath_( rawPath ), hidRecord_( hid )
   {
     SafeHandle deviceHandle( CreateFileW( rawPath_.c_str(), 0,
       FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr ) );
@@ -72,6 +70,9 @@ namespace nil {
           name_ = tmpName;
       }
     }
+
+    if ( hid )
+      name_ = hid->makePrettyName( name_, typedIndex_ );
   }
 
   RawInputDevice::~RawInputDevice()
@@ -104,6 +105,11 @@ namespace nil {
   const wideString& RawInputDevice::getRawPath() const
   {
     return rawPath_;
+  }
+
+  windows::HIDRecordPtr RawInputDevice::getHIDReccord() const
+  {
+    return hidRecord_;
   }
 
 }

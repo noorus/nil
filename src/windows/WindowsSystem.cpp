@@ -161,7 +161,7 @@ namespace nil {
     GetRawInputDeviceInfoW( handle, RIDI_DEVICENAME, &rawPath[0], &pathLength );
     rawPath.resize( rawPath.length() - 1 );
 
-    // wprintf_s( L"Raw arrival: %s\r\n", rawPath.c_str() );
+    auto hidRecord = hidManager_->getRecordByPath( rawPath );
 
     for ( auto& device : devices_ )
     {
@@ -170,14 +170,14 @@ namespace nil {
 
       auto rawDevice = dynamic_pointer_cast<RawInputDevice>( device );
 
-      if ( _wcsicmp( rawDevice->getRawPath().c_str(), rawPath.c_str() ) == 0 )
+      if ( util::compareDevicePaths( rawDevice->getRawPath(), rawPath ) )
       {
         deviceConnect( rawDevice );
         return;
       }
     }
 
-    auto device = make_shared<RawInputDevice>( ptr(), getNextID(), handle, rawPath )->ptr();
+    auto device = make_shared<RawInputDevice>( ptr(), getNextID(), handle, rawPath, hidRecord )->ptr();
 
     if ( isInitializing() )
       device->setStatus( Device::Status_Connected );
@@ -263,7 +263,9 @@ namespace nil {
 
   void System::refreshDevices()
   {
-    identifyXInputDevices();
+    // Gather devices that will be ignored in the DI enumerator callback.
+    // In practice this means XInput and specific direct HID controllers.
+    identifySpecialHandlingDevices();
 
     // DirectInput
 
@@ -277,7 +279,7 @@ namespace nil {
     auto hr = dinput_->EnumDevices( DI8DEVCLASS_GAMECTRL,
       diDeviceEnumCallback, this, DIEDFL_ATTACHEDONLY );
     if ( FAILED( hr ) )
-      NIL_EXCEPT_DINPUT( hr, "Could not enumerate DirectInput devices!" );
+      NIL_EXCEPT_DINPUT( hr, "Could not enumerate DirectInput devices" );
 
     for ( auto& device : devices_ )
       if ( device->getHandler() == Device::Handler_DirectInput
@@ -319,7 +321,7 @@ namespace nil {
   {
     auto system = reinterpret_cast<System*>( referer );
 
-    for ( auto& identifier : system->xinputDeviceIds_ )
+    for ( auto& identifier : system->specialHandlingDeviceIDs_ )
       if ( instance->guidProduct.Data1 == identifier )
         return DIENUM_CONTINUE;
 
@@ -395,12 +397,12 @@ namespace nil {
     listener_->onControllerDisabled( device.get(), instance.get() );
   }
 
-  void System::identifyXInputDevices()
+  void System::identifySpecialHandlingDevices()
   {
-    xinputDeviceIds_.clear();
+    specialHandlingDeviceIDs_.clear();
     for ( auto& hidRecord : hidManager_->getRecords() )
       if ( hidRecord->isXInput() )
-        xinputDeviceIds_.push_back( hidRecord->getIdentifier() );
+        specialHandlingDeviceIDs_.insert( hidRecord->getIdentifier() );
   }
 
   DeviceList& System::getDevices()

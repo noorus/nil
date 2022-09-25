@@ -14,8 +14,6 @@ namespace nil {
 
   void MouseState::reset()
   {
-    // We do NOT reset buttons!
-
     wheel.relative = 0;
 
     movement.relative.x = 0;
