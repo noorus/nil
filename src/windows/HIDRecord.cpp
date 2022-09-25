@@ -9,6 +9,8 @@ namespace nil {
 
   namespace windows {
 
+    // clang-format off
+
     const vector<KnownDeviceRecord> c_predefinedControllers = {
       { USBVendor_Sony, 0x05C4, KnownDevice_DualShock4, "DualShock 4", 18 },
       { USBVendor_Sony, 0x09CC, KnownDevice_DualShock4, "DualShock 4", 18 },
@@ -20,7 +22,15 @@ namespace nil {
       { USBVendor_Logitech, "Logitech" },
       { USBVendor_Sony, "Sony" },
       { USBVendor_Razer, "Razer" },
-      { USBVendor_Nacon, "Nacon" }
+      { USBVendor_Nacon, "Nacon" },
+      { USBVendor_Kingston, "HyperX" },
+      { USBVendor_Corsair, "Corsair" },
+      { USBVendor_Apple, "Apple" },
+      { USBVendor_Alienware, "Alienware" },
+      { USBVendor_Metadot, "Das" },
+      { USBVendor_Ducky, "Ducky" },
+      { USBVendor_Roccat, "Roccat" },
+      { USBVendor_SteelSeries, "SteelSeries" },
     };
 
     const map<HIDConnectionType, utf8String> c_hidConnectionTypeNameMap = {
@@ -28,6 +38,8 @@ namespace nil {
       { HIDConnection_USB, "USB" },
       { HIDConnection_Bluetooth, "Bluetooth" }
     };
+
+    // clang-format on
 
     inline const KnownDeviceRecord* resolveKnownDevice( uint16_t vid, uint16_t pid )
     {

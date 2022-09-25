@@ -136,7 +136,14 @@ namespace nil {
       USBVendor_Sony = 0x054C, //!< Sony
       USBVendor_Razer = 0x1532, //!< Razer
       USBVendor_Nacon = 0x146B, //!< Nacon
-      USBVendor_HyperX = 0x0951 //!< Kingston/HyperX
+      USBVendor_Kingston = 0x0951, //!< Kingston/HyperX
+      USBVendor_Corsair = 0x1B1C, //!< Corsair
+      USBVendor_Apple = 0x05AC, //!< Apple (+ Keychron?)
+      USBVendor_Alienware = 0x04F2, //!< Alienware
+      USBVendor_Metadot = 0x24F0, //!< Metadot (Das Keyboard)
+      USBVendor_Ducky = 0x04D9, //!< Ducky
+      USBVendor_Roccat = 0x1E7D, //!< Roccat
+      USBVendor_SteelSeries = 0x1038 //!< SteelSeries
     };
 
     enum KnownDeviceType
