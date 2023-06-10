@@ -35,3 +35,4 @@ lib/
 *.db
 *.VC.db*
 .vs/
+junk/

@@ -104,6 +104,10 @@ namespace nil {
         for ( auto& listener : rawListeners_ )
           listener->onRawKeyboardInput( raw->header.hDevice, raw->data.keyboard, sinked );
       }
+      else if ( raw->header.dwType == RIM_TYPEHID )
+      {
+        wprintf_s( L"RawInput (RIM_TYPEHID)\r\n" );
+      }
     }
 
     void EventMonitor::handleRawRemoval( HANDLE handle )
