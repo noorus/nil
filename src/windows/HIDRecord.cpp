@@ -142,6 +142,13 @@ namespace nil {
       return HIDConnection_Unknown;
     }
 
+    KnownDeviceType HIDRecord::knownDeviceType() const
+    {
+      if ( !knownDevice_ )
+        return KnownDevice_Unknown;
+      return knownDevice_->type;
+    }
+
     utf8String HIDRecord::makePrettyName( const utf8String& raw, int typedIndex ) const
     {
       vector<utf8String> parts;

@@ -213,6 +213,18 @@ namespace nil {
       it->second->onRawInput( input );
   }
 
+  void System::onRawHIDInput( HANDLE handle, const RAWHID& input, const bool sinked )
+  {
+    UNREFERENCED_PARAMETER( sinked );
+
+    if ( initializing_ || !handle )
+      return;
+
+    auto it = controllerMap_.find( handle );
+    if ( it != controllerMap_.end() )
+      it->second->onRawInput( input );
+  }
+
   void System::onRawRemoval( HANDLE handle )
   {
     for ( auto& device : devices_ )
@@ -248,6 +260,16 @@ namespace nil {
   void System::unmapKeyboard( HANDLE handle )
   {
     keyboardMap_.erase( handle );
+  }
+
+  void System::mapController( HANDLE handle, RawInputController* controller )
+  {
+    controllerMap_[handle] = controller;
+  }
+
+  void System::unmapController( HANDLE handle )
+  {
+    controllerMap_.erase( handle );
   }
 
   void System::initializeDevices()

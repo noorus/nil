@@ -61,6 +61,7 @@ namespace nil {
   friend class DirectInputController;
   friend class RawInputKeyboard;
   friend class RawInputMouse;
+  friend class RawInputController;
   private:
     DeviceID idPool_ = 0; //!< Device indexing pool
     int mouseIdPool_ = 0; //!< Mouse indexing pool
@@ -77,6 +78,7 @@ namespace nil {
     bool initializing_ = true; //!< Are we initializing?
     RawMouseMap mouseMap_; //!< Raw mouse events mapping
     RawKeyboardMap keyboardMap_; //!< Raw keyboard events mapping
+    RawControllerMap controllerMap_; //!< Raw controller events mapping
     SystemListener* listener_; //!< Our single event listener
     unique_ptr<XInput> xinput_; //!< XInput module handler
     const Cooperation coop_; //!< Cooperation mode
@@ -109,6 +111,8 @@ namespace nil {
     void unmapMouse( HANDLE handle );
     void mapKeyboard( HANDLE handle, RawInputKeyboard* keyboard );
     void unmapKeyboard( HANDLE handle );
+    void mapController( HANDLE handle, RawInputController* controller );
+    void unmapController( HANDLE handle );
     //! \b Internal My PnP plug callback.
     void onPnPPlug( const GUID& deviceClass, const wideString& devicePath ) override;
     //! \b Internal My PnP unplug callback.
@@ -119,6 +123,8 @@ namespace nil {
     void onRawMouseInput( HANDLE handle, const RAWMOUSE& input, const bool sinked ) override;
     //! \b Internal My Raw keyboard input callback.
     void onRawKeyboardInput( HANDLE handle, const RAWKEYBOARD& input, const bool sinked ) override;
+    //! \b Internal My Raw HID input callback.
+    void onRawHIDInput( HANDLE handle, const RAWHID& input, const bool sinked ) override;
     //! \b Internal My Raw removal callback.
     void onRawRemoval( HANDLE handle ) override;
     //! \b Internal My DirectInput device enumeration callback.

@@ -6,6 +6,7 @@
 #include "nilException.h"
 #include "nilCommon.h"
 #include "nilWindowsPNP.h"
+#include "nilPredefs.h"
 
 namespace nil {
 
@@ -234,11 +235,17 @@ namespace nil {
   //! @{
 
   //! \class RawInputController
-  //! Keyboard implemented by Raw Input API.
+  //! Controller implemented by Raw Input API.
   //! \sa Controller
-  class RawInputController : public Keyboard, public std::enable_shared_from_this<RawInputController> {
+  class RawInputController : public Controller, public std::enable_shared_from_this<RawInputController> {
   friend class System;
   private:
+    //! My raw input callback.
+    virtual void onRawInput( const RAWHID& input );
+    KnownDeviceType devType_ = KnownDevice_Unknown;
+    HIDConnectionType connType_ = HIDConnection_Unknown;
+    void setupDualSense();
+    void handleDualSense( const uint8_t* buf );
   public:
     //! Constructor.
     //! \param device The device.
@@ -323,6 +330,7 @@ namespace nil {
 
   using RawMouseMap = map<HANDLE, RawInputMouse*>;
   using RawKeyboardMap = map<HANDLE, RawInputKeyboard*>;
+  using RawControllerMap = map<HANDLE, RawInputController*>;
 
   //! @}
 

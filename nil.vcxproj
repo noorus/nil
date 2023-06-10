@@ -169,6 +169,7 @@
     <ClInclude Include="include\nilComponents.h" />
     <ClInclude Include="include\nilConfig.h" />
     <ClInclude Include="include\nilException.h" />
+    <ClInclude Include="include\nilPredefs.h" />
     <ClInclude Include="include\nilWindowsPNP.h" />
     <ClInclude Include="include\nilTypes.h" />
     <ClInclude Include="include\nilUtil.h" />
@@ -188,6 +189,7 @@
     <ClCompile Include="src\windows\ExternalModule.cpp" />
     <ClCompile Include="src\windows\HIDManager.cpp" />
     <ClCompile Include="src\windows\HIDRecord.cpp" />
+    <ClCompile Include="src\windows\rawinput\RawInputController.cpp" />
     <ClCompile Include="src\windows\rawinput\RawInputDevice.cpp" />
     <ClCompile Include="src\windows\rawinput\RawInputKeyboard.cpp" />
     <ClCompile Include="src\windows\rawinput\RawInputMouse.cpp" />

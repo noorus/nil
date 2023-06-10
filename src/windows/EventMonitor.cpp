@@ -106,7 +106,8 @@ namespace nil {
       }
       else if ( raw->header.dwType == RIM_TYPEHID )
       {
-        wprintf_s( L"RawInput (RIM_TYPEHID)\r\n" );
+        for ( auto& listener : rawListeners_ )
+          listener->onRawHIDInput( raw->header.hDevice, raw->data.hid, sinked );
       }
     }
 

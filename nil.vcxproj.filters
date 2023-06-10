@@ -54,6 +54,9 @@
     <ClInclude Include="include\nilConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\nilPredefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Exception.cpp">
@@ -115,6 +118,9 @@
     </ClCompile>
     <ClCompile Include="src\windows\ExternalModule.cpp">
       <Filter>Source Files\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\windows\rawinput\RawInputController.cpp">
+      <Filter>Source Files\Windows\RawInput</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

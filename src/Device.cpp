@@ -74,6 +74,8 @@ namespace nil {
       }
       else if ( getType() == Device_Controller )
       {
+        instance_ = make_shared<RawInputController>( rawDevice )->ptr();
+        system_->controllerEnabled( ptr(), dynamic_pointer_cast<Controller>( instance_->ptr() ) );
       }
       else
         NIL_EXCEPT( "Unsupported device type for RawInput; cannot instantiate device!" );
