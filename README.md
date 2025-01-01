@@ -1,12 +1,12 @@
 Nice Input Library
 ==================
 NIL is a gaming input library written in C++.  
-It is somewhat battle-tested, but currently implemented for Windows only.
+It is somewhat battle-tested, but currently implements Windows support only.
 
 ### Platform
 
-Current version tested on Windows 10 and newer.  
-Previous generation (before 2019) was tested against Windows Vista.  
+Tested on Windows 10 and newer.  
+Previous generation (before 2019) was tested on Windows Vista.  
 Should work fine on Windows 8, possibly on Windows 7, with few modifications if any.
 
 ### Building
@@ -15,8 +15,8 @@ Should work fine on Windows 8, possibly on Windows 7, with few modifications if 
 2. Press Build
 
 By default NIL builds as a statically linked library under Visual Studio 2022.  
-Clang-CL should also work fine, probably others, as long as some C++20 features are supported.  
-NIL has **No dependencies**, except for the Windows SDK & Driver Kit.  
+Clang-CL and others should work fine as long as some C++20 features are supported.  
+NIL has **no dependencies** other than the Windows SDK (and the DDK on very old installations.)
 
 ### Features
 
@@ -24,7 +24,9 @@ NIL has **No dependencies**, except for the Windows SDK & Driver Kit.
 * Plug-and-Play device runtime connection & disconnection detection.
 * Singlethreaded, buffered and listener-based.
 * Uses [Raw Input](http://msdn.microsoft.com/en-us/library/windows/desktop/ms645543%28v=vs.85%29.aspx) for mice & keyboards, [XInput](http://msdn.microsoft.com/en-us/library/windows/desktop/hh405053%28v=vs.85%29.aspx) for XBOX and emulated controllers, and [DirectInput](http://msdn.microsoft.com/en-us/library/windows/desktop/ee416842%28v=vs.85%29.aspx) for old-school gamepads.
-* No force feedback support. Too cumbersome to implement in a smartly abstracted way. If you're feeling up to the task, however, pull requests are welcome.
+
+### Not-features
+* Force feedback is not implemented, because it is hard to abstract in a sensible way between the different APIs. But if you're feeling up to the task, pull requests are welcome.
 
 ### Pitfalls
 
@@ -34,6 +36,3 @@ See the [PITFALLS.md](PITFALLS.md) file for information on some potential implem
 
 NIL is licensed under the **MIT** license.  
 For full license text, see the LICENSE file.
-
-Logitech SDKs under the *external* folder are property of Logitech.  
-See the Logitech SDK documentation files for licensing specifics.
